@@ -6,12 +6,12 @@ using System.Threading.Tasks;
 
 namespace Alterful.Functions
 {
-    enum InstructionType
+    public enum InstructionType
     {
         STARTUP, MACRO, CONST, BUILDIN
     }
 
-    abstract class AInstruction
+    public abstract class AInstruction
     {
         public const char SYMBOL_MACRO = '@';
         public const char SYMBOL_CONST = '#';
@@ -29,7 +29,7 @@ namespace Alterful.Functions
         /// </summary>
         /// <param name="instruction">欲获取类型的指令</param>
         /// <returns></returns>
-        static public InstructionType GetType(string instruction)
+        public static InstructionType GetType(string instruction)
         {
             switch (instruction[0])
             {
@@ -43,16 +43,16 @@ namespace Alterful.Functions
         /// <summary>
         /// 执行指令
         /// </summary>
-        abstract public void Execute();
+        public abstract void Execute();
     }
 
-    struct StartupItem
+    public struct StartupItem
     {
         public string StartupName { get; set; }
         public List<string> suffixList { get; set; }
     }
 
-    class AInstruction_Startup : AInstruction
+    public class AInstruction_Startup : AInstruction
     {
         /// <summary>
         /// 指令中包含的启动项个数
@@ -70,6 +70,11 @@ namespace Alterful.Functions
             {
                 if (AFile.Exists(item.StartupName))
                 {
+                    if (item.suffixList == null)
+                    {
+                        AFile.Launch(item.StartupName);
+                        continue;
+                    }
                     foreach (var suffix in item.suffixList)
                     {
                         switch (suffix)
@@ -79,8 +84,6 @@ namespace Alterful.Functions
                             case "o": AFile.Launch(item.StartupName); break;
                         }
                     }
-                    if (item.suffixList.Count == 0)
-                        AFile.Launch(item.StartupName);
                 }
                 else
                 {
@@ -89,15 +92,20 @@ namespace Alterful.Functions
             }
         }
 
+        public List<string> GetStartupItemStringList()
+        {
+            return new List<string>(Instruction.Split(' '));
+        }
+
         /// <summary>
         /// 获取指令中包含的启动项
         /// </summary>
         /// <returns></returns>
         public List<StartupItem> GetStartupItems()
         {
-            List<string> startupItemOrignal = new List<string>(Instruction.Split(' '));
+            List<string> startupItemStringList = GetStartupItemStringList();
             List<StartupItem> startupItemList = new List<StartupItem>();
-            foreach (var singleItem in startupItemOrignal)
+            foreach (var singleItem in startupItemStringList)
                 startupItemList.Add(StartupNameSuffixesParse(singleItem));
             return startupItemList;
         }
@@ -107,9 +115,9 @@ namespace Alterful.Functions
         /// </summary>
         /// <param name="singleStartupItem">单个的启动项原文本，可调用 GetStartupItems() 方法获得</param>
         /// <returns></returns>
-        private StartupItem StartupNameSuffixesParse(string singleStartupItem)
+        public static StartupItem StartupNameSuffixesParse(string singleStartupItem)
         {
-            if (singleStartupItem.IndexOf('-') == -1) return new StartupItem() { StartupName = singleStartupItem, suffixList = new List<string>() };
+            if (singleStartupItem.IndexOf('-') == -1) return new StartupItem() { StartupName = singleStartupItem, suffixList = null };
 
             StartupItem item = new StartupItem();
             List<string> suffixList = new List<string>(singleStartupItem.Split('-'));
