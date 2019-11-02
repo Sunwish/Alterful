@@ -92,6 +92,10 @@ namespace Alterful.Functions
             }
         }
 
+        /// <summary>
+        /// 获取指令包含的启动项文本列表
+        /// </summary>
+        /// <returns></returns>
         public List<string> GetStartupItemStringList()
         {
             return new List<string>(Instruction.Split(' '));
