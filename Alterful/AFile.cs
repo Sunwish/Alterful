@@ -9,14 +9,17 @@ using IWshRuntimeLibrary;
 using Alterful.Helper;
 namespace Alterful.Functions
 {
-    static class AFile
+    public static class AFile
     {
+        public static string BASE_PATH { get; } = AHelper.BASE_PATH;
+        public static string APATH_PATH { get; } = AHelper.APATH_PATH;
+        public const string LNK_EXTENTION = AHelper.LNK_EXTENTION;
         /// <summary>
         /// 获取快捷方式的目标路径
         /// </summary>
         /// <param name="shortcupFilePath">快捷方式的完整路径</param>
         /// <returns></returns>
-        static private string GetTargetPathOfShortcutFile(string shortcupFilePath)
+        static public string GetTargetPathOfShortcutFile(string shortcupFilePath)
         {
             if (!System.IO.File.Exists(shortcupFilePath)) throw new FileNotFoundException();
             IWshShell_Class wshShell = new IWshShell_Class();
@@ -72,7 +75,7 @@ namespace Alterful.Functions
         /// <returns></returns>
         static public string GetFullPathOfShortcutFile(string startupName, string Apath, string lnkExtention = AHelper.LNK_EXTENTION)
         {
-            return Apath + @"\" + startupName + lnkExtention;
+            return Apath + (Apath[Apath.Length-1] == '\\' ? "" : @"\") + (startupName[0] == '\\' ? startupName.Substring(1) : startupName) + lnkExtention;
         }
 
         /// <summary>

@@ -5,6 +5,8 @@ VisualStudioVersion = 15.0.26730.16
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Alterful", "Alterful\Alterful.csproj", "{9A29C012-B5AE-435E-9675-CB39AA8FB492}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AlterfulTests", "AlterfulTests\AlterfulTests.csproj", "{BE32B944-F3B4-447E-AD3A-FA687BD8BE2A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{9A29C012-B5AE-435E-9675-CB39AA8FB492}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9A29C012-B5AE-435E-9675-CB39AA8FB492}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9A29C012-B5AE-435E-9675-CB39AA8FB492}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BE32B944-F3B4-447E-AD3A-FA687BD8BE2A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BE32B944-F3B4-447E-AD3A-FA687BD8BE2A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BE32B944-F3B4-447E-AD3A-FA687BD8BE2A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BE32B944-F3B4-447E-AD3A-FA687BD8BE2A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

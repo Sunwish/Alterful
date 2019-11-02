@@ -39,7 +39,7 @@ namespace Alterful
             AHelper.CreateShortcut(AHelper.APATH_PATH + @"\demo" + AHelper.LNK_EXTENTION, FilesExamplePath + @"\" + ExampleFileName);
             
             // ----Demo Start----
-            AInstruction_Startup ins = new AInstruction_Startup("demo demo-f");
+            AInstruction ins = new AInstruction_Startup("demo demo-f");
             ins.Execute();
             // -----Demo End-----
 

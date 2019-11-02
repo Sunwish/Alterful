@@ -9,7 +9,7 @@ using System.Runtime.InteropServices;
 using IWshRuntimeLibrary;
 namespace Alterful.Helper
 {
-    static class AHelper
+    public static class AHelper
     {
         public static string BASE_PATH { get; } = System.IO.Path.GetDirectoryName(System.IO.Path.GetDirectoryName(System.IO.Path.GetDirectoryName(System.IO.Path.GetDirectoryName(typeof(MainWindow).Assembly.Location))));
         public static string APATH_PATH { get; } = BASE_PATH + @"\APath";
@@ -87,7 +87,6 @@ namespace Alterful.Helper
         public static void SetSysEnvironment(string name, string strValue)
         {
             OpenSysEnvironment().SetValue(name, strValue);
-
         }
 
         /// <summary>
@@ -98,6 +97,7 @@ namespace Alterful.Helper
         {
             string pathlist;
             pathlist = GetSysEnvironmentByName("PATH");
+
             //检测是否以;结尾
             if (pathlist.Substring(pathlist.Length - 1, 1) != ";")
             {
@@ -116,7 +116,6 @@ namespace Alterful.Helper
             {
                 SetSysEnvironment("PATH", pathlist + strHome + ";");
             }
-
         }
     }
 }
