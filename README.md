@@ -56,6 +56,7 @@ In order to start debugging successfully, make sure you run visual studio as an 
       - 删除 ❌
       - 复制 ❌
     - 新文件宏执行器 New-File Actuator ✅
+    - 常引用宏执行器 Const-Quote Actuator ❌
   - 常指令执行器 Const Actuator ❌
 
 ![Modular Diagram](https://i.loli.net/2019/11/01/eoX5AbgLduMQ8Kj.png)
