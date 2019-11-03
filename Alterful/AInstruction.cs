@@ -143,6 +143,12 @@ namespace Alterful.Functions
 
         public AInstruction_Macro(string instruction) : base(instruction) { GetMacroType(); }
 
+        /// <summary>
+        /// 获取宏指令类型
+        /// </summary>
+        /// <returns></returns>
+        /// <exception cref="MacroFormatException"></exception>
+        /// <exception cref="UnknowMacroType"></exception>
         public MacroType GetMacroType()
         {
             List<string> macroInstructionParts = new List<string>(Instruction.Split(' '));
@@ -210,6 +216,11 @@ namespace Alterful.Functions
                 AFile.LaunchTempFile(newFileName);
             }
         }
+
+        /// <summary>
+        /// 执行宏添加指令
+        /// </summary>
+        /// <exception cref="MacroFormatException"></exception>
         private void ExecuteMacroAdd()
         {
             List<string> macroInstructionParametersRaw = GetMacroInstructionParametersList();
@@ -231,6 +242,11 @@ namespace Alterful.Functions
         }
 
         enum NewFileType { File, Directory };
+        /// <summary>
+        /// 执行宏启动项添加指令
+        /// </summary>
+        /// <param name="macroInstructionParameters">宏添加指令参数列表</param>
+        /// <exception cref="FileNotFoundException"></exception>
         private void ExecuteMacroAddStartup(List<string> macroInstructionParameters)
         {
             NewFileType type = NewFileType.File;

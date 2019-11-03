@@ -20,6 +20,7 @@ namespace Alterful.Functions
         /// </summary>
         /// <param name="shortcupFilePath">快捷方式的完整路径</param>
         /// <returns></returns>
+        /// <exception cref="FileNotFoundException"></exception>
         static public string GetTargetPathOfShortcutFile(string shortcupFilePath)
         {
             if (!System.IO.File.Exists(shortcupFilePath)) throw new FileNotFoundException();
@@ -61,6 +62,7 @@ namespace Alterful.Functions
         /// </summary>
         /// <param name="filePath">要启动的文件路径</param>
         /// <param name="fileArgs">附加启动参数，默认为空</param>
+        /// <exception cref="FileNotFoundException"></exception>
         static private void StartupProcess(string filePath, string fileArgs = "")
         {
             if (!System.IO.File.Exists(filePath) && !System.IO.Directory.Exists(filePath)) throw new FileNotFoundException();
