@@ -47,12 +47,15 @@ In order to start debugging successfully, make sure you run visual studio as an 
   - 后缀解析 Suffix Parser ✅
   - 正则解析 Regex Parser ❌
   - 参数解析 Parameter Parser ✅
+  - 引用解析 Quote Parser ❌
 - 执行器 Actuator 🔳
   - 启动执行器 Startup Actuator ✅
   - 宏执行器 Macro Actuator 🔳
-    - 启动项宏执行器 Startup-Item Actuator ✅
+    - 启动项宏执行器 Startup-Item Actuator 🔳
+      - 添加 Add ✅
+      - 删除 ❌
+      - 复制 ❌
     - 新文件宏执行器 New-File Actuator ✅
-    - 常引用宏执行器 Const-Quote Actuator ❌
   - 常指令执行器 Const Actuator ❌
 
 ![Modular Diagram](https://i.loli.net/2019/11/01/eoX5AbgLduMQ8Kj.png)
@@ -87,7 +90,7 @@ In order to start debugging successfully, make sure you run visual studio as an 
     - @add ✅
     - @copy ❌
     - @del ❌
-  - 常引用宏 ❌
+  - 常指令宏 ❌
 - 常指令 Const Instruction ❌
 
 ![Instruction System](https://i.loli.net/2019/11/01/yZrzJ8RN2PiIW45.jpg)
