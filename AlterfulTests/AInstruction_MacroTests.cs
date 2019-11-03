@@ -45,5 +45,13 @@ namespace Alterful.Functions.Tests
         {
             Assert.AreEqual(expected, AInstruction_Macro.GetMacroAddType(firstParamOfMacroAddInstruction));
         }
+
+        [TestMethod()]
+        [DataRow("#constDemo", AInstruction_Macro.MacroDelType.CONST_QUOTE)]
+        [DataRow("startupDemo", AInstruction_Macro.MacroDelType.STARTUP)]
+        public void GetMacroDelTypeTest(string paramOfMacroDelItemString, AInstruction_Macro.MacroDelType expected)
+        {
+            Assert.AreEqual(expected, AInstruction_Macro.GetMacroDelType(paramOfMacroDelItemString));
+        }
     }
 }

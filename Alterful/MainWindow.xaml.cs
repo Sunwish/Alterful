@@ -36,21 +36,26 @@ namespace Alterful
             {
                 streamWriter.WriteLine("Hello Alterful!");
             }
-            AHelper.CreateShortcut(AHelper.APATH_PATH + @"\demo" + AHelper.LNK_EXTENTION, FilesExamplePath + @"\" + ExampleFileName);
+            
+            AFile.Add("demo", FilesExamplePath + @"\" + ExampleFileName);
 
             // ----Demo Start----
             // new AInstruction_Startup("demo demo-f").Execute();
 
             // new AInstruction_Macro("@new a.txt b.txt").Execute();
 
-            //new AInstruction_Macro(@"@add f f:\").Execute();
+            // new AInstruction_Macro(@"@add f f:\").Execute();
+
+            // new AInstruction_Macro(@"@del chrome").Execute();
 
             // -----Demo End-----
 
 
             // ----For fun----
-            new AInstruction_Macro(@"@add chrome C:\Program Files (x86)\Google\Chrome\Application\chrome.exe").Execute();
-            new AInstruction_Startup("chrome-f-o/https://fanyi.baidu.com/").Execute();
+            // new AInstruction_Macro(@"@add chrome C:\Program Files (x86)\Google\Chrome\Application\chrome.exe").Execute();
+            // new AInstruction_Macro(@"@add vs D:\Visual Studio 2017\Common7\IDE\devenv.exe").Execute();
+            // new AInstruction_Startup("chrome-f-o/https://fanyi.baidu.com/").Execute();
+            new AInstruction_Startup("vs-t").Execute();
             // ----For fun----
         }
         public MainWindow()

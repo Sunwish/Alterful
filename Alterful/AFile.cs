@@ -15,15 +15,17 @@ namespace Alterful.Functions
         public static string APATH_PATH { get; } = AHelper.APATH_PATH;
         public const string LNK_EXTENTION = AHelper.LNK_EXTENTION;
         public static string ATEMP_PATH { get; } = AHelper.ATEMP_PATH;
+        public class StartupItemNotFoundException : FileNotFoundException { }
+
         /// <summary>
         /// 获取快捷方式的目标路径
         /// </summary>
         /// <param name="shortcupFilePath">快捷方式的完整路径</param>
         /// <returns></returns>
-        /// <exception cref="FileNotFoundException"></exception>
+        /// <exception cref="StartupItemNotFoundException"></exception>
         static public string GetTargetPathOfShortcutFile(string shortcupFilePath)
         {
-            if (!System.IO.File.Exists(shortcupFilePath)) throw new FileNotFoundException();
+            if (!System.IO.File.Exists(shortcupFilePath)) throw new StartupItemNotFoundException();
             IWshShell_Class wshShell = new IWshShell_Class();
             try
             {
@@ -43,7 +45,7 @@ namespace Alterful.Functions
         /// </summary>
         /// <param name="filePath">要启动的文件路径</param>
         /// <param name="fileArgs">附加启动参数，默认为空</param>
-        static private void StartupProcessWithoutCheck(string filePath, string fileArgs = "")
+        static private void StartupProcessWithoutCheck(string filePath, string fileArgs = "", bool startupAsAdministrator = false)
         {
             Process newProcess = new Process()
             {
@@ -51,9 +53,10 @@ namespace Alterful.Functions
                 {
                     UseShellExecute = true,
                     Arguments = fileArgs,
-                    FileName = filePath
+                    FileName = filePath,
                 }
             };
+            if (startupAsAdministrator) newProcess.StartInfo.Verb = "runas";
             newProcess.Start();
         }
 
@@ -62,11 +65,11 @@ namespace Alterful.Functions
         /// </summary>
         /// <param name="filePath">要启动的文件路径</param>
         /// <param name="fileArgs">附加启动参数，默认为空</param>
-        /// <exception cref="FileNotFoundException"></exception>
-        static private void StartupProcess(string filePath, string fileArgs = "")
+        /// <exception cref="StartupItemNotFoundException"></exception>
+        static private void StartupProcess(string filePath, string fileArgs = "", bool startupAsAdministrator = false)
         {
-            if (!System.IO.File.Exists(filePath) && !System.IO.Directory.Exists(filePath)) throw new FileNotFoundException();
-            StartupProcessWithoutCheck(filePath, fileArgs);
+            if (!System.IO.File.Exists(filePath) && !System.IO.Directory.Exists(filePath)) throw new StartupItemNotFoundException();
+            StartupProcessWithoutCheck(filePath, fileArgs, startupAsAdministrator);
         }
 
         /// <summary>
@@ -96,15 +99,17 @@ namespace Alterful.Functions
         /// </summary>
         /// <param name="startupName">启动名</param>
         /// <param name="startupParameter">附加启动参数，默认为空</param>
-        public static void Launch(string startupName, string startupParameter = "")
+        /// <exception cref="StartupItemNotFoundException"></exception>
+        public static void Launch(string startupName, string startupParameter = "", bool startupAsAdministrator = false)
         {
+            if (!Exists(startupName)) throw new StartupItemNotFoundException();
             string fullPathOfLnkFile = GetFullPathOfShortcutFile(startupName, AHelper.APATH_PATH);
-            string targetFilePath = GetTargetPathOfShortcutFile(fullPathOfLnkFile);
             try
             {
-                StartupProcess(targetFilePath, startupParameter);
+                string targetFilePath = GetTargetPathOfShortcutFile(fullPathOfLnkFile);
+                StartupProcess(targetFilePath, startupParameter, startupAsAdministrator);
             }
-            catch (FileNotFoundException ex)
+            catch (StartupItemNotFoundException ex)
             {
                 Console.WriteLine(ex.Message);
             }
@@ -115,13 +120,13 @@ namespace Alterful.Functions
         /// </summary>
         /// <param name="fileName"></param>
         /// <param name="startupParameter"></param>
-        public static void LaunchTempFile(string fileName, string startupParameter = "")
+        public static void LaunchTempFile(string fileName, string startupParameter = "", bool startupAsAdministrator = false)
         {
             try
             {
-                StartupProcess(ATEMP_PATH + @"\" + fileName, startupParameter);
+                StartupProcess(ATEMP_PATH + @"\" + fileName, startupParameter, startupAsAdministrator);
             }
-            catch (FileNotFoundException ex)
+            catch (StartupItemNotFoundException ex)
             {
                 Console.WriteLine(ex.Message);
             }
@@ -131,7 +136,7 @@ namespace Alterful.Functions
         /// 在资源管理器中显示文件，目标文件必须是Alterful启动项
         /// </summary>
         /// <param name="startupName">启动名</param>
-        static public void ShowInExplorer(string startupName)
+        public static void ShowInExplorer(string startupName)
         {
             StartupProcessWithoutCheck("explorer.exe", "/select, \"" + GetFullPath(startupName) + "\"");
         }
@@ -140,7 +145,7 @@ namespace Alterful.Functions
         /// 获取APath目录下所有文件的FileInfo
         /// </summary>
         /// <returns></returns>
-        static private FileInfo[] GetLnkFilesInfo()
+        private static FileInfo[] GetLnkFilesInfo()
         {
             DirectoryInfo directoryInfo = new DirectoryInfo(AHelper.APATH_PATH);
             return directoryInfo.GetFiles();
@@ -150,7 +155,7 @@ namespace Alterful.Functions
         /// 获取当前所有Alterful启动项的启动名
         /// </summary>
         /// <returns></returns>
-        static public List<string> GetLnkList()
+        public static List<string> GetLnkList()
         {
             List<string> lnkList = new List<string>();
             FileInfo[] fileInfo = GetLnkFilesInfo();
@@ -165,11 +170,68 @@ namespace Alterful.Functions
         /// </summary>
         /// <param name="startupName">欲判断的启动名</param>
         /// <returns></returns>
-        static public bool Exists(string startupName)
+        public static bool Exists(string startupName)
         {
             List<string> startupNameList = GetLnkList();
             return startupNameList.IndexOf(startupName) != -1;
         }
 
+        /// <summary>
+        /// 删除Alterful启动项
+        /// </summary>
+        /// <param name="startupName">启动名</param>
+        /// <exception cref="StartupItemNotFoundException"></exception>
+        /// <exception cref="UnauthorizedAccessException"></exception>
+        public static void Delete(string startupName)
+        {
+            if (!Exists(startupName)) throw new StartupItemNotFoundException();
+            string fullPathOfLnkFile = GetFullPathOfShortcutFile(startupName, APATH_PATH);
+            System.IO.File.Delete(fullPathOfLnkFile);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="startupName">启动名</param>
+        /// <param name="targetPath">目标路径</param>
+        /// <exception cref="FileNotFoundException"></exception>
+        public static void Add(string startupName, string targetPath)
+        {
+            if (!System.IO.File.Exists(targetPath))
+            {
+                if (!Directory.Exists(targetPath))
+                {
+                    if (!Exists(targetPath)) throw new FileNotFoundException();
+                    else { Copy(startupName, targetPath); return; }                        
+                }
+            }
+            AHelper.CreateShortcut(AFile.APATH_PATH + @"\" + startupName + AFile.LNK_EXTENTION, targetPath);
+        }
+
+        /// <summary>
+        /// 复制一个具有相同指向的启动项
+        /// </summary>
+        /// <param name="newStartupName">新启动名</param>
+        /// <param name="origStartupName">被复制项的启动名</param>
+        /// <exception cref="StartupItemNotFoundException"></exception>
+        public static void Copy(string newStartupName, string origStartupName)
+        {
+            if (!Exists(origStartupName)) throw new StartupItemNotFoundException();
+            Add(newStartupName, GetFullPath(origStartupName));
+        }
+
+        /// <summary>
+        /// 将一个Alterful启动项的目标文件复制到ATemp目录
+        /// </summary>
+        /// <param name="startupName">启动名</param>
+        /// <exception cref="StartupItemNotFoundException"></exception>
+        /// <exception cref="FileNotFoundException"></exception>
+        public static void MoveToATemp(string startupName)
+        {
+            if (!Exists(startupName)) throw new StartupItemNotFoundException();
+            string targetFullPath = GetFullPath(startupName);
+            if (!System.IO.File.Exists(targetFullPath)) throw new FileNotFoundException();
+            System.IO.File.Copy(targetFullPath, ATEMP_PATH + @"\" + System.IO.Path.GetFileName(targetFullPath));
+        }
     }
 }

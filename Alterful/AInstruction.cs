@@ -84,6 +84,8 @@ namespace Alterful.Functions
                             case "f": AFile.ShowInExplorer(item.StartupName); break;
                             case "c": throw new NotImplementedException(); AFile.GetFullPath(item.StartupName);
                             case "o": AFile.Launch(item.StartupName, item.StartupParameter); break;
+                            case "oa": AFile.Launch(item.StartupName, item.StartupParameter, true); break;
+                            case "t": AFile.MoveToATemp(item.StartupName); break;
                         }
                     }
                 }
@@ -161,6 +163,7 @@ namespace Alterful.Functions
     {
         public enum MacroType { ADD, NEW, DEL }
         public enum MacroAddType { STARTUP, CONST_QUOTE }
+        public enum MacroDelType { STARTUP, CONST_QUOTE }
 
         public AInstruction_Macro(string instruction) : base(instruction) { GetMacroType(); }
 
@@ -187,6 +190,10 @@ namespace Alterful.Functions
         /// <summary>
         /// 执行宏指令
         /// </summary>
+        /// <exception cref="MacroFormatException"></exception>
+        /// <exception cref="FileNotFoundException"></exception>
+        /// <exception cref="AFile.StartupItemNotFoundException"></exception>
+        /// <exception cref="UnauthorizedAccessException"></exception>
         public override void Execute()
         {
             switch (GetMacroType())
@@ -228,6 +235,21 @@ namespace Alterful.Functions
             else return MacroAddType.STARTUP;
         }
 
+        /// <summary>
+        /// 获取宏删除指令的删除类型
+        /// </summary>
+        /// <param name="paramOfMacroDelItemString"></param>
+        /// <returns></returns>
+        public static MacroDelType GetMacroDelType(string paramOfMacroDelItemString)
+        {
+            if (paramOfMacroDelItemString[0] == '#') return MacroDelType.CONST_QUOTE;
+            else return MacroDelType.STARTUP;
+        }
+
+        /// <summary>
+        /// 执行宏新建指令
+        /// </summary>
+        /// <exception cref="UnauthorizedAccessException"></exception>
         private void ExecuteMacroNew()
         {
             List<string> macroInstructionParameters = GetMacroInstructionParametersList();
@@ -242,6 +264,7 @@ namespace Alterful.Functions
         /// 执行宏添加指令
         /// </summary>
         /// <exception cref="MacroFormatException"></exception>
+        /// <exception cref="FileNotFoundException"></exception>
         private void ExecuteMacroAdd()
         {
             List<string> macroInstructionParametersRaw = GetMacroInstructionParametersList();
@@ -262,7 +285,6 @@ namespace Alterful.Functions
             }
         }
 
-        enum NewFileType { File, Directory };
         /// <summary>
         /// 执行宏启动项添加指令
         /// </summary>
@@ -270,15 +292,7 @@ namespace Alterful.Functions
         /// <exception cref="FileNotFoundException"></exception>
         private void ExecuteMacroAddStartup(List<string> macroInstructionParameters)
         {
-            NewFileType type = NewFileType.File;
-            if (!File.Exists(macroInstructionParameters[1]))
-            {
-                if (!Directory.Exists(macroInstructionParameters[1]))
-                    throw new FileNotFoundException();
-                else
-                    type = NewFileType.Directory;
-            }
-            AHelper.CreateShortcut(AFile.APATH_PATH + @"\" + macroInstructionParameters[0] + AFile.LNK_EXTENTION, macroInstructionParameters[1]);
+            AFile.Add(macroInstructionParameters[0], macroInstructionParameters[1]);
         }
 
         private void ExecuteMacroAddConstQuote()
@@ -286,7 +300,27 @@ namespace Alterful.Functions
             throw new NotImplementedException();
         }
 
+        /// <summary>
+        /// 执行宏删除指令
+        /// </summary>
+        /// <exception cref="MacroFormatException"></exception>
+        /// <exception cref="AFile.StartupItemNotFoundException"></exception>
+        /// <exception cref="UnauthorizedAccessException"></exception>
         private void ExecuteMacroDel()
+        {
+            List<string> macroInstructionParametersRaw = GetMacroInstructionParametersList();
+            if (macroInstructionParametersRaw.Count < 1) throw new MacroFormatException();
+            foreach(string delItemString in macroInstructionParametersRaw)
+            {
+                switch(GetMacroDelType(delItemString))
+                {
+                    case MacroDelType.STARTUP: AFile.Delete(delItemString); break;
+                    case MacroDelType.CONST_QUOTE: ExecuteMacroDelConstQuote();  break;
+                }
+            }
+        }
+
+        private void ExecuteMacroDelConstQuote()
         {
             throw new NotImplementedException();
         }
