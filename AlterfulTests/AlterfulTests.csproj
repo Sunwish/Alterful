@@ -58,6 +58,7 @@
   <ItemGroup>
     <Compile Include="AFileTests.cs" />
     <Compile Include="AInstructionTests.cs" />
+    <Compile Include="AInstruction_MacroTests.cs" />
     <Compile Include="AInstruction_StartupTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

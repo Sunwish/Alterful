@@ -13,11 +13,13 @@ namespace Alterful.Helper
     {
         public static string BASE_PATH { get; } = System.IO.Path.GetDirectoryName(System.IO.Path.GetDirectoryName(System.IO.Path.GetDirectoryName(System.IO.Path.GetDirectoryName(typeof(MainWindow).Assembly.Location))));
         public static string APATH_PATH { get; } = BASE_PATH + @"\APath";
+        public static string ATEMP_PATH { get; } = BASE_PATH + @"\ATemp";
         public const string LNK_EXTENTION = ".lnk";
         public static void Initialize()
         {
             // Floder Check
             Directory.CreateDirectory(BASE_PATH + @"\APath");
+            Directory.CreateDirectory(BASE_PATH + @"\ATemp");
 
             // Enviroment Check
             SysEnviroment.SetPathAfter(APATH_PATH);
@@ -34,8 +36,8 @@ namespace Alterful.Helper
         public static void CreateShortcut(string lnkPath, string targetPath)
         {
             IWshShell_Class wshShell = new IWshShell_Class();
-            IWshShortcut shortcut = (IWshShortcut)wshShell.CreateShortcut(lnkPath);
-            shortcut.TargetPath = targetPath;
+            IWshShortcut shortcut = (IWshShortcut)wshShell.CreateShortcut(lnkPath.Trim());
+            shortcut.TargetPath = targetPath.Trim();
             shortcut.Save();
         }
     }

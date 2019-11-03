@@ -37,10 +37,13 @@ namespace Alterful
                 streamWriter.WriteLine("Hello Alterful!");
             }
             AHelper.CreateShortcut(AHelper.APATH_PATH + @"\demo" + AHelper.LNK_EXTENTION, FilesExamplePath + @"\" + ExampleFileName);
-            
+
             // ----Demo Start----
-            AInstruction ins = new AInstruction_Startup("demo demo-f");
-            ins.Execute();
+            // new AInstruction_Startup("demo demo-f").Execute();
+
+            // new AInstruction_Macro("@new a.txt b.txt").Execute();
+            new AInstruction_Macro(@"@add f f:\").Execute();
+
             // -----Demo End-----
 
         }

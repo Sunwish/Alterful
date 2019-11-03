@@ -14,6 +14,7 @@ namespace Alterful.Functions
         public static string BASE_PATH { get; } = AHelper.BASE_PATH;
         public static string APATH_PATH { get; } = AHelper.APATH_PATH;
         public const string LNK_EXTENTION = AHelper.LNK_EXTENTION;
+        public static string ATEMP_PATH { get; } = AHelper.ATEMP_PATH;
         /// <summary>
         /// 获取快捷方式的目标路径
         /// </summary>
@@ -93,13 +94,30 @@ namespace Alterful.Functions
         /// </summary>
         /// <param name="startupName">启动名</param>
         /// <param name="startupParameter">附加启动参数，默认为空</param>
-        static public void Launch(string startupName, string startupParameter = "")
+        public static void Launch(string startupName, string startupParameter = "")
         {
             string fullPathOfLnkFile = GetFullPathOfShortcutFile(startupName, AHelper.APATH_PATH);
             string targetFilePath = GetTargetPathOfShortcutFile(fullPathOfLnkFile);
             try
             {
                 StartupProcess(targetFilePath, startupParameter);
+            }
+            catch (FileNotFoundException ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// 从ATemp目录启动一个临时文件
+        /// </summary>
+        /// <param name="fileName"></param>
+        /// <param name="startupParameter"></param>
+        public static void LaunchTempFile(string fileName, string startupParameter = "")
+        {
+            try
+            {
+                StartupProcess(ATEMP_PATH + @"\" + fileName, startupParameter);
             }
             catch (FileNotFoundException ex)
             {

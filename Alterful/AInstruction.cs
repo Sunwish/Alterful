@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
+using System.IO;
+using Alterful.Helper;
 namespace Alterful.Functions
 {
     public enum InstructionType
@@ -131,5 +132,127 @@ namespace Alterful.Functions
 
             return item;
         }
+    }
+
+    public class UnknowMacroType : FormatException { }
+    public class MacroFormatException : FormatException { }
+    public class AInstruction_Macro : AInstruction
+    {
+        public enum MacroType { ADD, NEW, DEL }
+        public enum MacroAddType { STARTUP, CONST_QUOTE }
+
+        public AInstruction_Macro(string instruction) : base(instruction) { GetMacroType(); }
+
+        public MacroType GetMacroType()
+        {
+            List<string> macroInstructionParts = new List<string>(Instruction.Split(' '));
+            if (macroInstructionParts.Count < 2) throw new MacroFormatException();
+
+            switch (macroInstructionParts[0].Substring(1))
+            {
+                case "add": return MacroType.ADD;
+                case "new": return MacroType.NEW;
+                case "del": return MacroType.DEL;
+                default: throw new UnknowMacroType();
+            }
+        }
+
+        /// <summary>
+        /// 执行宏指令
+        /// </summary>
+        public override void Execute()
+        {
+            switch (GetMacroType())
+            {
+                case MacroType.ADD: ExecuteMacroAdd(); break;
+                case MacroType.DEL: ExecuteMacroDel(); break;
+                case MacroType.NEW: ExecuteMacroNew(); break;
+            }
+        }
+
+        /// <summary>
+        /// 取宏指令块列表
+        /// </summary>
+        /// <returns></returns>
+        public List<string> GetMacroInstructionPartsList()
+        {
+            return new List<string>(Instruction.Split(' '));
+        }
+
+        /// <summary>
+        /// 取宏指令参数列表
+        /// </summary>
+        /// <returns></returns>
+        public List<string> GetMacroInstructionParametersList()
+        {
+            List<string> paramList = GetMacroInstructionPartsList();
+            paramList.RemoveAt(0);
+            return paramList;
+        }
+
+        /// <summary>
+        /// 获取宏添加指令的添加类型
+        /// </summary>
+        /// <param name="firstParamOfMacroAddInstruction"></param>
+        /// <returns></returns>
+        public static MacroAddType GetMacroAddType(string firstParamOfMacroAddInstruction)
+        {
+            if (firstParamOfMacroAddInstruction[0] == '#') return MacroAddType.CONST_QUOTE;
+            else return MacroAddType.STARTUP;
+        }
+
+        private void ExecuteMacroNew()
+        {
+            List<string> macroInstructionParameters = GetMacroInstructionParametersList();
+            foreach (string newFileName in macroInstructionParameters)
+            {
+                using (StreamWriter streamWriter = new StreamWriter(AFile.ATEMP_PATH + @"\" + newFileName, false)) { }
+                AFile.LaunchTempFile(newFileName);
+            }
+        }
+        private void ExecuteMacroAdd()
+        {
+            List<string> macroInstructionParametersRaw = GetMacroInstructionParametersList();
+            if (macroInstructionParametersRaw.Count < 2) throw new MacroFormatException();
+            List<string> macroInstructionParameters = new List<string> { macroInstructionParametersRaw[0] };
+            string secondParam = macroInstructionParametersRaw[1];
+            for (int i = 2; i < macroInstructionParametersRaw.Count; i++)
+            {
+                secondParam += " " + macroInstructionParametersRaw[i];
+            }
+            macroInstructionParameters.Add(secondParam);
+
+            MacroAddType addType = GetMacroAddType(macroInstructionParameters[0]);
+            switch (addType)
+            {
+                case MacroAddType.STARTUP: ExecuteMacroAddStartup(macroInstructionParameters); break;
+                case MacroAddType.CONST_QUOTE: ExecuteMacroAddConstQuote(); break;
+            }
+        }
+
+        enum NewFileType { File, Directory };
+        private void ExecuteMacroAddStartup(List<string> macroInstructionParameters)
+        {
+            NewFileType type = NewFileType.File;
+            if (!File.Exists(macroInstructionParameters[1]))
+            {
+                if (!Directory.Exists(macroInstructionParameters[1]))
+                    throw new FileNotFoundException();
+                else
+                    type = NewFileType.Directory;
+            }
+            AHelper.CreateShortcut(AFile.APATH_PATH + @"\" + macroInstructionParameters[0] + AFile.LNK_EXTENTION, macroInstructionParameters[1]);
+        }
+
+        private void ExecuteMacroAddConstQuote()
+        {
+            throw new NotImplementedException();
+        }
+
+        private void ExecuteMacroDel()
+        {
+            throw new NotImplementedException();
+        }
+
     }
 }
