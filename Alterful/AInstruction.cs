@@ -50,7 +50,8 @@ namespace Alterful.Functions
     public struct StartupItem
     {
         public string StartupName { get; set; }
-        public List<string> suffixList { get; set; }
+        public string StartupParameter { get; set; }
+        public List<string> SuffixList { get; set; }
     }
 
     public class AInstruction_Startup : AInstruction
@@ -71,18 +72,18 @@ namespace Alterful.Functions
             {
                 if (AFile.Exists(item.StartupName))
                 {
-                    if (item.suffixList == null)
+                    if (item.SuffixList == null)
                     {
-                        AFile.Launch(item.StartupName);
+                        AFile.Launch(item.StartupName, item.StartupParameter);
                         continue;
                     }
-                    foreach (var suffix in item.suffixList)
+                    foreach (var suffix in item.SuffixList)
                     {
                         switch (suffix)
                         {
                             case "f": AFile.ShowInExplorer(item.StartupName); break;
                             case "c": throw new NotImplementedException(); AFile.GetFullPath(item.StartupName);
-                            case "o": AFile.Launch(item.StartupName); break;
+                            case "o": AFile.Launch(item.StartupName, item.StartupParameter); break;
                         }
                     }
                 }
@@ -103,6 +104,20 @@ namespace Alterful.Functions
         }
 
         /// <summary>
+        /// 获取分离参数的启动项列表
+        /// </summary>
+        /// <param name="singleStartupItemString"></param>
+        /// <returns></returns>
+        public static string GetStartupItemParameterDepart(ref string singleStartupItemString)
+        {
+            int paramSymbolPosition = singleStartupItemString.IndexOf('/');
+            if (-1 == paramSymbolPosition) return "";
+            string param = singleStartupItemString.Substring(paramSymbolPosition + 1);
+            singleStartupItemString = singleStartupItemString.Substring(0, paramSymbolPosition);
+            return param;
+        }
+
+        /// <summary>
         /// 获取指令中包含的启动项
         /// </summary>
         /// <returns></returns>
@@ -110,8 +125,14 @@ namespace Alterful.Functions
         {
             List<string> startupItemStringList = GetStartupItemStringList();
             List<StartupItem> startupItemList = new List<StartupItem>();
-            foreach (var singleItem in startupItemStringList)
-                startupItemList.Add(StartupNameSuffixesParse(singleItem));
+            for(int i = 0; i < startupItemStringList.Count; i++)
+            {
+                string singleItem = startupItemStringList[i];
+                string param = GetStartupItemParameterDepart(ref singleItem);
+                StartupItem item = StartupNameSuffixesParse(singleItem);
+                item.StartupParameter = param;
+                startupItemList.Add(item);
+            }
             return startupItemList;
         }
 
@@ -122,13 +143,13 @@ namespace Alterful.Functions
         /// <returns></returns>
         public static StartupItem StartupNameSuffixesParse(string singleStartupItem)
         {
-            if (singleStartupItem.IndexOf('-') == -1) return new StartupItem() { StartupName = singleStartupItem, suffixList = null };
+            if (singleStartupItem.IndexOf('-') == -1) return new StartupItem() { StartupName = singleStartupItem, SuffixList = null };
 
             StartupItem item = new StartupItem();
             List<string> suffixList = new List<string>(singleStartupItem.Split('-'));
             item.StartupName = suffixList[0];
             suffixList.RemoveAt(0);
-            item.suffixList = suffixList;
+            item.SuffixList = suffixList;
 
             return item;
         }

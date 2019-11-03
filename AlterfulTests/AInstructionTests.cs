@@ -19,7 +19,7 @@ namespace Alterful.Functions.Tests
         [DataRow(".paint", InstructionType.BUILDIN)]
         public void GetTypeTest(string instruction, InstructionType excepted)
         {
-            Assert.AreEqual(AInstruction.GetType(instruction), excepted);
+            Assert.AreEqual(excepted, AInstruction.GetType(instruction));
         }
 
     }

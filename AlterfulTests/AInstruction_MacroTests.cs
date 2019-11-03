@@ -18,7 +18,7 @@ namespace Alterful.Functions.Tests
         public void GetMacroTypeTest(string instruction, AInstruction_Macro.MacroType expected)
         {
             AInstruction_Macro ins = new AInstruction_Macro(instruction);
-            Assert.AreEqual(ins.GetMacroType(), expected);
+            Assert.AreEqual(expected, ins.GetMacroType());
         }
 
         [TestMethod()]
@@ -26,16 +26,16 @@ namespace Alterful.Functions.Tests
         {
             AInstruction_Macro ins = new AInstruction_Macro("@new a.txt");
             List<string> actual = ins.GetMacroInstructionPartsList();
-            Assert.AreEqual(actual.Count, 2);
-            Assert.AreEqual(actual[0], "@new");
-            Assert.AreEqual(actual[1], "a.txt");
+            Assert.AreEqual(2, actual.Count);
+            Assert.AreEqual("@new", actual[0]);
+            Assert.AreEqual("a.txt", actual[1]);
 
             ins = new AInstruction_Macro("@add #const instruction");
             actual = ins.GetMacroInstructionPartsList();
-            Assert.AreEqual(actual.Count, 3);
-            Assert.AreEqual(actual[0], "@add");
-            Assert.AreEqual(actual[1], "#const");
-            Assert.AreEqual(actual[2], "instruction");
+            Assert.AreEqual(3, actual.Count);
+            Assert.AreEqual("@add", actual[0]);
+            Assert.AreEqual("#const", actual[1]);
+            Assert.AreEqual("instruction", actual[2]);
         }
 
         [TestMethod()]
@@ -43,7 +43,7 @@ namespace Alterful.Functions.Tests
         [DataRow("startupDemo", AInstruction_Macro.MacroAddType.STARTUP)]
         public void GetMacroAddTypeTest(string firstParamOfMacroAddInstruction, AInstruction_Macro.MacroAddType expected)
         {
-            Assert.AreEqual(AInstruction_Macro.GetMacroAddType(firstParamOfMacroAddInstruction), expected);
+            Assert.AreEqual(expected, AInstruction_Macro.GetMacroAddType(firstParamOfMacroAddInstruction));
         }
     }
 }

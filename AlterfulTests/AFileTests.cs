@@ -54,14 +54,14 @@ namespace Alterful.Functions.Tests
         [DataRow(@"startupItemTest", @"C:\")]
         public void GetFullPathTest(string startupName, string expected)
         {
-            Assert.AreEqual(AFile.GetFullPath(startupName), expected);
+            Assert.AreEqual(expected, AFile.GetFullPath(startupName));
         }
 
         [TestMethod()]
         [DataRow(@"startupItemTest", true)]
         public void ExistsTest(string startupName, bool expected)
         {
-            Assert.AreEqual(AFile.Exists(startupName), expected);
+            Assert.AreEqual(expected, AFile.Exists(startupName));
         }
     }
 }

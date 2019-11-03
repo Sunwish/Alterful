@@ -42,10 +42,16 @@ namespace Alterful
             // new AInstruction_Startup("demo demo-f").Execute();
 
             // new AInstruction_Macro("@new a.txt b.txt").Execute();
-            new AInstruction_Macro(@"@add f f:\").Execute();
+
+            //new AInstruction_Macro(@"@add f f:\").Execute();
 
             // -----Demo End-----
 
+
+            // ----For fun----
+            new AInstruction_Macro(@"@add chrome C:\Program Files (x86)\Google\Chrome\Application\chrome.exe").Execute();
+            new AInstruction_Startup("chrome-f-o/https://fanyi.baidu.com/").Execute();
+            // ----For fun----
         }
         public MainWindow()
         {
