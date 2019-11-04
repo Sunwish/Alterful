@@ -55,7 +55,9 @@ namespace Alterful
             // new AInstruction_Macro(@"@add chrome C:\Program Files (x86)\Google\Chrome\Application\chrome.exe").Execute();
             // new AInstruction_Macro(@"@add vs D:\Visual Studio 2017\Common7\IDE\devenv.exe").Execute();
             // new AInstruction_Startup("chrome-f-o/https://fanyi.baidu.com/").Execute();
-            AInstruction.GetInstruction("chrome-f-o/https://fanyi.baidu.com/").Execute();
+            string yourChromePath = @"C:\Program Files (x86)\Google\Chrome\Application\chrome.exe";
+            AInstruction.GetInstruction("@add chrome " + yourChromePath).Execute();
+            AInstruction.GetInstruction("chrome-o/https://fanyi.baidu.com/#zh/en/%E9%94%AE%E7%9B%98%E5%A2%9E%E5%BC%BA").Execute();
             // ----For fun----
         }
         public MainWindow()
