@@ -5,18 +5,21 @@ using System.Text;
 using System.Threading.Tasks;
 using System.IO;
 using Alterful.Helper;
+using System.Text.RegularExpressions;
+
 namespace Alterful.Functions
 {
     public enum InstructionType
     {
         STARTUP, MACRO, CONST, BUILDIN
     }
-
+    class ConstQuoteParseError : FormatException{ }
     public abstract class AInstruction
     {
         public const char SYMBOL_MACRO = '@';
         public const char SYMBOL_CONST = '#';
         public const char SYMBOL_BUILDIN = '.';
+        public const char SYMBOL_CONST_ADD = '+';
         public string Instruction { get; }
         public List<string> ReportInfo { get; } = new List<string>();
 
@@ -42,9 +45,82 @@ namespace Alterful.Functions
         }
 
         /// <summary>
+        /// 获取可执行的Alterful指令
+        /// </summary>
+        /// <param name="instruction"></param>
+        /// <returns></returns>
+        public static AInstruction GetInstruction(string instruction)
+        {
+            switch (GetType(instruction))
+            {
+                case InstructionType.MACRO: return new AInstruction_Macro(instruction);
+                case InstructionType.STARTUP: return new AInstruction_Startup(instruction);
+                case InstructionType.CONST: throw new NotImplementedException();
+                default: return new AInstruction_Startup(instruction);
+            }
+        }
+
+        /// <summary>
         /// 执行指令
         /// </summary>
         public abstract void Execute();
+
+        /// <summary>
+        /// 常引用解析
+        /// </summary>
+        /// <param name="instructionString">解析前的指令</param>
+        /// <returns>返回解析后的指令</returns>
+        /// <exception cref="ConstQuoteParseError"></exception>
+        public static string ConstQuoteParse(string instructionString)
+        {
+            string resultString = instructionString;
+            int constQuoteSymbolPosition = instructionString.IndexOf(AInstruction.SYMBOL_CONST);
+            int constQuoteEndPosition = instructionString.Length - 1;
+            while (constQuoteSymbolPosition != -1)
+            {
+                int endPosition;
+                int constIndex = instructionString.Substring(constQuoteSymbolPosition + 1).IndexOf(AInstruction.SYMBOL_CONST);
+                int constAddIndex = instructionString.Substring(constQuoteSymbolPosition + 1).IndexOf(AInstruction.SYMBOL_CONST_ADD);
+                if (-1 == constIndex) endPosition = constQuoteSymbolPosition + constAddIndex + 1;
+                else if(-1 == constAddIndex) endPosition = constQuoteSymbolPosition + constIndex + 1;
+                else endPosition = constQuoteSymbolPosition + Math.Min(constIndex, constAddIndex) + 1;
+
+                if (endPosition != constQuoteSymbolPosition && endPosition != constQuoteEndPosition)
+                {
+                    constQuoteEndPosition = endPosition;
+                    if(constQuoteSymbolPosition != 0)
+                    {
+                        if (instructionString[constQuoteSymbolPosition - 1] == AInstruction.SYMBOL_CONST_ADD)
+                        {
+                            int removeAddStuffix = 0;
+                            if (instructionString.Length > constQuoteEndPosition + 1 && instructionString[constQuoteEndPosition + 1] != AInstruction.SYMBOL_CONST) removeAddStuffix = 1;
+                            var regex = new Regex(Regex.Escape(instructionString.Substring(constQuoteSymbolPosition - 1, constQuoteEndPosition - constQuoteSymbolPosition + 1 + removeAddStuffix)));
+                            resultString = regex.Replace(resultString, "CONSTQUOTE", 1);
+                        }
+                        else throw new ConstQuoteParseError();
+                    }
+                    else
+                    {
+                        int removeAddStuffix = 0;
+                        if (instructionString.Length > constQuoteEndPosition + 1 && instructionString[constQuoteEndPosition + 1] != AInstruction.SYMBOL_CONST) removeAddStuffix = 1;
+                        var regex = new Regex(Regex.Escape(instructionString.Substring(constQuoteSymbolPosition, constQuoteEndPosition - constQuoteSymbolPosition + removeAddStuffix)));
+                        resultString = regex.Replace(resultString, "CONSTQUOTE", 1);
+                    }
+
+                    int moveForward = instructionString.Substring(constQuoteEndPosition + 1).IndexOf(AInstruction.SYMBOL_CONST) + 1;
+                    if (0 == moveForward) break;
+                    constQuoteSymbolPosition = constQuoteEndPosition + moveForward;
+                    constQuoteEndPosition = instructionString.Length - 1;
+                }
+                else
+                {
+                    int includeBackChar = constQuoteSymbolPosition != 0 && instructionString[constQuoteSymbolPosition - 1] == AInstruction.SYMBOL_CONST_ADD ? -1 : 0;
+                    resultString = resultString.Replace(instructionString.Substring(constQuoteSymbolPosition + includeBackChar, constQuoteEndPosition - constQuoteSymbolPosition + 1 - includeBackChar), "CONSTQUOTE");
+                    break;
+                }
+            }
+            return resultString;
+        }
     }
 
     public struct StartupItem
