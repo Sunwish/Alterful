@@ -23,6 +23,11 @@ namespace Alterful.Functions
 
         private static List<ConstQuoteItem> constQuoteItems = new List<ConstQuoteItem>();
 
+        public static List<ConstQuoteItem> GetConstQuoteItems()
+        {
+            return constQuoteItems;
+        }
+
         /// <summary>
         /// 判断常引用文件是否存在
         /// </summary>
@@ -38,8 +43,8 @@ namespace Alterful.Functions
         /// <exception cref="UnauthorizedAccessException"></exception>
         public static void CreateConstQuoteFile()
         {
-            if(!IsConstQuoteFileExists())
-                using (StreamWriter streamWriter = new StreamWriter(CONSTQUOTE_FILE_PATH, false)) ;
+            if (!IsConstQuoteFileExists())
+                using (StreamWriter streamWriter = new StreamWriter(CONSTQUOTE_FILE_PATH, false)) { }
         }
 
         /// <summary>
@@ -55,7 +60,7 @@ namespace Alterful.Functions
             {
                 List<string> constQuoteMapConfigLines = GetConstQuoteMapConfigLines(streamReader.ReadToEnd());
                 foreach (var constQuoteMapConfigSingleLine in constQuoteMapConfigLines)
-                    if("" != constQuoteMapConfigSingleLine)
+                    if("" != constQuoteMapConfigSingleLine.Trim())
                         constQuoteMapConfig.Add(ConstQuoteItemParse(constQuoteMapConfigSingleLine));
             }
             return constQuoteMapConfig;
@@ -137,11 +142,13 @@ namespace Alterful.Functions
                 else
                     return;
             }
-            string newItemString = name + CONSTQUOTE_CONFIGLINE_DEVIDE_SYMBOL + quote;
-            using(StreamWriter streamWriter = new StreamWriter(CONSTQUOTE_FILE_PATH, true))
+            List<ConstQuoteItem> tempList = new List<ConstQuoteItem>(constQuoteItems);
+            tempList.Add(new ConstQuoteItem()
             {
-                streamWriter.WriteLine(newItemString);
-            }
+                constQuoteName = name,
+                constQuoteString = quote
+            });
+            WriteConfigToFile(tempList);
             ReadAllConfig();
         }
 
@@ -189,23 +196,6 @@ namespace Alterful.Functions
                     return constQuoteItems.IndexOf(constQuoteItem);
             }
             return -1;
-        }
-
-        /// <summary>
-        /// 将当前程序内存储的常引用映射配置信息覆盖写出至常引用文件中
-        /// </summary>
-        /// <exception cref="UnauthorizedAccessException"></exception>
-        public static void WriteConfigToFile()
-        {
-            string outputString = "";
-            foreach(var constQuoteItem in constQuoteItems)
-            {
-                outputString += constQuoteItem.constQuoteName + CONSTQUOTE_CONFIGLINE_DEVIDE_SYMBOL + constQuoteItem.constQuoteString + "\n";
-            }
-            using(StreamWriter streamWriter = new StreamWriter(CONSTQUOTE_FILE_PATH, false))
-            {
-                streamWriter.WriteLine(outputString);
-            }
         }
 
         /// <summary>
@@ -286,6 +276,11 @@ namespace Alterful.Functions
             return resultString;
         }
 
+        /// <summary>
+        /// 从可能带有前后缀的常引用名文本串中拉去纯净的常引用名，如：#constName -> constName
+        /// </summary>
+        /// <param name="constQuoteName"></param>
+        /// <returns></returns>
         public static string ConstQuoteNamePull(string constQuoteName)
         {
             if (constQuoteName.Length == 0) return "";
@@ -295,7 +290,6 @@ namespace Alterful.Functions
                 constQuoteName = constQuoteName.Substring(1);
             return constQuoteName;
         }
-
     }
 }
 

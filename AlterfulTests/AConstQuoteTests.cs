@@ -31,6 +31,16 @@ namespace Alterful.Functions.Tests
             Assert.AreEqual("constQuoteName", actual.constQuoteName);
             Assert.AreEqual("constQuoteString", actual.constQuoteString);
         }
+
+        [TestMethod()]
+        [DataRow("#constQuoteName", "constQuoteName")]
+        [DataRow("constQuoteName+", "constQuoteName")]
+        [DataRow("#constQuoteName+", "constQuoteName")]
+        [DataRow("constQuoteName", "constQuoteName")]
+        public void ConstQuoteNamePullTest(string nameMayWithStuffix, string excepted)
+        {
+            Assert.AreEqual(excepted, AConstQuote.ConstQuoteNamePull(nameMayWithStuffix));
+        }
     }
 }
 

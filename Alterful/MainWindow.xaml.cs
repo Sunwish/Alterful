@@ -36,34 +36,23 @@ namespace Alterful
             {
                 streamWriter.WriteLine("Hello Alterful!");
             }
-            
             AFile.Add("demo", FilesExamplePath + @"\" + ExampleFileName);
 
             // ----Demo Start----
             // new AInstruction_Startup("demo demo-f").Execute();
-
             // new AInstruction_Macro("@new a.txt b.txt").Execute();
-
             // new AInstruction_Macro(@"@add f f:\").Execute();
-
-            // new AInstruction_Macro(@"@del chrome").Execute();
-
+            // new AInstruction_Macro("f").Execute();
+            // new AInstruction_Macro(@"@del f").Execute();
             // -----Demo End-----
 
 
-            // ----For fun----
-            // new AInstruction_Macro(@"@add chrome C:\Program Files (x86)\Google\Chrome\Application\chrome.exe").Execute();
-            // new AInstruction_Macro(@"@add vs D:\Visual Studio 2017\Common7\IDE\devenv.exe").Execute();
-            // new AInstruction_Startup("chrome-f-o/https://fanyi.baidu.com/").Execute();
+            // ----Test For fun----
             string yourChromePath = @"C:\Program Files (x86)\Google\Chrome\Application\chrome.exe";
             AInstruction.GetInstruction("@add chrome " + yourChromePath).Execute();
-            //AInstruction.GetInstruction("chrome-o/https://fanyi.baidu.com/#zh/en/%E9%94%AE%E7%9B%98%E5%A2%9E%E5%BC%BA").Execute();
-            AConstQuote.Add("fy", "chrome-o/https://fanyi.baidu.com/#zh/en/");
+            AInstruction.GetInstruction("@add #fy chrome-o/https://fanyi.baidu.com/#zh/en/").Execute();
             AInstruction.GetInstruction("#fy+键盘增强").Execute();
-            //AConstQuote.Delete("addTest");
-            //List<AConstQuote.ConstQuoteItem> list = AConstQuote.GetConstQuoteMapConfig();
-            //Console.Read();
-            // ----For fun----
+            // ----Test For fun----
 
         }
         public MainWindow()

@@ -57,7 +57,7 @@ namespace Alterful.Functions
         {
             switch (GetType(instruction))
             {
-                case InstructionType.MACRO: return new AInstruction_Macro(AConstQuote.ConstQuoteParse(instruction));
+                case InstructionType.MACRO: return new AInstruction_Macro(instruction);
                 case InstructionType.STARTUP: return new AInstruction_Startup(AConstQuote.ConstQuoteParse(instruction));
                 case InstructionType.CONST: throw new NotImplementedException();
                 default: return new AInstruction_Startup(AConstQuote.ConstQuoteParse(instruction));
@@ -279,8 +279,9 @@ namespace Alterful.Functions
             List<string> macroInstructionParameters = GetMacroInstructionParametersList();
             foreach (string newFileName in macroInstructionParameters)
             {
-                using (StreamWriter streamWriter = new StreamWriter(AFile.ATEMP_PATH + @"\" + newFileName, false)) { }
-                AFile.LaunchTempFile(newFileName);
+                string fileName = AConstQuote.ConstQuoteParse(newFileName);
+                using (StreamWriter streamWriter = new StreamWriter(AFile.ATEMP_PATH + @"\" + fileName, false)) { }
+                AFile.LaunchTempFile(fileName);
             }
         }
 
@@ -305,7 +306,7 @@ namespace Alterful.Functions
             switch (addType)
             {
                 case MacroAddType.STARTUP: ExecuteMacroAddStartup(macroInstructionParameters); break;
-                case MacroAddType.CONST_QUOTE: ExecuteMacroAddConstQuote(); break;
+                case MacroAddType.CONST_QUOTE: ExecuteMacroAddConstQuote(macroInstructionParameters); break;
             }
         }
 
@@ -316,12 +317,14 @@ namespace Alterful.Functions
         /// <exception cref="FileNotFoundException"></exception>
         private void ExecuteMacroAddStartup(List<string> macroInstructionParameters)
         {
-            AFile.Add(macroInstructionParameters[0], macroInstructionParameters[1]);
+            AFile.Add(AConstQuote.ConstQuoteParse(macroInstructionParameters[0]), AConstQuote.ConstQuoteParse(macroInstructionParameters[1]));
         }
 
-        private void ExecuteMacroAddConstQuote()
+        private void ExecuteMacroAddConstQuote(List<string> macroInstructionParameters)
         {
-            throw new NotImplementedException();
+            if (macroInstructionParameters.Count != 2) throw new MacroFormatException();
+            string constQuoteName = AConstQuote.ConstQuoteNamePull(macroInstructionParameters[0]);
+            AConstQuote.Add(constQuoteName, macroInstructionParameters[1]);
         }
 
         /// <summary>
@@ -339,15 +342,14 @@ namespace Alterful.Functions
                 switch(GetMacroDelType(delItemString))
                 {
                     case MacroDelType.STARTUP: AFile.Delete(delItemString); break;
-                    case MacroDelType.CONST_QUOTE: ExecuteMacroDelConstQuote();  break;
+                    case MacroDelType.CONST_QUOTE: ExecuteMacroDelConstQuote(delItemString);  break;
                 }
             }
         }
 
-        private void ExecuteMacroDelConstQuote()
+        private void ExecuteMacroDelConstQuote(string delConstQuoteName)
         {
-            throw new NotImplementedException();
+            AConstQuote.Delete(AConstQuote.ConstQuoteNamePull(delConstQuoteName));
         }
-
     }
 }

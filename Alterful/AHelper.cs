@@ -25,7 +25,7 @@ namespace Alterful.Helper
 
             // File Check
             AConstQuote.CreateConstQuoteFile();
-
+            
             // Config Check
             AConstQuote.ReadAllConfig();
 
