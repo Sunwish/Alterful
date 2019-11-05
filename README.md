@@ -44,18 +44,10 @@ In order to start debugging successfully, make sure you run visual studio as an 
 - 有效性检查器 Validity Checker ❌
 - 指令解析器 Instruction Parser 🔳
   - 型别解析 Type Parser ✅
-  
   - 后缀解析 Suffix Parser ✅
-  
   - 参数解析 Parameter Parser ✅
-  
+  - 引用解析 Quote Parser ✅
   - 正则解析 Regex Parser ❌
-  
-  - 引用解析 Quote Parser 🔳
-  
-    - 引用定位 ✅
-  
-    - 引用匹配  ❌
 - 执行器 Actuator 🔳
   - 启动执行器 Startup Actuator ✅
   - 宏执行器 Macro Actuator 🔳
@@ -87,6 +79,7 @@ In order to start debugging successfully, make sure you run visual studio as an 
 - 宏指令 Macro Instruction 🔳
   - 新建宏 Temp File ✅
   - 启动宏  ✅
+  - 常引用宏 ❌
   - 常指令宏 ❌
 - 常指令 Const Instruction ❌
 

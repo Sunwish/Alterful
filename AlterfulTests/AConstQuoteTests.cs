@@ -40,6 +40,7 @@ namespace Alterful.Tests
     public class AConstQuoteTests
     {
         [TestMethod()]
+        [DataRow("test", "test")]
         [DataRow("#test", "CONSTQUOTE")]
         [DataRow("#test+#test", "CONSTQUOTECONSTQUOTE")]
         [DataRow("#test1+#test2+#test3", "CONSTQUOTECONSTQUOTECONSTQUOTE")]

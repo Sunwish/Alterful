@@ -38,8 +38,12 @@ namespace Alterful.Functions
             switch (instruction[0])
             {
                 case SYMBOL_MACRO: return InstructionType.MACRO;
-                case SYMBOL_CONST: return InstructionType.CONST;
                 case SYMBOL_BUILDIN: return InstructionType.BUILDIN;
+                case SYMBOL_CONST:
+                    if (instruction[instruction.Length - 1] == ')') // Const Function
+                        return InstructionType.CONST;
+                    else // Startup Instrcution with const quote
+                        return InstructionType.STARTUP;
             }
             return InstructionType.STARTUP;
         }
@@ -53,10 +57,10 @@ namespace Alterful.Functions
         {
             switch (GetType(instruction))
             {
-                case InstructionType.MACRO: return new AInstruction_Macro(instruction);
-                case InstructionType.STARTUP: return new AInstruction_Startup(instruction);
+                case InstructionType.MACRO: return new AInstruction_Macro(AConstQuote.ConstQuoteParse(instruction));
+                case InstructionType.STARTUP: return new AInstruction_Startup(AConstQuote.ConstQuoteParse(instruction));
                 case InstructionType.CONST: throw new NotImplementedException();
-                default: return new AInstruction_Startup(instruction);
+                default: return new AInstruction_Startup(AConstQuote.ConstQuoteParse(instruction));
             }
         }
 

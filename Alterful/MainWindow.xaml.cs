@@ -57,8 +57,9 @@ namespace Alterful
             // new AInstruction_Startup("chrome-f-o/https://fanyi.baidu.com/").Execute();
             string yourChromePath = @"C:\Program Files (x86)\Google\Chrome\Application\chrome.exe";
             AInstruction.GetInstruction("@add chrome " + yourChromePath).Execute();
-            AInstruction.GetInstruction("chrome-o/https://fanyi.baidu.com/#zh/en/%E9%94%AE%E7%9B%98%E5%A2%9E%E5%BC%BA").Execute();
-            // AConstQuote.Add("addTest2", "thisIsQuote2");
+            //AInstruction.GetInstruction("chrome-o/https://fanyi.baidu.com/#zh/en/%E9%94%AE%E7%9B%98%E5%A2%9E%E5%BC%BA").Execute();
+            AConstQuote.Add("fy", "chrome-o/https://fanyi.baidu.com/#zh/en/");
+            AInstruction.GetInstruction("#fy+键盘增强").Execute();
             //AConstQuote.Delete("addTest");
             //List<AConstQuote.ConstQuoteItem> list = AConstQuote.GetConstQuoteMapConfig();
             //Console.Read();

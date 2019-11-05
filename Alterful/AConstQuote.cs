@@ -10,7 +10,7 @@ namespace Alterful.Functions
 {
     public class ConstQuoteMapConfigFormatException : FormatException { }
     public class ConstQuoteNameAlreadyExistsException : Exception { }
-    public class ConstQuoteItemNotExistException : Exception { }
+    public class ConstQuoteItemNotFoundException : Exception { }
     public static class AConstQuote
     {
         public static string CONSTQUOTE_FILE_PATH = AFile.BASE_PATH + @"\Config\ConstQuoteMap";
@@ -90,9 +90,14 @@ namespace Alterful.Functions
         /// <exception cref="ConstQuoteMapConfigFormatException"></exception>
         public static ConstQuoteItem ConstQuoteItemParse(string constQuoteMapConfigSingleLine)
         {
+            constQuoteMapConfigSingleLine = constQuoteMapConfigSingleLine.Trim();
             if ("" == constQuoteMapConfigSingleLine) return new ConstQuoteItem();
-            List<string> paramList = new List<string>(constQuoteMapConfigSingleLine.Split(CONSTQUOTE_CONFIGLINE_DEVIDE_SYMBOL));
-            if (paramList.Count != 2) throw new ConstQuoteMapConfigFormatException();
+            int firstConstQuoteSymbolPosition = constQuoteMapConfigSingleLine.IndexOf(CONSTQUOTE_CONFIGLINE_DEVIDE_SYMBOL);
+            if(-1 == firstConstQuoteSymbolPosition || constQuoteMapConfigSingleLine.Length - 1 == firstConstQuoteSymbolPosition) throw new ConstQuoteMapConfigFormatException();
+            List<string> paramList = new List<string> {
+                constQuoteMapConfigSingleLine.Substring(0, firstConstQuoteSymbolPosition),
+                constQuoteMapConfigSingleLine.Substring(firstConstQuoteSymbolPosition + 1)
+            };
             return new ConstQuoteItem()
             {
                 constQuoteName = paramList[0].Trim(),
@@ -125,7 +130,13 @@ namespace Alterful.Functions
         public static void Add(string name, string quote)
         {
             if (!IsConstQuoteFileExists()) throw new FileNotFoundException();
-            if (IsQuoteNameExists(name)) throw new ConstQuoteNameAlreadyExistsException();
+            if (IsQuoteNameExists(name))
+            {
+                if (GetQuote(name) != quote)
+                    throw new ConstQuoteNameAlreadyExistsException();
+                else
+                    return;
+            }
             string newItemString = name + CONSTQUOTE_CONFIGLINE_DEVIDE_SYMBOL + quote;
             using(StreamWriter streamWriter = new StreamWriter(CONSTQUOTE_FILE_PATH, true))
             {
@@ -135,17 +146,31 @@ namespace Alterful.Functions
         }
 
         /// <summary>
+        /// 获取引用内容
+        /// </summary>
+        /// <param name="constQuoteName">欲获取引用内容的常引用名</param>
+        /// <returns></returns>
+        /// <exception cref="ConstQuoteItemNotFoundException"></exception>
+        public static string GetQuote(string constQuoteName)
+        {
+            foreach (var constQuoteItem in constQuoteItems)
+                if (constQuoteItem.constQuoteName == constQuoteName)
+                    return constQuoteItem.constQuoteString;
+            throw new ConstQuoteItemNotFoundException();
+        }
+
+        /// <summary>
         /// 删除常引用项
         /// </summary>
         /// <param name="name">欲删除常引用项的引用名</param>
-        /// <exception cref="ConstQuoteItemNotExistException"></exception>
+        /// <exception cref="ConstQuoteItemNotFoundException"></exception>
         /// <exception cref="UnauthorizedAccessException"></exception>
         public static void Delete(string name)
         {
-            if (!IsQuoteNameExists(name)) throw new ConstQuoteItemNotExistException();
+            if (!IsQuoteNameExists(name)) throw new ConstQuoteItemNotFoundException();
             List<ConstQuoteItem> tempList = new List<ConstQuoteItem>(constQuoteItems);
             int targetIndex = GetIndexOfConstQuote(name);
-            if (-1 == targetIndex) throw new ConstQuoteItemNotExistException();
+            if (-1 == targetIndex) throw new ConstQuoteItemNotFoundException();
             tempList.RemoveAt(targetIndex);
             WriteConfigToFile(tempList);
             constQuoteItems.RemoveAt(targetIndex);
@@ -211,6 +236,7 @@ namespace Alterful.Functions
             string resultString = instructionString;
             int constQuoteSymbolPosition = instructionString.IndexOf(AInstruction.SYMBOL_CONST);
             int constQuoteEndPosition = instructionString.Length - 1;
+            string constQuoteName;
             while (constQuoteSymbolPosition != -1)
             {
                 int endPosition;
@@ -229,8 +255,9 @@ namespace Alterful.Functions
                         {
                             int removeAddStuffix = 0;
                             if (instructionString.Length > constQuoteEndPosition + 1 && instructionString[constQuoteEndPosition + 1] != AInstruction.SYMBOL_CONST) removeAddStuffix = 1;
-                            var regex = new Regex(Regex.Escape(instructionString.Substring(constQuoteSymbolPosition - 1, constQuoteEndPosition - constQuoteSymbolPosition + 1 + removeAddStuffix)));
-                            resultString = regex.Replace(resultString, "CONSTQUOTE", 1);
+                            constQuoteName = instructionString.Substring(constQuoteSymbolPosition - 1, constQuoteEndPosition - constQuoteSymbolPosition + 1 + removeAddStuffix);
+                            var regex = new Regex(Regex.Escape(constQuoteName));
+                            resultString = regex.Replace(resultString, GetQuote(ConstQuoteNamePull(constQuoteName)), 1);
                         }
                         else throw new ConstQuoteParseError();
                     }
@@ -238,8 +265,9 @@ namespace Alterful.Functions
                     {
                         int removeAddStuffix = 0;
                         if (instructionString.Length > constQuoteEndPosition + 1 && instructionString[constQuoteEndPosition + 1] != AInstruction.SYMBOL_CONST) removeAddStuffix = 1;
-                        var regex = new Regex(Regex.Escape(instructionString.Substring(constQuoteSymbolPosition, constQuoteEndPosition - constQuoteSymbolPosition + removeAddStuffix)));
-                        resultString = regex.Replace(resultString, "CONSTQUOTE", 1);
+                        constQuoteName = instructionString.Substring(constQuoteSymbolPosition, constQuoteEndPosition - constQuoteSymbolPosition + removeAddStuffix);
+                        var regex = new Regex(Regex.Escape(constQuoteName));
+                        resultString = regex.Replace(resultString, GetQuote(ConstQuoteNamePull(constQuoteName)), 1);
                     }
 
                     int moveForward = instructionString.Substring(constQuoteEndPosition + 1).IndexOf(AInstruction.SYMBOL_CONST) + 1;
@@ -250,12 +278,24 @@ namespace Alterful.Functions
                 else
                 {
                     int includeBackChar = constQuoteSymbolPosition != 0 && instructionString[constQuoteSymbolPosition - 1] == AInstruction.SYMBOL_CONST_ADD ? -1 : 0;
-                    resultString = resultString.Replace(instructionString.Substring(constQuoteSymbolPosition + includeBackChar, constQuoteEndPosition - constQuoteSymbolPosition + 1 - includeBackChar), "CONSTQUOTE");
+                    constQuoteName = instructionString.Substring(constQuoteSymbolPosition + includeBackChar, constQuoteEndPosition - constQuoteSymbolPosition + 1 - includeBackChar);
+                    resultString = resultString.Replace(constQuoteName, GetQuote(ConstQuoteNamePull(constQuoteName)));
                     break;
                 }
             }
             return resultString;
         }
+
+        public static string ConstQuoteNamePull(string constQuoteName)
+        {
+            if (constQuoteName.Length == 0) return "";
+            if ('+' == constQuoteName[constQuoteName.Length - 1])
+                constQuoteName = constQuoteName.Substring(0, constQuoteName.Length - 1);
+            if (CONSTQUOTE_CONFIGLINE_DEVIDE_SYMBOL == constQuoteName[0])
+                constQuoteName = constQuoteName.Substring(1);
+            return constQuoteName;
+        }
+
     }
 }
 
