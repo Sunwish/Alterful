@@ -7,6 +7,7 @@ using System.IO;
 using Microsoft.Win32;
 using System.Runtime.InteropServices;
 using IWshRuntimeLibrary;
+using Alterful.Functions;
 namespace Alterful.Helper
 {
     public static class AHelper
@@ -20,6 +21,13 @@ namespace Alterful.Helper
             // Floder Check
             Directory.CreateDirectory(BASE_PATH + @"\APath");
             Directory.CreateDirectory(BASE_PATH + @"\ATemp");
+            Directory.CreateDirectory(BASE_PATH + @"\Config");
+
+            // File Check
+            AConstQuote.CreateConstQuoteFile();
+
+            // Config Check
+            AConstQuote.ReadAllConfig();
 
             // Enviroment Check
             SysEnviroment.SetPathAfter(APATH_PATH);

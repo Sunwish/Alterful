@@ -58,7 +58,12 @@ namespace Alterful
             string yourChromePath = @"C:\Program Files (x86)\Google\Chrome\Application\chrome.exe";
             AInstruction.GetInstruction("@add chrome " + yourChromePath).Execute();
             AInstruction.GetInstruction("chrome-o/https://fanyi.baidu.com/#zh/en/%E9%94%AE%E7%9B%98%E5%A2%9E%E5%BC%BA").Execute();
+            // AConstQuote.Add("addTest2", "thisIsQuote2");
+            //AConstQuote.Delete("addTest");
+            //List<AConstQuote.ConstQuoteItem> list = AConstQuote.GetConstQuoteMapConfig();
+            //Console.Read();
             // ----For fun----
+
         }
         public MainWindow()
         {

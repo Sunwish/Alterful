@@ -4,6 +4,7 @@
 FilesExample/
 ATemp/
 APath/demo.lnk
+Config/
 
 # User-specific files
 *.suo
