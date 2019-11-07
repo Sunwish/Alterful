@@ -15,7 +15,7 @@ namespace Alterful.Functions.Tests
         [DataRow("hello", InstructionType.STARTUP)]
         [DataRow(@"\hello", InstructionType.STARTUP)]
         [DataRow("@add", InstructionType.MACRO)]
-        [DataRow("#get", InstructionType.CONST)]
+        [DataRow("#get", InstructionType.STARTUP)]
         [DataRow(".paint", InstructionType.BUILDIN)]
         public void GetTypeTest(string instruction, InstructionType excepted)
         {

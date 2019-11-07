@@ -13,6 +13,7 @@ namespace Alterful.Functions
     {
         STARTUP, MACRO, CONST, BUILDIN
     }
+    class InvalidInstructionException : FormatException { }
     class ConstQuoteParseError : FormatException{ }
     public abstract class AInstruction
     {
@@ -64,6 +65,12 @@ namespace Alterful.Functions
             }
         }
 
+        /// <summary>
+        /// 指令有效性检查
+        /// </summary>
+        /// <returns></returns>
+        // public abstract bool Check();
+        
         /// <summary>
         /// 执行指令
         /// </summary>

@@ -65,10 +65,10 @@ namespace Alterful.Functions
         /// </summary>
         /// <param name="filePath">要启动的文件路径</param>
         /// <param name="fileArgs">附加启动参数，默认为空</param>
-        /// <exception cref="StartupItemNotFoundException"></exception>
+        /// <exception cref="FileNotFoundException"></exception>
         static private void StartupProcess(string filePath, string fileArgs = "", bool startupAsAdministrator = false)
         {
-            if (!System.IO.File.Exists(filePath) && !System.IO.Directory.Exists(filePath)) throw new StartupItemNotFoundException();
+            if (!System.IO.File.Exists(filePath) && !System.IO.Directory.Exists(filePath)) throw new FileNotFoundException();
             StartupProcessWithoutCheck(filePath, fileArgs, startupAsAdministrator);
         }
 
@@ -100,19 +100,13 @@ namespace Alterful.Functions
         /// <param name="startupName">启动名</param>
         /// <param name="startupParameter">附加启动参数，默认为空</param>
         /// <exception cref="StartupItemNotFoundException"></exception>
+        /// <exception cref="FileNotFoundException"></exception>
         public static void Launch(string startupName, string startupParameter = "", bool startupAsAdministrator = false)
         {
             if (!Exists(startupName)) throw new StartupItemNotFoundException();
             string fullPathOfLnkFile = GetFullPathOfShortcutFile(startupName, AHelper.APATH_PATH);
-            try
-            {
-                string targetFilePath = GetTargetPathOfShortcutFile(fullPathOfLnkFile);
-                StartupProcess(targetFilePath, startupParameter, startupAsAdministrator);
-            }
-            catch (StartupItemNotFoundException ex)
-            {
-                Console.WriteLine(ex.Message);
-            }
+            string targetFilePath = GetTargetPathOfShortcutFile(fullPathOfLnkFile);
+            StartupProcess(targetFilePath, startupParameter, startupAsAdministrator);
         }
 
         /// <summary>

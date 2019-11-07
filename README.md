@@ -40,8 +40,8 @@ In order to start debugging successfully, make sure you run visual studio as an 
 
 ### 模块 Modular Diagram
 
-- 热键监视 Hotkey Monitor ❌
-- 有效性检查器 Validity Checker ❌
+- 热键监视 Hotkey Monitor ❌ 
+- ~~有效性检查器 Validity Checker~~
 - 指令解析器 Instruction Parser 🔳
   - 型别解析 Type Parser ✅
   - 后缀解析 Suffix Parser ✅

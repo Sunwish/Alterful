@@ -49,6 +49,7 @@ namespace Alterful.Tests
     [TestClass()]
     public class AConstQuoteTests
     {
+        /*
         [TestMethod()]
         [DataRow("test", "test")]
         [DataRow("#test", "CONSTQUOTE")]
@@ -62,5 +63,6 @@ namespace Alterful.Tests
         {
             Assert.AreEqual(expected, AConstQuote.ConstQuoteParse(instruction));
         }
+        */
     }
 }
