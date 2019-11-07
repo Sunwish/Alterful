@@ -36,6 +36,7 @@ namespace Alterful.Functions
         /// <returns></returns>
         public static InstructionType GetType(string instruction)
         {
+            if (0 == instruction.Length) return InstructionType.STARTUP;
             switch (instruction[0])
             {
                 case SYMBOL_MACRO: return InstructionType.MACRO;

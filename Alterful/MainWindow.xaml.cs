@@ -26,9 +26,6 @@ namespace Alterful
     {
         public void MainTest()
         {
-            // Global Initialization
-            AHelper.Initialize();
-
             // Demo Initialization
             string FilesExamplePath = AHelper.BASE_PATH + @"\FilesExample", ExampleFileName = "demoFile.txt";
             Directory.CreateDirectory(FilesExamplePath);
@@ -57,11 +54,34 @@ namespace Alterful
         }
         public MainWindow()
         {
+            // Global Initialization
+            AHelper.Initialize();
+
             InitializeComponent();
 
-            MainTest();
+            // MainTest();
 
-            Close();
+            // Close();
+        }
+
+        private void ExecuteButton_Click(object sender, RoutedEventArgs e)
+        {
+            ExecuteInstruction(InstructionTextBox.Text);
+            InstructionTextBox.Text = "";
+        }
+
+        private void InstructionTextBox_KeyDown(object sender, KeyEventArgs e)
+        {
+            if(e.Key == Key.Enter)
+            {
+                ExecuteInstruction(InstructionTextBox.Text);
+                InstructionTextBox.Text = "";
+            }
+        }
+
+        private void ExecuteInstruction(string instruction)
+        {
+            AInstruction.GetInstruction(instruction).Execute();
         }
     }
 }
