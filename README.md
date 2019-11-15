@@ -6,7 +6,7 @@ Alterful Keyboard Enhancement is a domestic original efficiency tool for embedde
 
 ## 项目说明 Project Description：
 
-- [![GitHub version](https://badge.fury.io/gh/Sunwish%2FAlterful.svg)](https://badge.fury.io/gh/Sunwish%2FAlterful)&nbsp;&nbsp;[![](https://img.shields.io/badge/tests-22_passes,0_failed-brightgreen.svg)](https://badge.fury.io/gh/Sunwish%2FAlterful)&nbsp;&nbsp;[![](https://img.shields.io/badge/build-passed-brightgreen.svg)](https://badge.fury.io/gh/Sunwish%2FAlterful)&nbsp;&nbsp;[![](https://img.shields.io/badge/.Net_Framework-4.6.1-brightgreen.svg)](https://badge.fury.io/gh/Sunwish%2FAlterful)
+- [![GitHub version](https://badge.fury.io/gh/Sunwish%2FAlterful.svg)](https://badge.fury.io/gh/Sunwish%2FAlterful)&nbsp;&nbsp;[![](https://img.shields.io/badge/tests-21_passes,0_failed-brightgreen.svg)](https://badge.fury.io/gh/Sunwish%2FAlterful)&nbsp;&nbsp;[![](https://img.shields.io/badge/build-passed-brightgreen.svg)](https://badge.fury.io/gh/Sunwish%2FAlterful)&nbsp;&nbsp;[![](https://img.shields.io/badge/.Net_Framework-4.6.1-brightgreen.svg)](https://badge.fury.io/gh/Sunwish%2FAlterful)
 
 - Alterful 当前的线上版本（[现行版本](https://alterful.com/)）为闭源项目，现已终止维护。
 
@@ -55,6 +55,7 @@ In order to start debugging successfully, make sure you run visual studio as an 
     - 新文件宏执行器 New-File Actuator ✅
     - 常引用宏执行器 Const-Quote Actuator ✅
     - 常指令宏执行器 Const-Instruction Actuator ❌
+  - 命令行执行器 CMD Actuator ✅
   - 常指令执行器 Const Actuator ❌
 
 ![Modular Diagram](https://i.loli.net/2019/11/01/eoX5AbgLduMQ8Kj.png)
@@ -67,7 +68,10 @@ In order to start debugging successfully, make sure you run visual studio as an 
   - 文件启动 File Startup ✅
   - 文件操作 File Operation ✅
   - 文件搜索 File Search ❌
-- 系统功能 System Function ❌
+- 系统功能 System Function 🔳
+  - 命令行 CMD ✅
+  - 网页检索 Web Search ❌
+  - 宏热键 Hotkeys ❌
 - 辅助功能 Auxiliary Function ❌
 
 ![Basic Functions](https://i.loli.net/2019/11/01/VkGIW2uqACZoQws.png)
@@ -82,6 +86,7 @@ In order to start debugging successfully, make sure you run visual studio as an 
   - 启动宏  ✅
   - 常引用宏 ✅
   - 常指令宏 ❌
+- 命令行指令 Command Instruction  ✅ 
 - 常指令 Const Instruction ❌
 
 ![Instruction System](https://i.loli.net/2019/11/01/yZrzJ8RN2PiIW45.jpg)
