@@ -55,15 +55,19 @@ namespace Alterful.Functions
         /// <exception cref="ConstQuoteMapConfigFormatException"></exception>
         public static List<ConstQuoteItem> GetConstQuoteMapConfig()
         {
-            List<ConstQuoteItem> constQuoteMapConfig = new List<ConstQuoteItem>();
-            using (StreamReader streamReader = new StreamReader(CONSTQUOTE_FILE_PATH))
+            try
             {
-                List<string> constQuoteMapConfigLines = GetConstQuoteMapConfigLines(streamReader.ReadToEnd());
-                foreach (var constQuoteMapConfigSingleLine in constQuoteMapConfigLines)
-                    if("" != constQuoteMapConfigSingleLine.Trim())
-                        constQuoteMapConfig.Add(ConstQuoteItemParse(constQuoteMapConfigSingleLine));
+                List<ConstQuoteItem> constQuoteMapConfig = new List<ConstQuoteItem>();
+                using (StreamReader streamReader = new StreamReader(CONSTQUOTE_FILE_PATH))
+                {
+                    List<string> constQuoteMapConfigLines = GetConstQuoteMapConfigLines(streamReader.ReadToEnd());
+                    foreach (var constQuoteMapConfigSingleLine in constQuoteMapConfigLines)
+                        if ("" != constQuoteMapConfigSingleLine.Trim())
+                            constQuoteMapConfig.Add(ConstQuoteItemParse(constQuoteMapConfigSingleLine));
+                }
+                return constQuoteMapConfig;
             }
-            return constQuoteMapConfig;
+            catch (Exception){ throw; }
         }
 
         /// <summary>
@@ -73,7 +77,8 @@ namespace Alterful.Functions
         /// <exception cref="ConstQuoteMapConfigFormatException"></exception>
         public static void ReadAllConfig()
         {
-            constQuoteItems = GetConstQuoteMapConfig();
+            try{ constQuoteItems = GetConstQuoteMapConfig(); }
+            catch (Exception){throw;}
         }
 
         /// <summary>
@@ -134,22 +139,26 @@ namespace Alterful.Functions
         /// <exception cref="ConstQuoteNameAlreadyExistsException"></exception>
         public static void Add(string name, string quote)
         {
-            if (!IsConstQuoteFileExists()) throw new FileNotFoundException();
-            if (IsQuoteNameExists(name))
+            try
             {
-                if (GetQuote(name) != quote)
-                    throw new ConstQuoteNameAlreadyExistsException();
-                else
-                    return;
+                if (!IsConstQuoteFileExists()) throw new FileNotFoundException();
+                if (IsQuoteNameExists(name))
+                {
+                    if (GetQuote(name) != quote)
+                        throw new ConstQuoteNameAlreadyExistsException();
+                    else
+                        return;
+                }
+                List<ConstQuoteItem> tempList = new List<ConstQuoteItem>(constQuoteItems);
+                tempList.Add(new ConstQuoteItem()
+                {
+                    constQuoteName = name,
+                    constQuoteString = quote
+                });
+                WriteConfigToFile(tempList);
+                ReadAllConfig();
             }
-            List<ConstQuoteItem> tempList = new List<ConstQuoteItem>(constQuoteItems);
-            tempList.Add(new ConstQuoteItem()
-            {
-                constQuoteName = name,
-                constQuoteString = quote
-            });
-            WriteConfigToFile(tempList);
-            ReadAllConfig();
+            catch (Exception){ throw; }            
         }
 
         /// <summary>

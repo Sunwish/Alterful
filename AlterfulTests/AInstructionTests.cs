@@ -17,6 +17,7 @@ namespace Alterful.Functions.Tests
         [DataRow("@add", InstructionType.MACRO)]
         [DataRow("#get", InstructionType.STARTUP)]
         [DataRow(".paint", InstructionType.BUILDIN)]
+        [DataRow(">ipconfig", InstructionType.CMD)]
         public void GetTypeTest(string instruction, InstructionType excepted)
         {
             Assert.AreEqual(excepted, AInstruction.GetType(instruction));

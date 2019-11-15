@@ -211,7 +211,8 @@ namespace Alterful.Functions
         public static void Copy(string newStartupName, string origStartupName)
         {
             if (!Exists(origStartupName)) throw new StartupItemNotFoundException();
-            Add(newStartupName, GetFullPath(origStartupName));
+            try{ Add(newStartupName, GetFullPath(origStartupName)); }
+            catch (Exception){ throw; }
         }
 
         /// <summary>

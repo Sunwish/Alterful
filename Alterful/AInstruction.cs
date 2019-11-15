@@ -11,7 +11,7 @@ namespace Alterful.Functions
 {
     public enum InstructionType
     {
-        STARTUP, MACRO, CONST, BUILDIN
+        STARTUP, MACRO, CONST, BUILDIN, CMD
     }
     class InvalidInstructionException : FormatException { }
     class ConstQuoteParseError : FormatException{ }
@@ -21,6 +21,7 @@ namespace Alterful.Functions
         public const char SYMBOL_CONST = '#';
         public const char SYMBOL_BUILDIN = '.';
         public const char SYMBOL_CONST_ADD = '+';
+        public const char SYMBOL_CONST_CMD = '>';
         public string Instruction { get; }
         public List<string> ReportInfo { get; } = new List<string>();
 
@@ -41,6 +42,7 @@ namespace Alterful.Functions
             {
                 case SYMBOL_MACRO: return InstructionType.MACRO;
                 case SYMBOL_BUILDIN: return InstructionType.BUILDIN;
+                case SYMBOL_CONST_CMD: return InstructionType.CMD;
                 case SYMBOL_CONST:
                     if (instruction[instruction.Length - 1] == ')') // Const Function
                         return InstructionType.CONST;
@@ -62,6 +64,7 @@ namespace Alterful.Functions
                 case InstructionType.MACRO: return new AInstruction_Macro(instruction);
                 case InstructionType.STARTUP: return new AInstruction_Startup(AConstQuote.ConstQuoteParse(instruction));
                 case InstructionType.CONST: throw new NotImplementedException();
+                case InstructionType.CMD: return new AInstruction_CMD(instruction);
                 default: return new AInstruction_Startup(AConstQuote.ConstQuoteParse(instruction));
             }
         }
@@ -75,7 +78,9 @@ namespace Alterful.Functions
         /// <summary>
         /// 执行指令
         /// </summary>
-        public abstract void Execute();
+        /// <exception cref="AFile.StartupItemNotFoundException"></exception>
+        /// <exception cref="UnauthorizedAccessException"></exception>
+        public abstract string Execute();
 
     }
 
@@ -97,7 +102,7 @@ namespace Alterful.Functions
         /// <summary>
         /// 执行指令，启动失败的启动项在ReportInfo中查看
         /// </summary>
-        public override void Execute()
+        public override string Execute()
         {
             ReportInfo.Clear();
             foreach (var item in GetStartupItems())
@@ -126,6 +131,7 @@ namespace Alterful.Functions
                     ReportInfo.Add(item.StartupName);
                 }
             }
+            return "Execute successfully";
         }
 
         /// <summary>
@@ -197,7 +203,16 @@ namespace Alterful.Functions
         public enum MacroAddType { STARTUP, CONST_QUOTE }
         public enum MacroDelType { STARTUP, CONST_QUOTE }
 
-        public AInstruction_Macro(string instruction) : base(instruction) { GetMacroType(); }
+        public AInstruction_Macro(string instruction) : base(instruction) {
+            try
+            {
+                GetMacroType();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
 
         /// <summary>
         /// 获取宏指令类型
@@ -226,14 +241,22 @@ namespace Alterful.Functions
         /// <exception cref="FileNotFoundException"></exception>
         /// <exception cref="AFile.StartupItemNotFoundException"></exception>
         /// <exception cref="UnauthorizedAccessException"></exception>
-        public override void Execute()
+        public override string Execute()
         {
-            switch (GetMacroType())
+            try
             {
-                case MacroType.ADD: ExecuteMacroAdd(); break;
-                case MacroType.DEL: ExecuteMacroDel(); break;
-                case MacroType.NEW: ExecuteMacroNew(); break;
+                switch (GetMacroType())
+                {
+                    case MacroType.ADD: ExecuteMacroAdd(); break;
+                    case MacroType.DEL: ExecuteMacroDel(); break;
+                    case MacroType.NEW: ExecuteMacroNew(); break;
+                }
             }
+            catch (Exception)
+            {
+                throw;
+            }
+            return "Execute successfully";
         }
 
         /// <summary>
@@ -311,11 +334,19 @@ namespace Alterful.Functions
             macroInstructionParameters.Add(secondParam);
 
             MacroAddType addType = GetMacroAddType(macroInstructionParameters[0]);
-            switch (addType)
+            try
             {
-                case MacroAddType.STARTUP: ExecuteMacroAddStartup(macroInstructionParameters); break;
-                case MacroAddType.CONST_QUOTE: ExecuteMacroAddConstQuote(macroInstructionParameters); break;
+                switch (addType)
+                {
+                    case MacroAddType.STARTUP: ExecuteMacroAddStartup(macroInstructionParameters); break;
+                    case MacroAddType.CONST_QUOTE: ExecuteMacroAddConstQuote(macroInstructionParameters); break;
+                }
             }
+            catch (Exception)
+            {
+                throw;
+            }
+            
         }
 
         /// <summary>
@@ -323,16 +354,39 @@ namespace Alterful.Functions
         /// </summary>
         /// <param name="macroInstructionParameters">宏添加指令参数列表</param>
         /// <exception cref="FileNotFoundException"></exception>
+        /// <exception cref="ConstQuoteParseError"></exception>
         private void ExecuteMacroAddStartup(List<string> macroInstructionParameters)
         {
-            AFile.Add(AConstQuote.ConstQuoteParse(macroInstructionParameters[0]), AConstQuote.ConstQuoteParse(macroInstructionParameters[1]));
+            try
+            {
+                AFile.Add(AConstQuote.ConstQuoteParse(macroInstructionParameters[0]), AConstQuote.ConstQuoteParse(macroInstructionParameters[1]));
+            }
+            catch (FileNotFoundException)
+            {
+                throw;
+            }
+            catch (ConstQuoteParseError)
+            {
+                throw;
+            }
         }
 
+        /// <summary>
+        /// 执行宏添加常引用指令
+        /// </summary>
+        /// <param name="macroInstructionParameters"></param>
+        /// <exception cref="FileNotFoundException"></exception>
+        /// <exception cref="UnauthorizedAccessException"></exception>
+        /// <exception cref="ConstQuoteNameAlreadyExistsException"></exception>
         private void ExecuteMacroAddConstQuote(List<string> macroInstructionParameters)
         {
-            if (macroInstructionParameters.Count != 2) throw new MacroFormatException();
-            string constQuoteName = AConstQuote.ConstQuoteNamePull(macroInstructionParameters[0]);
-            AConstQuote.Add(constQuoteName, macroInstructionParameters[1]);
+            try
+            {
+                if (macroInstructionParameters.Count != 2) throw new MacroFormatException();
+                string constQuoteName = AConstQuote.ConstQuoteNamePull(macroInstructionParameters[0]);
+                AConstQuote.Add(constQuoteName, macroInstructionParameters[1]);
+            }
+            catch (Exception){ throw; }
         }
 
         /// <summary>
@@ -358,6 +412,24 @@ namespace Alterful.Functions
         private void ExecuteMacroDelConstQuote(string delConstQuoteName)
         {
             AConstQuote.Delete(AConstQuote.ConstQuoteNamePull(delConstQuoteName));
+        }
+    }
+
+    public class AInstruction_CMD : AInstruction
+    {
+        public AInstruction_CMD(string instruction) : base(instruction) {}
+
+        public override string Execute()
+        {
+            try
+            {
+                string output = AHelper.ExecuteCommand(Instruction.Substring(1).Trim());
+                return output;
+            }
+            catch (Exception exception)
+            {
+                return exception.Message;
+            }
         }
     }
 }

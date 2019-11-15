@@ -7,6 +7,7 @@ using System.IO;
 using Microsoft.Win32;
 using System.Runtime.InteropServices;
 using IWshRuntimeLibrary;
+using System.Diagnostics;
 using Alterful.Functions;
 namespace Alterful.Helper
 {
@@ -48,6 +49,39 @@ namespace Alterful.Helper
             shortcut.TargetPath = targetPath.Trim();
             shortcut.Save();
         }
+
+        /// <summary>
+        /// 执行命令行
+        /// </summary>
+        /// <param name="commandLine"></param>
+        /// <returns>命令行返回文本</returns>
+        public static string ExecuteCommand(string commandLine)
+        {
+            try
+            {
+                ProcessStartInfo startInfo = new ProcessStartInfo("cmd", "/c " + commandLine)
+                {
+                    // The following command are needed to redirect the standard output.
+                    // This means that it will be redirected to the Process.StandardOutput StreamReader.
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true,
+                    UseShellExecute = false,
+                    CreateNoWindow = true,
+                };
+                Process process = new Process() { StartInfo = startInfo };
+                process.Start();
+                // Return the output.
+                string standardOutput = process.StandardOutput.ReadToEnd();
+                string standardError = process.StandardError.ReadToEnd();
+                string retn = "" == standardOutput ? standardError : standardOutput;
+                return retn;
+            }
+            catch (Exception exception)
+            {
+                // Console.WriteLine(exception.Message);
+                throw;
+            }
+        }
     }
 
     static class SysEnviroment
@@ -76,17 +110,9 @@ namespace Alterful.Helper
         public static string GetSysEnvironmentByName(string name)
         {
             string result = string.Empty;
-            try
-            {
-                result = OpenSysEnvironment().GetValue(name).ToString();//读取
-            }
-            catch (Exception)
-            {
-
-                return string.Empty;
-            }
+            try{ result = OpenSysEnvironment().GetValue(name).ToString(); }
+            catch (Exception){ return string.Empty;}
             return result;
-
         }
 
         /// <summary>

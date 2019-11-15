@@ -62,26 +62,43 @@ namespace Alterful
             // MainTest();
 
             // Close();
+
+            
         }
 
         private void ExecuteButton_Click(object sender, RoutedEventArgs e)
         {
-            ExecuteInstruction(InstructionTextBox.Text);
-            InstructionTextBox.Text = "";
+            InstructionOutputTextBox.Text = "";
+            string retnInfo = ExecuteInstruction(InstructionTextBox.Text);
+            if (AInstruction.GetType(InstructionTextBox.Text) == InstructionType.CMD) InstructionTextBox.Text = "> ";
+            else InstructionTextBox.Text = "";
+            InstructionTextBox.SelectionStart = InstructionTextBox.Text.Length;
+            InstructionOutputTextBox.Text = retnInfo;
         }
 
         private void InstructionTextBox_KeyDown(object sender, KeyEventArgs e)
         {
             if(e.Key == Key.Enter)
             {
-                ExecuteInstruction(InstructionTextBox.Text);
-                InstructionTextBox.Text = "";
+                InstructionOutputTextBox.Text = "";
+                string retnInfo = ExecuteInstruction(InstructionTextBox.Text);
+                if (AInstruction.GetType(InstructionTextBox.Text) == InstructionType.CMD) InstructionTextBox.Text = "> ";
+                else InstructionTextBox.Text = "";
+                InstructionTextBox.SelectionStart = InstructionTextBox.Text.Length;
+                InstructionOutputTextBox.Text = retnInfo;
             }
         }
 
-        private void ExecuteInstruction(string instruction)
+        private string ExecuteInstruction(string instruction)
         {
-            AInstruction.GetInstruction(instruction).Execute();
+            try
+            {
+                return AInstruction.GetInstruction(instruction).Execute();
+            }
+            catch(Exception exception)
+            {
+                return exception.Message;
+            }
         }
     }
 }

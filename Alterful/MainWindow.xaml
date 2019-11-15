@@ -5,10 +5,11 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Alterful"
         mc:Ignorable="d"
-        Title="Alterful Demo" Height="70" Width="312" Visibility="Visible" Foreground="White" Background="Black" Topmost="True">
+        Title="Alterful Demo" Height="210.874" Width="312" Visibility="Visible" Foreground="White" Background="Black" Topmost="True">
     <Grid>
         <TextBox x:Name="InstructionTextBox" HorizontalAlignment="Left" Height="33" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="209" Background="White" KeyDown="InstructionTextBox_KeyDown"/>
         <Button x:Name="ExecuteButton" Content="Execute" HorizontalAlignment="Left" VerticalAlignment="Top" Width="89" Margin="209,-1,-0.4,0" Height="34" Click="ExecuteButton_Click"/>
+        <TextBox x:Name="InstructionOutputTextBox" IsReadOnly="True" HorizontalAlignment="Left" Height="149" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="298" Background="White" KeyDown="InstructionTextBox_KeyDown" Margin="0,33,0,-0.4"/>
 
     </Grid>
 </Window>
