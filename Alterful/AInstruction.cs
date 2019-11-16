@@ -109,6 +109,7 @@ namespace Alterful.Functions
         {
             int existCount = 0;
             ReportInfo.Clear();
+            AHelper.InstructionHistory.Insert(0, Instruction);
             foreach (var item in GetStartupItems())
             {
                 if (item.StartupName == "") continue;
@@ -255,6 +256,7 @@ namespace Alterful.Functions
         public override string Execute()
         {
             ReportInfo.Clear();
+            AHelper.InstructionHistory.Insert(0, Instruction);
             try
             {
                 switch (GetMacroType())
@@ -437,6 +439,7 @@ namespace Alterful.Functions
         public override string Execute()
         {
             ReportInfo.Clear();
+            AHelper.InstructionHistory.Insert(0, Instruction);
             try
             {
                 string output = AHelper.ExecuteCommand(Instruction.Substring(1).Trim());

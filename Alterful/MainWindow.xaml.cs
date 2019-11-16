@@ -76,8 +76,6 @@ namespace Alterful
         /// </summary>
         private void ExecuteTextBoxInstrution()
         {
-            showOutput = false;
-
             // Append instruction line.
             AppendRTBLine(TestRichTextbox, InstructionTextBox.Text, Brushes.MintCream, Brushes.Black);
 
@@ -100,7 +98,7 @@ namespace Alterful
             SolidColorBrush bgcolor;
             switch (AInstruction.reportType)
             {
-                case AInstruction.ReportType.OK: bgcolor = Brushes.DarkGreen; break;
+                case AInstruction.ReportType.OK: bgcolor = Brushes.DarkGreen; if(AInstruction.ReportInfo.Count == 0) showOutput = false; break;
                 case AInstruction.ReportType.WARNING: bgcolor = Brushes.Gold; showOutput = true; break;
                 case AInstruction.ReportType.ERROR: bgcolor = Brushes.Red; showOutput = true; break;
                 default: bgcolor = Brushes.SlateGray; break;
@@ -172,8 +170,21 @@ namespace Alterful
         private void InstructionTextBox_PreviewKeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Right && "" == InstructionTextBox.Text) { InstructionTextBox.Text = "> "; InstructionTextBox.SelectionStart = InstructionTextBox.Text.Length; return; }
-            if (e.Key == Key.Up) throw new NotImplementedException("Prev instruction");
-            if (e.Key == Key.Down) throw new NotImplementedException("Next instructon");
+            if (e.Key == Key.Up)
+            {
+                if (AHelper.InstructionHistory.Count - 1 == AHelper.InstructionPointer) return;
+                AHelper.InstructionPointer++;
+                InstructionTextBox.Text = AHelper.InstructionHistory[AHelper.InstructionPointer];
+                InstructionTextBox.SelectionStart = InstructionTextBox.Text.Length;
+            }
+            if (e.Key == Key.Down)
+            {
+                if (-1 == AHelper.InstructionPointer) return;
+                if (0 == AHelper.InstructionPointer) { AHelper.InstructionPointer--; InstructionTextBox.Text = ""; return; }
+                AHelper.InstructionPointer--;
+                InstructionTextBox.Text = AHelper.InstructionHistory[AHelper.InstructionPointer];
+                InstructionTextBox.SelectionStart = InstructionTextBox.Text.Length;
+            }
         }
 
         /// <summary>

@@ -17,6 +17,8 @@ namespace Alterful.Helper
         public static string APATH_PATH { get; } = BASE_PATH + @"\APath";
         public static string ATEMP_PATH { get; } = BASE_PATH + @"\ATemp";
         public const string LNK_EXTENTION = ".lnk";
+        public static List<string> InstructionHistory = new List<string>();
+        public static int InstructionPointer = -1;
         public static void Initialize()
         {
             // Floder Check
