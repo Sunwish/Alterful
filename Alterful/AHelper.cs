@@ -73,8 +73,8 @@ namespace Alterful.Helper
                 // Return the output.
                 string standardOutput = process.StandardOutput.ReadToEnd();
                 string standardError = process.StandardError.ReadToEnd();
-                string retn = "" == standardOutput ? standardError : standardOutput;
-                return retn;
+                if (standardError != "") throw new Exception(standardError);
+                return standardOutput;
             }
             catch (Exception exception)
             {

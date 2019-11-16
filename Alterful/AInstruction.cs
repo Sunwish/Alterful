@@ -23,7 +23,10 @@ namespace Alterful.Functions
         public const char SYMBOL_CONST_ADD = '+';
         public const char SYMBOL_CONST_CMD = '>';
         public string Instruction { get; }
-        public List<string> ReportInfo { get; } = new List<string>();
+        public static List<string> ReportInfo { get; } = new List<string>();
+        public static ReportType reportType = ReportType.OK;
+
+        public enum ReportType { OK, WARNING, ERROR }
 
         protected AInstruction(string instruction)
         {
@@ -104,11 +107,15 @@ namespace Alterful.Functions
         /// </summary>
         public override string Execute()
         {
+            int existCount = 0;
             ReportInfo.Clear();
             foreach (var item in GetStartupItems())
             {
+                if (item.StartupName == "") continue;
+
                 if (AFile.Exists(item.StartupName))
                 {
+                    existCount++;
                     if (item.SuffixList == null)
                     {
                         AFile.Launch(item.StartupName, item.StartupParameter);
@@ -128,10 +135,11 @@ namespace Alterful.Functions
                 }
                 else
                 {
-                    ReportInfo.Add(item.StartupName);
+                    ReportInfo.Add("Starup item [" + item.StartupName + "] is not exist.");
                 }
             }
-            return "Execute successfully";
+            reportType = ReportType.OK;
+            return existCount!=0 ? "Execute successfully." : "";
         }
 
         /// <summary>
@@ -195,23 +203,26 @@ namespace Alterful.Functions
         }
     }
 
-    public class UnknowMacroType : FormatException { }
-    public class MacroFormatException : FormatException { }
+    public class UnknowMacroType : FormatException { public UnknowMacroType(string unknowType) : base(AInstruction_Macro.MSG_UNKNOW_MACRO_TYPE + " [" + unknowType + "].") { } }
+    public class MacroFormatException : FormatException { public MacroFormatException() : base(AInstruction_Macro.MSG_MACRO_FORMAT_EXCEPTION) { } }
     public class AInstruction_Macro : AInstruction
     {
         public enum MacroType { ADD, NEW, DEL }
         public enum MacroAddType { STARTUP, CONST_QUOTE }
         public enum MacroDelType { STARTUP, CONST_QUOTE }
+        public static string MSG_UNKNOW_MACRO_TYPE { get; } = "Unknow macro type";
+        public static string MSG_MACRO_FORMAT_EXCEPTION { get; } = "Unknow macro instruction format.";
 
         public AInstruction_Macro(string instruction) : base(instruction) {
-            try
+            /*try
             {
                 GetMacroType();
             }
             catch (Exception)
             {
+                reportType = ReportType.ERROR;
                 throw;
-            }
+            }*/
         }
 
         /// <summary>
@@ -224,13 +235,13 @@ namespace Alterful.Functions
         {
             List<string> macroInstructionParts = new List<string>(Instruction.Split(' '));
             if (macroInstructionParts.Count < 2) throw new MacroFormatException();
-
-            switch (macroInstructionParts[0].Substring(1))
+            string macroType = macroInstructionParts[0].Substring(1);
+            switch (macroType)
             {
                 case "add": return MacroType.ADD;
                 case "new": return MacroType.NEW;
                 case "del": return MacroType.DEL;
-                default: throw new UnknowMacroType();
+                default: throw new UnknowMacroType(macroType);
             }
         }
 
@@ -243,6 +254,7 @@ namespace Alterful.Functions
         /// <exception cref="UnauthorizedAccessException"></exception>
         public override string Execute()
         {
+            ReportInfo.Clear();
             try
             {
                 switch (GetMacroType())
@@ -254,9 +266,11 @@ namespace Alterful.Functions
             }
             catch (Exception)
             {
+                reportType = ReportType.ERROR;
                 throw;
             }
-            return "Execute successfully";
+            reportType = ReportType.OK;
+            return "Execute successfully.";
         }
 
         /// <summary>
@@ -360,6 +374,7 @@ namespace Alterful.Functions
             try
             {
                 AFile.Add(AConstQuote.ConstQuoteParse(macroInstructionParameters[0]), AConstQuote.ConstQuoteParse(macroInstructionParameters[1]));
+                reportType = ReportType.OK;
             }
             catch (FileNotFoundException)
             {
@@ -421,13 +436,16 @@ namespace Alterful.Functions
 
         public override string Execute()
         {
+            ReportInfo.Clear();
             try
             {
                 string output = AHelper.ExecuteCommand(Instruction.Substring(1).Trim());
+                reportType = ReportType.OK;
                 return output;
             }
             catch (Exception exception)
             {
+                reportType = ReportType.ERROR;
                 return exception.Message;
             }
         }
