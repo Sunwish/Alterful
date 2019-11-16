@@ -4,7 +4,7 @@ Alterful 键盘增强，是一款国产原创的嵌入式系统增效工具，�
 
 Alterful Keyboard Enhancement is a domestic original efficiency tool for embedded systems. It uses the global and unique shortcut key Alt + A to make typing function calls. Thanks to Alterful's nestability of instructions, this mini-efficiency tool without main interface has powerful and rich functions. Just memorizing a shortcut key, it can realize the comfortable and fast operation of any program/file/folder such as quick start, file location, card screenshot, color extraction and global word translation. It not only greatly improves the daily work efficiency of PC users, but also is concise, efficient and full of geeky feeling.
 
-## 项目说明 Project Description：
+## 项目说明 Project Description
 
 - [![GitHub version](https://badge.fury.io/gh/Sunwish%2FAlterful.svg)](https://badge.fury.io/gh/Sunwish%2FAlterful)&nbsp;&nbsp;[![](https://img.shields.io/badge/tests-21_passes,0_failed-brightgreen.svg)](https://badge.fury.io/gh/Sunwish%2FAlterful)&nbsp;&nbsp;[![](https://img.shields.io/badge/build-passed-brightgreen.svg)](https://badge.fury.io/gh/Sunwish%2FAlterful)&nbsp;&nbsp;[![](https://img.shields.io/badge/.Net_Framework-4.6.1-brightgreen.svg)](https://badge.fury.io/gh/Sunwish%2FAlterful)
 
@@ -20,13 +20,13 @@ Alterful Keyboard Enhancement is a domestic original efficiency tool for embedde
 
   This repository project is being updated continuously. After the reconstruction, it will replace the current version. At that time, Alterful will transform into an open source project and restart maintenance.
 
-## 调试说明 Debugging Instructions：
+## 调试说明 Debugging Instructions
 
 为了成功启动调试，请确保以管理员身份运行 Visual Studio 并打开项目。
 
 In order to start debugging successfully, make sure you run visual studio as an administrator and open the project.
 
-## 核心开发（阶段一） Core Development (Stage 1)：
+## 核心开发（阶段一） Core Development (Stage 1)
 
 全部完成（All done） ✅
 
@@ -82,7 +82,7 @@ In order to start debugging successfully, make sure you run visual studio as an 
 
 ![Instruction System](https://i.loli.net/2019/11/01/yZrzJ8RN2PiIW45.jpg)
 
-## 深度开发（阶段二） Improvement Development (Stage 2)：
+## 深度开发（阶段二） Improvement Development (Stage 2)
 
 - 常指令语法扩展
   - 常指令重载 ❌
@@ -100,7 +100,7 @@ In order to start debugging successfully, make sure you run visual studio as an 
   - 异步命令行 ❌
 - 规范常引用解析域  ❌
 
-## 扫尾工作（阶段三）  Concluding Work (Stage 3)：
+## 扫尾工作（阶段三）  Concluding Work (Stage 3)
 
 - 版本检查 ❌
 - 自动更新 ❌
