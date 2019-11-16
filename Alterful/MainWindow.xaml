@@ -7,11 +7,11 @@
         mc:Ignorable="d"
         Title="Alterful Demo" Width="250" Visibility="Visible" Foreground="White" Background="{x:Null}" Topmost="True" WindowStyle="None" SnapsToDevicePixels="True" Cursor="IBeam" Height="160" ResizeMode="NoResize" VerticalAlignment="Bottom" MaxHeight="520" VerticalContentAlignment="Bottom" ShowInTaskbar="False">
     <Grid VerticalAlignment="Bottom">
-        <TextBox x:Name="InstructionTextBox" BorderBrush="SlateGray" TextWrapping="NoWrap" Text="" Background="Black" KeyDown="InstructionTextBox_KeyDown" Margin="0,0,0,0" Height="24" Foreground="White" BorderThickness="1" VerticalAlignment="Bottom" VerticalContentAlignment="Center" AllowDrop="False" TextChanged="InstructionTextBox_TextChanged" PreviewKeyDown="InstructionTextBox_PreviewKeyDown"/>
         <RichTextBox x:Name="TestRichTextbox" IsReadOnly="True" VerticalScrollBarVisibility="Hidden" Margin="0,0,0,24" Background="Black" Foreground="White" VerticalAlignment="Bottom" BorderThickness="1,1,1,0" IsTabStop="False" AllowDrop="False" IsHitTestVisible="True" KeyDown="TestRichTextbox_KeyDown">
             <FlowDocument>
                 <Paragraph LineHeight="1"/>
             </FlowDocument>
         </RichTextBox>
+        <TextBox x:Name="InstructionTextBox" BorderBrush="SlateGray" TextWrapping="NoWrap" Text="" Background="Black" KeyDown="InstructionTextBox_KeyDown" Margin="0,0,0,0" Height="24" Foreground="White" BorderThickness="1" VerticalAlignment="Bottom" VerticalContentAlignment="Center" AllowDrop="False" TextChanged="InstructionTextBox_TextChanged" PreviewKeyDown="InstructionTextBox_PreviewKeyDown"/>
     </Grid>
 </Window>

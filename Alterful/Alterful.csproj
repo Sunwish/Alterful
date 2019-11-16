@@ -69,6 +69,12 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="AHotKeySetting.cs" />
+    <Compile Include="AKey.cs" />
+    <Compile Include="HotKeyHelper.cs" />
+    <Compile Include="HotKeyManager.cs" />
+    <Compile Include="HotKeyModel.cs" />
+    <Compile Include="HotKeySettingsManager.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
