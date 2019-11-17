@@ -61,9 +61,9 @@ In order to start debugging successfully, make sure you run visual studio as an 
 - 文件功能 File Function 🔳
   - 文件启动 File Startup ✅
   - 文件操作 File Operation ✅
-  - 文件搜索 File Search ❌
+  - ~~文件搜索 File Search~~
 - 系统功能 System Function ✅
-- 辅助功能 Auxiliary Function ❌
+- ~~辅助功能 Auxiliary Function~~
 
 ![Basic Functions](https://i.loli.net/2019/11/01/VkGIW2uqACZoQws.png)
 
