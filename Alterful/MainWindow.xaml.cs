@@ -138,28 +138,62 @@ namespace Alterful
                         constInstructionInputMode = false;
                         TestRichTextbox.IsReadOnly = true; InstructionTextBox.IsEnabled = true;
 
-                        // Get Const Instruction Content.
-                        foreach(string ciLine in GetConstInstructionInputLines())
-                        {
-                            Console.WriteLine(ciLine);
-                        }
+                        // Get const instruction lines and update max width.
+                        foreach(string ciLine in GetConstInstructionInputLines()) { UpdateMaxWidth(ciLine); }
 
                         string outputMsg = "\nOperation [" + InstructionTextBox.Text + "] cancelled.";
                         UpdateMaxWidth(outputMsg);
                         AppendRTBLine(TestRichTextbox, outputMsg, Brushes.MintCream, Brushes.Red);
                         TestRichTextbox.BorderThickness = new Thickness(1, 1, 1, 0);
                         InstructionTextBox.Focus(); showOutput = true;
-                        InstructionTextBox.Text = "";
                         Resize();
                     }
                     else if(constInstructionInputMode && sid == m_HotKeySettings[AHotKeySetting.CONFIRM_CONST_INSTRUCTION_INPUT])
                     {
-                        // Get Const Instruction Content.
+                        ConstInstructionItem ciItem = AInstruction_Macro.GetConstInstructionItem(InstructionTextBox.Text);
+                        constInstructionInputMode = false;
+                        TestRichTextbox.IsReadOnly = true; InstructionTextBox.IsEnabled = true;
+
+                        string outputHead = ciItem.ConstInstruction + "(";
+                        foreach (string paramName in ciItem.ParameterList)
+                        {
+                            outputHead += paramName + ",";
+                        }
+                        outputHead = (outputHead[outputHead.Length - 1] == ',' ? outputHead.Substring(0, outputHead.Length - 1) : outputHead) + ")";
+                        string output = outputHead + "\n";
+
+                        // Get const instruction lines and update max width.
                         foreach (string ciLine in GetConstInstructionInputLines())
                         {
-                            Console.WriteLine(ciLine);
+                            output += ciLine + "\n";
+                            UpdateMaxWidth(ciLine);
                         }
-                        throw new NotImplementedException();
+
+                        string outputMsg = "";
+                        SolidColorBrush colorBackground = Brushes.DarkGreen;
+                        try
+                        {
+                            using (StreamWriter writer = new StreamWriter(AHelper.CONST_INSTRUCTION_PATH + @"\" + outputHead, false))
+                            {
+                                writer.WriteLine(output);
+                            }
+                            outputMsg = "\nAdd const instruction [" + InstructionTextBox.Text + "] successfully.";
+                        }
+                        catch(Exception exception)
+                        {
+                            outputMsg = "\n" + exception.Message;
+                            colorBackground = Brushes.Red;
+                        }
+                        finally
+                        {
+                            UpdateMaxWidth(outputMsg);
+                            AppendRTBLine(TestRichTextbox, outputMsg, Brushes.MintCream, colorBackground);
+                            TestRichTextbox.BorderThickness = new Thickness(1, 1, 1, 0);
+                            InstructionTextBox.Focus(); showOutput = true;
+                            InstructionTextBox.Text = "";
+                            Resize();
+                        }
+                        
                     }
                     handled = true;
                     break;

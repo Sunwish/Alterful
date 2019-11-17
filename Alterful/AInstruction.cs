@@ -205,6 +205,12 @@ namespace Alterful.Functions
         }
     }
 
+    public struct ConstInstructionItem
+    {
+        public string ConstInstruction { get; set; }
+        public List<string> ParameterList { get; set; }
+    }
+
     public class UnknowMacroType : FormatException { public UnknowMacroType(string unknowType) : base(AInstruction_Macro.MSG_UNKNOW_MACRO_TYPE + " [" + unknowType + "].") { } }
     public class MacroFormatException : FormatException { public MacroFormatException() : base(AInstruction_Macro.MSG_MACRO_FORMAT_EXCEPTION) { } }
     public class AInstruction_Macro : AInstruction
@@ -334,13 +340,35 @@ namespace Alterful.Functions
         }
 
         /// <summary>
+        /// 获取（解析）常指令宏中的常指令项目
+        /// </summary>
+        /// <param name="instruction">指令</param>
+        /// <returns></returns>
+        public static ConstInstructionItem GetConstInstructionItem(string instruction)
+        {
+            ConstInstructionItem ciItem = new ConstInstructionItem() { ParameterList = new List<string>() };
+            int startSymbol = instruction.IndexOf("(");
+            int endSymbol = instruction.LastIndexOf(")");
+            ciItem.ConstInstruction = instruction.Substring(instruction.IndexOf(" ") + 1, startSymbol - instruction.IndexOf(" ") - 1);
+            string paramText = instruction.Substring(instruction.IndexOf("(") + 1, endSymbol - startSymbol - 1);
+            foreach(string param in paramText.Split(','))
+            {
+                if ("" != param.Trim()) ciItem.ParameterList.Add(param.Trim());
+            }
+            return ciItem;
+        }
+
+        /// <summary>
         /// 执行宏添加指令
         /// </summary>
         /// <exception cref="MacroFormatException"></exception>
         /// <exception cref="FileNotFoundException"></exception>
         private void ExecuteMacroAdd()
         {
+            // MacroAddType - Const Instruction
             if ((Instruction.IndexOf("(") < Instruction.IndexOf(")")) && Instruction.IndexOf(")") != -1) throw new Exception(AInstruction.ADD_CONST_INSTRUCTION);
+
+            // MacroAddType - Startup / Const Quote
             List<string> macroInstructionParametersRaw = GetMacroInstructionParametersList();
             if (macroInstructionParametersRaw.Count < 2) throw new MacroFormatException();
             List<string> macroInstructionParameters = new List<string> { macroInstructionParametersRaw[0] };

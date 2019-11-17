@@ -53,5 +53,16 @@ namespace Alterful.Functions.Tests
         {
             Assert.AreEqual(expected, AInstruction_Macro.GetMacroDelType(paramOfMacroDelItemString));
         }
+
+        [TestMethod()]
+        public void GetConstInstructionItemTest()
+        {
+            ConstInstructionItem ciItem = AInstruction_Macro.GetConstInstructionItem("@add testName(param1, param2)");
+
+            Assert.AreEqual("testName", ciItem.ConstInstruction);
+            Assert.AreEqual(2, ciItem.ParameterList.Count);
+            Assert.AreEqual("param1", ciItem.ParameterList[0]);
+            Assert.AreEqual("param2", ciItem.ParameterList[1]);
+        }
     }
 }

@@ -16,6 +16,7 @@ namespace Alterful.Helper
         public static string BASE_PATH { get; } = System.IO.File.Exists(System.IO.Path.GetDirectoryName(System.IO.Path.GetDirectoryName(System.IO.Path.GetDirectoryName(System.IO.Path.GetDirectoryName(typeof(MainWindow).Assembly.Location)))) + @"\Alterful.sln") ? System.IO.Path.GetDirectoryName(System.IO.Path.GetDirectoryName(System.IO.Path.GetDirectoryName(System.IO.Path.GetDirectoryName(typeof(MainWindow).Assembly.Location)))) : System.IO.Path.GetDirectoryName(typeof(MainWindow).Assembly.Location);
         public static string APATH_PATH { get; } = BASE_PATH + @"\APath";
         public static string ATEMP_PATH { get; } = BASE_PATH + @"\ATemp";
+        public static string CONST_INSTRUCTION_PATH { get; } = BASE_PATH + @"\Config\ConstInstruction";
         public const string LNK_EXTENTION = ".lnk";
         public static List<string> InstructionHistory = new List<string>();
         public static int InstructionPointer = -1;
@@ -25,6 +26,7 @@ namespace Alterful.Helper
             Directory.CreateDirectory(BASE_PATH + @"\APath");
             Directory.CreateDirectory(BASE_PATH + @"\ATemp");
             Directory.CreateDirectory(BASE_PATH + @"\Config");
+            Directory.CreateDirectory(CONST_INSTRUCTION_PATH);
 
             // File Check
             AConstQuote.CreateConstQuoteFile();
