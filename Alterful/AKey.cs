@@ -5,6 +5,10 @@
     /// </summary>
     public enum AKey
     {
+        // KeyEventArgs.Key + 14
+        Esc = 27,
+        Tab = 17,
+        Enter = 21,
         Space = 32,
         Left = 37,
         Up = 38,

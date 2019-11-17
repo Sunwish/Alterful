@@ -22,6 +22,7 @@ namespace Alterful.Functions
         public const char SYMBOL_BUILDIN = '.';
         public const char SYMBOL_CONST_ADD = '+';
         public const char SYMBOL_CONST_CMD = '>';
+        public const string ADD_CONST_INSTRUCTION = "ADD_CONST_INSTRUCTION";
         public string Instruction { get; }
         public static List<string> ReportInfo { get; } = new List<string>();
         public static ReportType reportType = ReportType.OK;
@@ -339,6 +340,7 @@ namespace Alterful.Functions
         /// <exception cref="FileNotFoundException"></exception>
         private void ExecuteMacroAdd()
         {
+            if ((Instruction.IndexOf("(") < Instruction.IndexOf(")")) && Instruction.IndexOf(")") != -1) throw new Exception(AInstruction.ADD_CONST_INSTRUCTION);
             List<string> macroInstructionParametersRaw = GetMacroInstructionParametersList();
             if (macroInstructionParametersRaw.Count < 2) throw new MacroFormatException();
             List<string> macroInstructionParameters = new List<string> { macroInstructionParametersRaw[0] };

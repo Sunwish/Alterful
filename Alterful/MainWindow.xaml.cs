@@ -38,7 +38,15 @@ namespace Alterful
 
         double outputWidthMax = 0;
         bool showOutput = true;
+        bool constInstructionInputMode = false;
+        double constInstructionInputWidthBias = 120;
+        ConstInstructionContentRange constInstructionContentRange = new ConstInstructionContentRange();
 
+        struct ConstInstructionContentRange
+        {
+            public TextPointer ContentStart;
+            public TextPointer ContentEnd;
+        }
         /// <summary>
         /// 窗体加载完成后事件处理函数
         /// </summary>
@@ -112,6 +120,7 @@ namespace Alterful
         private IntPtr WndProc(IntPtr hWnd, int msg, IntPtr wideParam, IntPtr longParam, ref bool handled)
         {
             var hotkeySetting = new AHotKeySetting();
+            // Console.WriteLine(wideParam.ToInt32());
             switch (msg)
             {
                 case HotKeyManager.WM_HOTKEY:
@@ -121,13 +130,64 @@ namespace Alterful
                         hotkeySetting = AHotKeySetting.AWAKEN;
                         //TODO AWAKEN
                         Visibility = IsVisible ? Visibility.Hidden : Visibility.Visible;
-                        showOutput = false; Resize();
+                        showOutput = constInstructionInputMode; Resize();
                         if (Visibility == Visibility.Visible) InstructionTextBox.Focus();
+                    }
+                    else if(constInstructionInputMode && sid == m_HotKeySettings[AHotKeySetting.CANCEL_CONST_INSTRUCTION_INPUT])
+                    {
+                        constInstructionInputMode = false;
+                        TestRichTextbox.IsReadOnly = true; InstructionTextBox.IsEnabled = true;
+
+                        // Get Const Instruction Content.
+                        foreach(string ciLine in GetConstInstructionInputLines())
+                        {
+                            Console.WriteLine(ciLine);
+                        }
+
+                        string outputMsg = "\nOperation [" + InstructionTextBox.Text + "] cancelled.";
+                        UpdateMaxWidth(outputMsg);
+                        AppendRTBLine(TestRichTextbox, outputMsg, Brushes.MintCream, Brushes.Red);
+                        TestRichTextbox.BorderThickness = new Thickness(1, 1, 1, 0);
+                        InstructionTextBox.Focus(); showOutput = true;
+                        InstructionTextBox.Text = "";
+                        Resize();
+                    }
+                    else if(constInstructionInputMode && sid == m_HotKeySettings[AHotKeySetting.CONFIRM_CONST_INSTRUCTION_INPUT])
+                    {
+                        // Get Const Instruction Content.
+                        foreach (string ciLine in GetConstInstructionInputLines())
+                        {
+                            Console.WriteLine(ciLine);
+                        }
+                        throw new NotImplementedException();
                     }
                     handled = true;
                     break;
             }
             return IntPtr.Zero;
+        }
+
+        /// <summary>
+        /// 获取当前录入的常指令文本
+        /// </summary>
+        private string GetConstInstructionContent()
+        {
+            constInstructionContentRange.ContentEnd = TestRichTextbox.Document.ContentEnd;
+            return new TextRange(constInstructionContentRange.ContentStart, constInstructionContentRange.ContentEnd).Text;
+        }
+
+        /// <summary>
+        /// 虎丘当前录入的常指令文本行
+        /// </summary>
+        /// <returns></returns>
+        private List<string> GetConstInstructionInputLines()
+        {
+            List<string> ciLines = new List<string>();
+            foreach (string ciLine in GetConstInstructionContent().Split('\n'))
+            {
+                if (ciLine.Trim() != "") ciLines.Add(ciLine.Trim());
+            }
+            return ciLines;
         }
 
         public void MainTest()
@@ -180,11 +240,24 @@ namespace Alterful
         /// </summary>
         private void ExecuteTextBoxInstrution()
         {
-            // Append instruction line.
-            AppendRTBLine(TestRichTextbox, InstructionTextBox.Text, Brushes.MintCream, Brushes.Black);
-
             // Execute instruction.
             string retnInfo = ExecuteInstruction(InstructionTextBox.Text);
+            if (AInstruction.ADD_CONST_INSTRUCTION == retnInfo)
+            {
+                constInstructionInputMode = true;
+                TestRichTextbox.IsReadOnly = false; InstructionTextBox.IsEnabled = false;
+                AppendRTBLine(TestRichTextbox, "Confirm: Alt + S / Cancel: Alt + Esc", Brushes.DarkBlue, Brushes.Gold);
+                TestRichTextbox.BorderThickness = new Thickness(1);
+                TestRichTextbox.Focus(); TestRichTextbox.CaretPosition = TestRichTextbox.Document.ContentEnd; showOutput = true;
+                constInstructionContentRange.ContentStart = TestRichTextbox.CaretPosition.Paragraph.ContentStart;
+                TestRichTextbox.CaretPosition.Paragraph.IsEnabled = false;
+                UpdateMaxWidth(InstructionTextBox.Text);
+                UpdateMaxWidth("Confirm: Alt + S / Cancel: Alt + Esc");
+                Resize(true, constInstructionInputWidthBias); return;
+            }
+
+            // Append instruction line.
+            AppendRTBLine(TestRichTextbox, InstructionTextBox.Text, Brushes.MintCream, Brushes.Black);
 
             // Print report.
             foreach (var reportInfo in AInstruction.ReportInfo)
@@ -228,14 +301,14 @@ namespace Alterful
         /// 重新调整窗口尺寸
         /// </summary>
         /// <param name="resizeHeight"></param>
-        /// <param name="bias">测量宽度的人工偏移量</param>
-        private void Resize(bool resizeHeight = true, double bias = 12)
+        /// <param name="widthBias">测量宽度的人工偏移量</param>
+        private void Resize(bool resizeHeight = true, double widthBias = 15, double heightBias = 0)
         {
             // Measure and set width, height.
             double insWidth = MeasureString(InstructionTextBox, InstructionTextBox.Text).Width;
-            Width = (showOutput ? (insWidth > outputWidthMax ? insWidth : outputWidthMax) : insWidth) + bias;
+            Width = (showOutput ? (insWidth > outputWidthMax ? insWidth : outputWidthMax) : insWidth) + widthBias;
             TestRichTextbox.Visibility = showOutput ? Visibility.Visible : Visibility.Hidden;
-            if (resizeHeight) Height = (showOutput ? TestRichTextbox.ExtentHeight : 0) + InstructionTextBox.Height;
+            if (resizeHeight) Height = (showOutput ? TestRichTextbox.ExtentHeight : 0) + InstructionTextBox.Height + heightBias;
 
             // Window Left-Bottom.
             var desktopWorkingArea = System.Windows.SystemParameters.WorkArea;
@@ -257,7 +330,7 @@ namespace Alterful
             tr.Text = appendString + "\n";
             tr.ApplyPropertyValue(TextElement.ForegroundProperty, foregroundColor);
             tr.ApplyPropertyValue(TextElement.BackgroundProperty, backgroundColor);
-            if(scrollToEnd) TestRichTextbox.ScrollToEnd();
+            if (scrollToEnd) TestRichTextbox.ScrollToEnd();
         }
 
         /// <summary>
@@ -267,7 +340,12 @@ namespace Alterful
         /// <param name="e"></param>
         private void InstructionTextBox_KeyDown(object sender, KeyEventArgs e)
         {
-            if (e.Key == Key.Enter && "" != InstructionTextBox.Text) { ExecuteTextBoxInstrution(); return; }
+            if (e.Key == Key.Enter && "" != InstructionTextBox.Text)
+            {
+                if (!constInstructionInputMode) { ExecuteTextBoxInstrution(); }
+                else { e.Handled = false; Resize(true, 12, 500); InstructionTextBox.Height = 500; InstructionTextBox.MaxLines = 500; }
+                return;
+            }
             if (e.Key == Key.Enter && "" == InstructionTextBox.Text) { Visibility = Visibility.Hidden; showOutput = false; Resize(); }
             if (e.Key == Key.Escape) { Visibility = Visibility.Hidden; showOutput = false; Resize(); }
             if (e.KeyboardDevice.Modifiers == ModifierKeys.Alt) { e.Handled = true; showOutput = !showOutput; Resize(); return; }
@@ -311,7 +389,7 @@ namespace Alterful
         /// <param name="e"></param>
         private void InstructionTextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
-            Resize(false);
+            Resize(constInstructionInputMode);
         }
 
         /// <summary>
@@ -344,6 +422,11 @@ namespace Alterful
             if ("~" == instruction) Close();
             try { return AInstruction.GetInstruction(instruction).Execute(); }
             catch(Exception exception) { return exception.Message; }
+        }
+
+        private void TestRichTextbox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (constInstructionInputMode) Resize(true, constInstructionInputWidthBias);
         }
     }
 }

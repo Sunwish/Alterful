@@ -24,6 +24,8 @@ namespace Alterful.GlobalHotKey
         {
             var hotKeyList = new ObservableCollection<HotKeyModel>();
             hotKeyList.Add(new HotKeyModel { Name = AHotKeySetting.AWAKEN.ToString(), IsUsable = true, IsSelectCtrl = false, IsSelectAlt = true, IsSelectShift = false, SelectKey = AKey.A });
+            hotKeyList.Add(new HotKeyModel { Name = AHotKeySetting.CANCEL_CONST_INSTRUCTION_INPUT.ToString(), IsUsable = true, IsSelectCtrl = false, IsSelectAlt = true, IsSelectShift = false, SelectKey = AKey.Esc });
+            hotKeyList.Add(new HotKeyModel { Name = AHotKeySetting.CONFIRM_CONST_INSTRUCTION_INPUT.ToString(), IsUsable = true, IsSelectCtrl = false, IsSelectAlt = true, IsSelectShift = false, SelectKey = AKey.S });
             return hotKeyList;
         }
 
