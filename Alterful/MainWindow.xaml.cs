@@ -160,7 +160,7 @@ namespace Alterful
                             outputHead += paramName + ",";
                         }
                         outputHead = (outputHead[outputHead.Length - 1] == ',' ? outputHead.Substring(0, outputHead.Length - 1) : outputHead) + ")";
-                        string output = outputHead + "\n";
+                        string output = "";
 
                         // Get const instruction lines and update max width.
                         foreach (string ciLine in GetConstInstructionInputLines())
@@ -261,6 +261,7 @@ namespace Alterful
             // Instruction Test.
             // MainTest();
             // Close();
+
         }
 
         private void InitializeGUI()

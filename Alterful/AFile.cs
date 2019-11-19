@@ -160,6 +160,30 @@ namespace Alterful.Functions
         }
 
         /// <summary>
+        /// 获取常指令文件信息
+        /// </summary>
+        /// <returns></returns>
+        private static FileInfo[] GetConstInstructionFilesInfo()
+        {
+            DirectoryInfo directoryInfo = new DirectoryInfo(AHelper.CONST_INSTRUCTION_PATH);
+            return directoryInfo.GetFiles();
+        }
+
+        /// <summary>
+        /// 获取当前所有常指令列表
+        /// </summary>
+        /// <returns></returns>
+        public static List<string> GetConstInstructionList()
+        {
+            List<string> constInstructionList = new List<string>();
+            FileInfo[] fileInfo = GetConstInstructionFilesInfo();
+            foreach (FileInfo file in fileInfo)
+                if (file.Extension == "")
+                    constInstructionList.Add(file.Name);
+            return constInstructionList;
+        }
+
+        /// <summary>
         /// 判断启动名是否存在
         /// </summary>
         /// <param name="startupName">欲判断的启动名</param>
