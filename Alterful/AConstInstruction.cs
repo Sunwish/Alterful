@@ -10,7 +10,7 @@ using Alterful.Helper;
 namespace Alterful
 {
     public class ConstInstructionNameUnkonwException : Exception { public ConstInstructionNameUnkonwException() : base("Const instruction parse error.") { } }
-    public class ConstInstructionNotFoundException : Exception { public ConstInstructionNotFoundException() : base("Const instruction is not found.") { } }
+    public class ConstInstructionNotFoundException : Exception { public ConstInstructionNotFoundException(string ins) : base("Const instruction [" + ins + "] is not found.") { } }
     public struct ConstInstruction
     {
         public string constInstructionName;
@@ -59,7 +59,7 @@ namespace Alterful
                 item.parameterList.Add(paramBlock.Trim());
 
             // Get Instruction Name
-            item.constInstructionName = fileName.Substring(0, paramStart);
+            item.constInstructionName = fileName.Substring(0, paramStart).Trim();
 
             if (!readInstructionLines) return item;
             // Get Instruction Lines
@@ -109,15 +109,19 @@ namespace Alterful
         /// <exception cref="FileNotFoundException"></exception>
         public static string Delete(string constInstruction)
         {
-            if (!Exist(constInstruction)) throw new ConstInstructionNotFoundException();
-            ConstInstruction item = new ConstInstruction();
-            GetConstInstructionFrame(constInstruction, ref item);
-            string targetFileName = item.constInstructionName + SYMBOL_PARAMETER_START;
-            foreach (string param in item.parameterList)
-                targetFileName += param + SYMBOL_PARAMETER_DEVIDE;
-            targetFileName = targetFileName.Substring(0, targetFileName.Length - 1) + SYMBOL_PARAMETER_END;
-            File.Delete(AHelper.CONST_INSTRUCTION_PATH + @"\" + targetFileName);
-            return targetFileName;
+            if (!Exist(constInstruction)) throw new ConstInstructionNotFoundException(constInstruction);
+            try
+            {
+                ConstInstruction item = new ConstInstruction();
+                GetConstInstructionFrame(constInstruction, ref item);
+                string targetFileName = item.constInstructionName + SYMBOL_PARAMETER_START;
+                foreach (string param in item.parameterList)
+                    targetFileName += param + SYMBOL_PARAMETER_DEVIDE;
+                targetFileName = targetFileName.Substring(0, targetFileName.Length - 1) + SYMBOL_PARAMETER_END;
+                File.Delete(AHelper.CONST_INSTRUCTION_PATH + @"\" + targetFileName);
+                return targetFileName;
+            }
+            catch (Exception excption) { throw excption; }
         }
     }
 }

@@ -275,6 +275,8 @@ namespace Alterful
         /// </summary>
         private void ExecuteTextBoxInstrution()
         {
+            UpdateMaxWidth(InstructionTextBox.Text);
+
             // Execute instruction.
             string retnInfo = ExecuteInstruction(InstructionTextBox.Text);
             if (AInstruction.ADD_CONST_INSTRUCTION == retnInfo)
@@ -286,7 +288,6 @@ namespace Alterful
                 TestRichTextbox.Focus(); TestRichTextbox.CaretPosition = TestRichTextbox.Document.ContentEnd; showOutput = true;
                 constInstructionContentRange.ContentStart = TestRichTextbox.CaretPosition.Paragraph.ContentStart;
                 TestRichTextbox.CaretPosition.Paragraph.IsEnabled = false;
-                UpdateMaxWidth(InstructionTextBox.Text);
                 UpdateMaxWidth("Confirm: Alt + S / Cancel: Alt + Esc");
                 Resize(true, constInstructionInputWidthBias); return;
             }
@@ -305,14 +306,15 @@ namespace Alterful
 
             // Print return information.
             SolidColorBrush bgcolor;
+            SolidColorBrush fgcolor;
             switch (AInstruction.reportType)
             {
-                case AInstruction.ReportType.OK: bgcolor = Brushes.DarkGreen; if(AInstruction.ReportInfo.Count == 0) showOutput = false; break;
-                case AInstruction.ReportType.WARNING: bgcolor = Brushes.Gold; showOutput = true; break;
-                case AInstruction.ReportType.ERROR: bgcolor = Brushes.Red; showOutput = true; break;
-                default: bgcolor = Brushes.SlateGray; break;
+                case AInstruction.ReportType.OK: bgcolor = Brushes.DarkGreen; fgcolor = Brushes.MintCream; if (AInstruction.ReportInfo.Count == 0) showOutput = false; break;
+                case AInstruction.ReportType.WARNING: bgcolor = Brushes.Gold; fgcolor = Brushes.DarkBlue; showOutput = true; break;
+                case AInstruction.ReportType.ERROR: bgcolor = Brushes.Red; fgcolor = Brushes.MintCream; showOutput = true; break;
+                default: bgcolor = Brushes.SlateGray; fgcolor = Brushes.DarkBlue; break;
             }
-            if (retnInfo != "") AppendRTBLine(TestRichTextbox, retnInfo.Trim(), Brushes.MintCream, bgcolor);
+            if (retnInfo != "") AppendRTBLine(TestRichTextbox, retnInfo.Trim(), fgcolor, bgcolor);
 
             if (AInstruction.GetType(InstructionTextBox.Text) == InstructionType.CMD) { InstructionTextBox.Text = "> "; showOutput = true; }
             else InstructionTextBox.Text = "";
@@ -327,7 +329,7 @@ namespace Alterful
         /// 更新最大行款记录
         /// </summary>
         /// <param name="line">欲参与更新的行文本</param>
-        private void UpdateMaxWidth(string line)
+        public void UpdateMaxWidth(string line)
         {
             if (MeasureString(InstructionTextBox, line).Width > outputWidthMax) outputWidthMax = MeasureString(InstructionTextBox, line).Width;
         }
@@ -377,11 +379,13 @@ namespace Alterful
         {
             if (e.Key == Key.Enter && "" != InstructionTextBox.Text)
             {
+                e.Handled = true;
                 if (!constInstructionInputMode) { ExecuteTextBoxInstrution(); }
                 else { e.Handled = false; Resize(true, 12, 500); InstructionTextBox.Height = 500; InstructionTextBox.MaxLines = 500; }
                 return;
             }
-            if (e.Key == Key.Enter && "" == InstructionTextBox.Text) { Visibility = Visibility.Hidden; showOutput = false; Resize(); }
+            if (e.Key == Key.Enter && "" == InstructionTextBox.Text) {
+                Visibility = Visibility.Hidden; showOutput = false; Resize(); }
             if (e.Key == Key.Escape) { Visibility = Visibility.Hidden; showOutput = false; Resize(); }
             if (e.KeyboardDevice.Modifiers == ModifierKeys.Alt) { e.Handled = true; showOutput = !showOutput; Resize(); return; }
             if(e.Key == Key.Tab) throw new NotImplementedException("Instruction completion");
@@ -396,6 +400,7 @@ namespace Alterful
                 AHelper.InstructionPointer++;
                 InstructionTextBox.Text = AHelper.InstructionHistory[AHelper.InstructionPointer];
                 InstructionTextBox.SelectionStart = InstructionTextBox.Text.Length;
+                return;
             }
             if (e.Key == Key.Down)
             {
@@ -404,7 +409,9 @@ namespace Alterful
                 AHelper.InstructionPointer--;
                 InstructionTextBox.Text = AHelper.InstructionHistory[AHelper.InstructionPointer];
                 InstructionTextBox.SelectionStart = InstructionTextBox.Text.Length;
+                return;
             }
+            AHelper.InstructionPointer = -1;
         }
 
         /// <summary>

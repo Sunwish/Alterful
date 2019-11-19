@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using System.IO;
 using Alterful.Helper;
 using System.Text.RegularExpressions;
-
+using Alterful;
 namespace Alterful.Functions
 {
     public enum InstructionType
@@ -23,6 +23,7 @@ namespace Alterful.Functions
         public const char SYMBOL_CONST_ADD = '+';
         public const char SYMBOL_CONST_CMD = '>';
         public const string ADD_CONST_INSTRUCTION = "ADD_CONST_INSTRUCTION";
+        public const string MSG_EXECUTE_SUCCESSFULLY = "Execute successfully.";
         public string Instruction { get; }
         public static List<string> ReportInfo { get; } = new List<string>();
         public static ReportType reportType = ReportType.OK;
@@ -53,7 +54,8 @@ namespace Alterful.Functions
                     else // Startup Instrcution with const quote
                         return InstructionType.STARTUP;
             }
-            return InstructionType.STARTUP;
+            if ((instruction.IndexOf("(") < instruction.IndexOf(")")) && instruction.IndexOf(")") != -1) return InstructionType.CONST;
+            else return InstructionType.STARTUP;
         }
 
         /// <summary>
@@ -67,7 +69,7 @@ namespace Alterful.Functions
             {
                 case InstructionType.MACRO: return new AInstruction_Macro(instruction);
                 case InstructionType.STARTUP: return new AInstruction_Startup(AConstQuote.ConstQuoteParse(instruction));
-                case InstructionType.CONST: throw new NotImplementedException();
+                case InstructionType.CONST: return new AInstruction_Const(instruction);
                 case InstructionType.CMD: return new AInstruction_CMD(instruction);
                 default: return new AInstruction_Startup(AConstQuote.ConstQuoteParse(instruction));
             }
@@ -141,7 +143,7 @@ namespace Alterful.Functions
                 }
             }
             reportType = ReportType.OK;
-            return existCount!=0 ? "Execute successfully." : "";
+            return existCount!=0 ? AInstruction.MSG_EXECUTE_SUCCESSFULLY : "";
         }
 
         /// <summary>
@@ -220,7 +222,6 @@ namespace Alterful.Functions
         public enum MacroDelType { STARTUP, CONST_QUOTE }
         public static string MSG_UNKNOW_MACRO_TYPE { get; } = "Unknow macro type";
         public static string MSG_MACRO_FORMAT_EXCEPTION { get; } = "Unknow macro instruction format.";
-
         public AInstruction_Macro(string instruction) : base(instruction) {
             /*try
             {
@@ -279,7 +280,7 @@ namespace Alterful.Functions
                 throw;
             }
             reportType = ReportType.OK;
-            return "Execute successfully.";
+            return MSG_EXECUTE_SUCCESSFULLY;
         }
 
         /// <summary>
@@ -444,6 +445,13 @@ namespace Alterful.Functions
         /// <exception cref="UnauthorizedAccessException"></exception>
         private void ExecuteMacroDel()
         {
+            // MacroDeleteType - Const Instruction
+            if ((Instruction.IndexOf("(") < Instruction.IndexOf(")")) && Instruction.IndexOf(")") != -1)
+            {
+                try { AConstInstruction.Delete(AInstruction_Const.GetConstInstructionFromMacroInstruction(Instruction)); return; }
+                catch (Exception exception) { throw exception; }
+            }
+
             List<string> macroInstructionParametersRaw = GetMacroInstructionParametersList();
             if (macroInstructionParametersRaw.Count < 1) throw new MacroFormatException();
             foreach(string delItemString in macroInstructionParametersRaw)
@@ -480,6 +488,48 @@ namespace Alterful.Functions
             {
                 reportType = ReportType.ERROR;
                 return exception.Message;
+            }
+        }
+    }
+
+    public class AInstruction_Const : AInstruction
+    {
+        public AInstruction_Const(string instruction) : base(instruction) { }
+
+        /// <summary>
+        /// 从宏指令中分离出常指令部分
+        /// </summary>
+        /// <param name="macroInstruction"></param>
+        /// <returns></returns>
+        public static string GetConstInstructionFromMacroInstruction(string macroInstruction)
+        {
+            return macroInstruction.Substring(macroInstruction.IndexOf(" ") + 1, macroInstruction.Length - macroInstruction.IndexOf(" ") - 1);
+        }
+
+        /// <summary>
+        /// 执行指令，启动失败的启动项在ReportInfo中查看
+        /// </summary>
+        public override string Execute()
+        {
+            ReportInfo.Clear();
+            AHelper.InstructionHistory.Insert(0, Instruction);
+
+            ConstInstruction ci = new ConstInstruction();
+            if(AConstInstruction.GetConstInstructionFrame(Instruction, ref ci))
+            {
+                bool allRight = true;
+                foreach(string instructionLine in ci.instructionLines)
+                {
+                    AInstruction.GetInstruction(instructionLine).Execute();
+                    if (reportType != ReportType.OK) allRight = false;
+                }
+                if(!allRight) reportType = ReportType.WARNING;
+                return AInstruction.MSG_EXECUTE_SUCCESSFULLY;
+            }
+            else
+            {
+                reportType = ReportType.ERROR;
+                throw new ConstInstructionNotFoundException(Instruction);
             }
         }
     }
