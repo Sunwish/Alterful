@@ -285,11 +285,27 @@ namespace Alterful
                 TestRichTextbox.IsReadOnly = false; InstructionTextBox.IsEnabled = false;
                 AppendRTBLine(TestRichTextbox, "Confirm: Alt + S / Cancel: Alt + Esc", Brushes.DarkBlue, Brushes.Gold);
                 TestRichTextbox.BorderThickness = new Thickness(1);
-                TestRichTextbox.Focus(); TestRichTextbox.CaretPosition = TestRichTextbox.Document.ContentEnd; showOutput = true;
+
+                // If ci already exist
+                string constInstruction = AInstruction_Const.GetConstInstructionFromMacroInstruction(InstructionTextBox.Text);
+                if (AConstInstruction.Exist(constInstruction))
+                {
+                    ConstInstruction ci = new ConstInstruction();
+                    if (AConstInstruction.GetConstInstructionFrame(constInstruction, ref ci))
+                    {
+                        foreach (string insLine in ci.instructionLines)
+                        {
+                            AppendRTBLine(TestRichTextbox, insLine, Brushes.MintCream, Brushes.Black);
+                            UpdateMaxWidth(insLine);
+                        }
+                    }
+                }
                 constInstructionContentRange.ContentStart = TestRichTextbox.CaretPosition.Paragraph.ContentStart;
                 TestRichTextbox.CaretPosition.Paragraph.IsEnabled = false;
                 UpdateMaxWidth("Confirm: Alt + S / Cancel: Alt + Esc");
-                Resize(true, constInstructionInputWidthBias); return;
+                Resize(true, constInstructionInputWidthBias);
+                TestRichTextbox.Focus(); TestRichTextbox.CaretPosition = TestRichTextbox.Document.ContentEnd; showOutput = true;
+                return;
             }
 
             // Append instruction line.
