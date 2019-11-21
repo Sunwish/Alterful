@@ -259,7 +259,7 @@ namespace Alterful.Functions
                             resultString = regex.Replace(resultString, GetQuote(ConstQuoteNamePull(constQuoteName)), 1);
                         }
                         else throw new ConstQuoteParseError();
-                    }
+                    }  
                     else
                     {
                         int removeAddStuffix = 0;

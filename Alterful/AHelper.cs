@@ -9,6 +9,8 @@ using System.Runtime.InteropServices;
 using IWshRuntimeLibrary;
 using System.Diagnostics;
 using Alterful.Functions;
+using System.Threading;
+
 namespace Alterful.Helper
 {
     public static class AHelper
@@ -87,6 +89,31 @@ namespace Alterful.Helper
                 // Console.WriteLine(exception.Message);
                 throw;
             }
+        }
+
+        /// <summary>
+        /// 异步执行命令行
+        /// </summary>
+        /// <param name="command"></param>
+        public static void ExecuteCommandAsync(string command)
+        {
+            /*
+            try
+            {
+                //Asynchronously start the Thread to process the Execute command request.
+                Thread objThread = new Thread(new ParameterizedThreadStart());
+                //Make the thread as background thread.
+                objThread.IsBackground = true;
+                //Set the Priority of the thread.
+                objThread.Priority = ThreadPriority.AboveNormal;
+                //Start the thread.
+                objThread.Start(command);
+            }
+            catch (Exception exception)
+            {
+                throw exception;
+            }
+            */
         }
     }
 

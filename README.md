@@ -6,7 +6,7 @@ Alterful Keyboard Enhancement is a domestic original efficiency tool for embedde
 
 ## 项目说明 Project Description
 
-- [![GitHub version](https://badge.fury.io/gh/Sunwish%2FAlterful.svg)](https://badge.fury.io/gh/Sunwish%2FAlterful)&nbsp;&nbsp;[![](https://img.shields.io/badge/tests-26_passes,0_failed-brightgreen.svg)](https://badge.fury.io/gh/Sunwish%2FAlterful)&nbsp;&nbsp;[![](https://img.shields.io/badge/build-passed-brightgreen.svg)](https://badge.fury.io/gh/Sunwish%2FAlterful)&nbsp;&nbsp;[![](https://img.shields.io/badge/.Net_Framework-4.6.1-brightgreen.svg)](https://badge.fury.io/gh/Sunwish%2FAlterful)
+- [![GitHub version](https://badge.fury.io/gh/Sunwish%2FAlterful.svg)](https://badge.fury.io/gh/Sunwish%2FAlterful)&nbsp;&nbsp;[![](https://img.shields.io/badge/tests-27_passes,0_failed-brightgreen.svg)](https://badge.fury.io/gh/Sunwish%2FAlterful)&nbsp;&nbsp;[![](https://img.shields.io/badge/build-passed-brightgreen.svg)](https://badge.fury.io/gh/Sunwish%2FAlterful)&nbsp;&nbsp;[![](https://img.shields.io/badge/.Net_Framework-4.6.1-brightgreen.svg)](https://badge.fury.io/gh/Sunwish%2FAlterful)
 
 - Alterful 当前的线上版本（[现行版本](https://alterful.com/)）为闭源项目，现已终止维护。
 
@@ -79,7 +79,8 @@ In order to start debugging successfully, make sure you run visual studio as an 
   - 启动名智能补全 ❌
   - 常引用名智能补全 ❌
   - 宏指令智能补全 ❌
-  - 常指令默认参数自动补全 ❌
+  - ~~常指令默认参数自动补全~~
+  - 常指令智能补全 ❌
 - 命令行交互
   - 记忆工作目录 ✅
   - 异步命令行 ❌

@@ -308,7 +308,10 @@ namespace Alterful
                         }
                     }
                 }
-                
+
+                // Set CaretPosition.
+                TestRichTextbox.CaretPosition = TestRichTextbox.Document.ContentEnd;
+
                 UpdateMaxWidth("Confirm: Alt + S / Cancel: Alt + Esc");
                 Resize(true, constInstructionInputWidthBias);
                 TestRichTextbox.Focus(); showOutput = true;
