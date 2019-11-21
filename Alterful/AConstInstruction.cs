@@ -58,6 +58,7 @@ namespace Alterful
             string paramString = fileName.Substring(paramStart + 1, paramEnd - paramStart - 1);
             foreach (string paramBlock in paramString.Split(SYMBOL_PARAMETER_DEVIDE))
                 item.parameterList.Add(paramBlock.Trim());
+            if (1 == item.parameterList.Count && "" == item.parameterList[0].Trim()) item.parameterList.Clear();
 
             // Get Instruction Name
             item.constInstructionName = fileName.Substring(0, paramStart).Trim();
@@ -143,6 +144,17 @@ namespace Alterful
                 instructionLine = instructionLine.Replace(constInstruction.parameterList[i], value);
             }
             return instructionLine;
+        }
+
+        public static string GetFileNameFromConstInstruction(ConstInstruction ci)
+        {
+            string fileName = ci.constInstructionName + "(";
+            foreach(string paramName in ci.parameterList)
+            {
+                fileName += paramName + ",";
+            }
+            fileName = fileName.Substring(0, fileName.Length - 1) + ")";
+            return fileName;
         }
     }
 }

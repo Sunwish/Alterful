@@ -481,6 +481,13 @@ namespace Alterful.Functions
             try
             {
                 string output = AHelper.ExecuteCommand(Instruction.Substring(1).Trim());
+
+                // cd detect
+                List<string> cmdParts = new List<string>(Instruction.Split(' '));
+                cmdParts.RemoveAt(0); // Remove symbol '>'
+                if (cmdParts.Count > 1 && "cd" == cmdParts[0])
+                    Directory.SetCurrentDirectory(cmdParts[1]);
+
                 reportType = ReportType.OK;
                 return output;
             }

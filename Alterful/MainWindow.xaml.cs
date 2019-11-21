@@ -40,6 +40,7 @@ namespace Alterful
         bool showOutput = true;
         bool constInstructionInputMode = false;
         double constInstructionInputWidthBias = 120;
+        string OldConstInstructionFileName = "";
         ConstInstructionContentRange constInstructionContentRange = new ConstInstructionContentRange();
 
         struct ConstInstructionContentRange
@@ -173,6 +174,7 @@ namespace Alterful
                         SolidColorBrush colorBackground = Brushes.DarkGreen;
                         try
                         {
+                            try { File.Delete(AHelper.CONST_INSTRUCTION_PATH + @"\" + OldConstInstructionFileName); } catch { }
                             using (StreamWriter writer = new StreamWriter(AHelper.CONST_INSTRUCTION_PATH + @"\" + outputHead, false))
                             {
                                 writer.WriteLine(output);
@@ -286,6 +288,11 @@ namespace Alterful
                 AppendRTBLine(TestRichTextbox, "Confirm: Alt + S / Cancel: Alt + Esc", Brushes.DarkBlue, Brushes.Gold);
                 TestRichTextbox.BorderThickness = new Thickness(1);
 
+                // Content Start
+                TestRichTextbox.CaretPosition = TestRichTextbox.Document.ContentEnd;
+                constInstructionContentRange.ContentStart = TestRichTextbox.CaretPosition.Paragraph.ContentStart;
+                TestRichTextbox.CaretPosition.Paragraph.IsEnabled = false;
+
                 // If ci already exist
                 string constInstruction = AInstruction_Const.GetConstInstructionFromMacroInstruction(InstructionTextBox.Text);
                 if (AConstInstruction.Exist(constInstruction))
@@ -293,6 +300,7 @@ namespace Alterful
                     ConstInstruction ci = new ConstInstruction();
                     if (AConstInstruction.GetConstInstructionFrame(constInstruction, ref ci))
                     {
+                        OldConstInstructionFileName = AConstInstruction.GetFileNameFromConstInstruction(ci);
                         foreach (string insLine in ci.instructionLines)
                         {
                             AppendRTBLine(TestRichTextbox, insLine, Brushes.MintCream, Brushes.Black);
@@ -300,11 +308,10 @@ namespace Alterful
                         }
                     }
                 }
-                constInstructionContentRange.ContentStart = TestRichTextbox.CaretPosition.Paragraph.ContentStart;
-                TestRichTextbox.CaretPosition.Paragraph.IsEnabled = false;
+                
                 UpdateMaxWidth("Confirm: Alt + S / Cancel: Alt + Esc");
                 Resize(true, constInstructionInputWidthBias);
-                TestRichTextbox.Focus(); TestRichTextbox.CaretPosition = TestRichTextbox.Document.ContentEnd; showOutput = true;
+                TestRichTextbox.Focus(); showOutput = true;
                 return;
             }
 
@@ -383,7 +390,7 @@ namespace Alterful
             tr.Text = appendString + "\n";
             tr.ApplyPropertyValue(TextElement.ForegroundProperty, foregroundColor);
             tr.ApplyPropertyValue(TextElement.BackgroundProperty, backgroundColor);
-            if (scrollToEnd) TestRichTextbox.ScrollToEnd();
+            if (scrollToEnd) { TestRichTextbox.ScrollToEnd(); }
         }
 
         /// <summary>

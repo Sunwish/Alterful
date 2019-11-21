@@ -81,9 +81,9 @@ In order to start debugging successfully, make sure you run visual studio as an 
   - 宏指令智能补全 ❌
   - 常指令默认参数自动补全 ❌
 - 命令行交互
-  - 记忆工作目录 ❌
+  - 记忆工作目录 ✅
   - 异步命令行 ❌
-- 规范常引用解析域  ❌
+- 规范常引用解析域 ❌
 
 ## 扫尾工作（阶段三）  Concluding Work (Stage 3)
 

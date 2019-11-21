@@ -39,6 +39,8 @@ namespace Alterful.Helper
 
             // Regedit Check
 
+            // Others
+
         }
 
         /// <summary>
