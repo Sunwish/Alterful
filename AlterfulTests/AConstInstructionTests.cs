@@ -41,5 +41,25 @@ namespace Alterful.Tests
             string fileName2 = AConstInstruction.Delete("test()");
             Assert.AreEqual("test()", fileName2);
         }
+
+        [TestMethod()]
+        public void ConstInstructionParameterParseTest()
+        {
+            ConstInstruction ci = new ConstInstruction {
+                constInstructionName = "test",
+                instructionLines = new List<string> {
+                    "param1 param2 param3"
+                },
+                parameterList = new List<string>{
+                    "param1",
+                    "param2"
+                }
+            };
+            List<string> valueList = new List<string>{
+                "a", "b"
+            };
+            string parseAcutual = AConstInstruction.ConstInstructionParameterParse(ci, "param1 param2 param3", valueList);
+            Assert.AreEqual("a b param3", parseAcutual);
+        }
     }
 }

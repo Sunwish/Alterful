@@ -509,6 +509,7 @@ namespace Alterful.Functions
         /// <summary>
         /// 执行指令，启动失败的启动项在ReportInfo中查看
         /// </summary>
+        /// <exception cref="ConstInstructionParameterParseException"></exception>
         public override string Execute()
         {
             ReportInfo.Clear();
@@ -518,12 +519,23 @@ namespace Alterful.Functions
             if(AConstInstruction.GetConstInstructionFrame(Instruction, ref ci))
             {
                 bool allRight = true;
-                foreach(string instructionLine in ci.instructionLines)
+                try
                 {
-                    AInstruction.GetInstruction(instructionLine).Execute();
-                    if (reportType != ReportType.OK) allRight = false;
+                    foreach (string instructionLine in ci.instructionLines)
+                    {
+                        // Instruction here firstly need to be parse (const quote / parameter parse).
+                        // Const quote parse.
+                        string instructionLine_cqp = AConstQuote.ConstQuoteParse(instructionLine);
+                        // Parameter parse
+                        ConstInstruction instructionAttribute = AConstInstruction.ConstInstructionFileNameParse(Instruction, false);
+                        string instructionLine_cpq_pp = AConstInstruction.ConstInstructionParameterParse(ci, instructionLine_cqp, instructionAttribute.parameterList);
+                        // Execute
+                        AInstruction.GetInstruction(instructionLine_cpq_pp).Execute();
+                        if (reportType != ReportType.OK) allRight = false;
+                    }
                 }
-                if(!allRight) reportType = ReportType.WARNING;
+                catch(Exception exception) { throw exception; }
+                finally { if (!allRight) reportType = ReportType.WARNING; }
                 return AInstruction.MSG_EXECUTE_SUCCESSFULLY;
             }
             else

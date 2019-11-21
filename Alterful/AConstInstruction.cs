@@ -11,6 +11,7 @@ namespace Alterful
 {
     public class ConstInstructionNameUnkonwException : Exception { public ConstInstructionNameUnkonwException() : base("Const instruction parse error.") { } }
     public class ConstInstructionNotFoundException : Exception { public ConstInstructionNotFoundException(string ins) : base("Const instruction [" + ins + "] is not found.") { } }
+    public class ConstInstructionParameterParseException : Exception { public ConstInstructionParameterParseException() : base("Const instruction parameter parse error.") { } }
     public struct ConstInstruction
     {
         public string constInstructionName;
@@ -122,6 +123,26 @@ namespace Alterful
                 return targetFileName;
             }
             catch (Exception excption) { throw excption; }
+        }
+
+        /// <summary>
+        /// 常指令参数解析
+        /// </summary>
+        /// <param name="constInstruction">常指令结构</param>
+        /// <param name="instructionLine">常指令指令行</param>
+        /// <param name="paramValueList">参数值列表</param>
+        /// <exception cref="ConstInstructionParameterParseException"></exception>
+        /// <returns></returns>
+        public static string ConstInstructionParameterParse(ConstInstruction constInstruction, string instructionLine, List<string> paramValueList, bool constQuoteParse = true)
+        {
+            if (paramValueList.Count != constInstruction.parameterList.Count) throw new ConstInstructionParameterParseException();
+            for (int i = 0; i < constInstruction.parameterList.Count; i++)
+            {
+                string value = paramValueList[i];
+                if (constQuoteParse) value = AConstQuote.ConstQuoteParse(value);
+                instructionLine = instructionLine.Replace(constInstruction.parameterList[i], value);
+            }
+            return instructionLine;
         }
     }
 }
