@@ -38,6 +38,9 @@ namespace Alterful.Functions
                 case InstructionType.MACRO:
                     cp = AInstruction_Macro.GetCompletion(targetInstructionPart);
                     break;
+                case InstructionType.CONST:
+                    cp = AConstQuote.GetCompletion(targetInstructionPart);
+                    break;
                 case InstructionType.BUILDIN:
                     break;
             }
@@ -47,14 +50,15 @@ namespace Alterful.Functions
                 retn.content = targetInstructionLeft + cp + targetInstructionRight;
                 retn.selectStart = retn.caretPosition = currentInput.caretPosition;
                 retn.selectEnd = retn.selectStart + cp.Length - targetInstructionPart.Length - 1;
-                retn.selectEmpty = false;
+                retn.selectEmpty = retn.selectEnd == 0;
             }
-
             return retn;
         }
         
         public static InstructionType GetInstructionCompletionPartType(string instructionPart)
         {
+            if (string.IsNullOrEmpty(instructionPart)) return InstructionType.STARTUP;
+            if (AInstruction.SYMBOL_CONST == instructionPart[0]) return InstructionType.CONST;
             return AInstruction.GetType(instructionPart);
         }
 

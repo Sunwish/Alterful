@@ -225,6 +225,19 @@ namespace Alterful.Functions
         }
 
         /// <summary>
+        /// 获取补全
+        /// </summary>
+        /// <param name="part"></param>
+        /// <returns></returns>
+        public static string GetCompletion(string part)
+        {
+            List<string> list = new List<string>();
+            foreach(ConstQuoteItem ciList in GetConstQuoteItems())
+                list.Add(ciList.constQuoteName);
+            return AInstruction.SYMBOL_CONST + AHelper.FindCompletion(list, part.Substring(1));
+        }
+
+        /// <summary>
         /// 常引用解析
         /// </summary>
         /// <param name="instructionString">解析前的指令</param>

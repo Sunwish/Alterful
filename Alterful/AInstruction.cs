@@ -104,6 +104,11 @@ namespace Alterful.Functions
         public int Count { get; }
         public AInstruction_Startup(string instruction) : base(instruction) => Count = instruction.Split(' ').Length;
 
+        /// <summary>
+        /// 获取补全
+        /// </summary>
+        /// <param name="part"></param>
+        /// <returns></returns>
         public static string GetCompletion(string part) => AHelper.FindCompletion(AFile.GetLnkList(), part);
 
         /// <summary>
@@ -235,6 +240,11 @@ namespace Alterful.Functions
             }*/
         }
 
+        /// <summary>
+        /// 获取补全
+        /// </summary>
+        /// <param name="part"></param>
+        /// <returns></returns>
         public static string GetCompletion(string part) => SYMBOL_MACRO + AHelper.FindCompletion(new List<string> { "add", "del", "new" }, part.Substring(1));
 
         /// <summary>
