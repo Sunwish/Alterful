@@ -58,6 +58,16 @@ namespace Alterful.Helper
             shortcut.Save();
         }
 
+        public static string FindCompletion(List<string> list, string part)
+        {
+            foreach (string full in list)
+            {
+                if (full.IndexOf(part).Equals(0))
+                    return full;
+            }
+            return "";
+        }
+
         /// <summary>
         /// 执行命令行
         /// </summary>

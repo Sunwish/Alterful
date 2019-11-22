@@ -61,6 +61,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Compile Include="ACompletion.cs" />
     <Compile Include="AConstInstruction.cs" />
     <Compile Include="AConstQuote.cs" />
     <Compile Include="AFile.cs" />

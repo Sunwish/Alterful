@@ -56,6 +56,7 @@
     <Otherwise />
   </Choose>
   <ItemGroup>
+    <Compile Include="ACompletionTests.cs" />
     <Compile Include="AConstInstructionTests.cs" />
     <Compile Include="AConstQuoteTests.cs" />
     <Compile Include="AFileTests.cs" />

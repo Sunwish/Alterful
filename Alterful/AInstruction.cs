@@ -54,7 +54,7 @@ namespace Alterful.Functions
                     else // Startup Instrcution with const quote
                         return InstructionType.STARTUP;
             }
-            if ((instruction.IndexOf("(") < instruction.IndexOf(")")) && instruction.IndexOf(")") != -1) return InstructionType.CONST;
+            if ((instruction.IndexOf("(") < instruction.IndexOf(")")) && instruction.IndexOf(")") != -1 && instruction.IndexOf(")") == instruction.Length - 1) return InstructionType.CONST;
             else return InstructionType.STARTUP;
         }
 
@@ -87,7 +87,6 @@ namespace Alterful.Functions
         /// <exception cref="AFile.StartupItemNotFoundException"></exception>
         /// <exception cref="UnauthorizedAccessException"></exception>
         public abstract string Execute();
-
     }
 
     public struct StartupItem
@@ -103,7 +102,9 @@ namespace Alterful.Functions
         /// 指令中包含的启动项个数
         /// </summary>
         public int Count { get; }
-        public AInstruction_Startup(string instruction) : base(instruction) { Count = instruction.Split(' ').Length; }
+        public AInstruction_Startup(string instruction) : base(instruction) => Count = instruction.Split(' ').Length;
+
+        public static string GetCompletion(string part) => AHelper.FindCompletion(AFile.GetLnkList(), part);
 
         /// <summary>
         /// 执行指令，启动失败的启动项在ReportInfo中查看
@@ -233,6 +234,8 @@ namespace Alterful.Functions
                 throw;
             }*/
         }
+
+        public static string GetCompletion(string part) => SYMBOL_MACRO + AHelper.FindCompletion(new List<string> { "add", "del", "new" }, part.Substring(1));
 
         /// <summary>
         /// 获取宏指令类型
@@ -367,7 +370,7 @@ namespace Alterful.Functions
         private void ExecuteMacroAdd()
         {
             // MacroAddType - Const Instruction
-            if ((Instruction.IndexOf("(") < Instruction.IndexOf(")")) && Instruction.IndexOf(")") != -1) throw new Exception(AInstruction.ADD_CONST_INSTRUCTION);
+            if ((Instruction.IndexOf("(") < Instruction.IndexOf(")")) && Instruction.IndexOf(")") != -1  && Instruction.IndexOf(")") == Instruction.Length - 1) throw new Exception(AInstruction.ADD_CONST_INSTRUCTION);
 
             // MacroAddType - Startup / Const Quote
             List<string> macroInstructionParametersRaw = GetMacroInstructionParametersList();
@@ -446,7 +449,7 @@ namespace Alterful.Functions
         private void ExecuteMacroDel()
         {
             // MacroDeleteType - Const Instruction
-            if ((Instruction.IndexOf("(") < Instruction.IndexOf(")")) && Instruction.IndexOf(")") != -1)
+            if ((Instruction.IndexOf("(") < Instruction.IndexOf(")")) && Instruction.IndexOf(")") != -1 && Instruction.IndexOf(")") == Instruction.Length - 1)
             {
                 try { AConstInstruction.Delete(AInstruction_Const.GetConstInstructionFromMacroInstruction(Instruction)); return; }
                 catch (Exception exception) { throw exception; }
@@ -473,6 +476,8 @@ namespace Alterful.Functions
     public class AInstruction_CMD : AInstruction
     {
         public AInstruction_CMD(string instruction) : base(instruction) {}
+
+        public static string GetCompletion(string part) => "";
 
         public override string Execute()
         {
@@ -512,6 +517,8 @@ namespace Alterful.Functions
         {
             return macroInstruction.Substring(macroInstruction.IndexOf(" ") + 1, macroInstruction.Length - macroInstruction.IndexOf(" ") - 1);
         }
+
+        public static string GetCompletion(string part) => throw new NotImplementedException();
 
         /// <summary>
         /// 执行指令，启动失败的启动项在ReportInfo中查看

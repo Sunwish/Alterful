@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Alterful.Tests
+namespace Alterful.Functions.Tests
 {
     [TestClass()]
     public class AConstInstructionTests
@@ -14,19 +14,20 @@ namespace Alterful.Tests
         [TestMethod()]
         public void ConstInstructionFileNameParseTest()
         {
-            ConstInstruction item = AConstInstruction.ConstInstructionFileNameParse("test(param1,param2)");
+            ConstInstruction item = AConstInstruction.ConstInstructionFileNameParse("test(param1,param2)", false);
             Assert.AreEqual("test", item.constInstructionName);
 
             Assert.AreEqual(2, item.parameterList.Count);
             Assert.AreEqual("param1", item.parameterList[0]);
             Assert.AreEqual("param2", item.parameterList[1]);
-
-            Assert.AreEqual(1, item.instructionLines.Count);
         }
 
+
+        /*
         [TestMethod()]
         public void ExistTest()
         {
+            // Please create Const-Instruction before test.
             Assert.AreEqual(false, AConstInstruction.Exist("test(p1,p2,p3)"));
             Assert.AreEqual(false, AConstInstruction.Exist("test1()"));
             Assert.AreEqual(true, AConstInstruction.Exist("test()"));
@@ -36,11 +37,13 @@ namespace Alterful.Tests
         [TestMethod()]
         public void DeleteTest()
         {
+            // Please create Const-Instruction before test.
             string fileName1 = AConstInstruction.Delete("test(p1,p2)");
             Assert.AreEqual("test(param1,param2)", fileName1);
             string fileName2 = AConstInstruction.Delete("test()");
             Assert.AreEqual("test()", fileName2);
         }
+        */
 
         [TestMethod()]
         public void ConstInstructionParameterParseTest()

@@ -7,7 +7,7 @@ using System.IO;
 using Alterful.Functions;
 using Alterful.Helper;
 
-namespace Alterful
+namespace Alterful.Functions
 {
     public class ConstInstructionNameUnkonwException : Exception { public ConstInstructionNameUnkonwException() : base("Const instruction parse error.") { } }
     public class ConstInstructionNotFoundException : Exception { public ConstInstructionNotFoundException(string ins) : base("Const instruction [" + ins + "] is not found.") { } }

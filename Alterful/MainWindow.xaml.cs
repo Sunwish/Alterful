@@ -41,6 +41,7 @@ namespace Alterful
         bool constInstructionInputMode = false;
         double constInstructionInputWidthBias = 120;
         string OldConstInstructionFileName = "";
+        bool completing = false;
         ConstInstructionContentRange constInstructionContentRange = new ConstInstructionContentRange();
 
         struct ConstInstructionContentRange
@@ -414,7 +415,13 @@ namespace Alterful
                 Visibility = Visibility.Hidden; showOutput = false; Resize(); }
             if (e.Key == Key.Escape) { Visibility = Visibility.Hidden; showOutput = false; Resize(); }
             if (e.KeyboardDevice.Modifiers == ModifierKeys.Alt) { e.Handled = true; showOutput = !showOutput; Resize(); return; }
-            if(e.Key == Key.Tab) throw new NotImplementedException("Instruction completion");
+            if (e.Key == Key.Tab)
+            {
+                e.Handled = true;
+                if (InstructionTextBox.Text[InstructionTextBox.Text.Length - 1] != ' ')
+                { completing = true; InstructionTextBox.AppendText(" "); completing = false; }
+                InstructionTextBox.CaretIndex = InstructionTextBox.Text.Length;
+            }
         }
 
         private void InstructionTextBox_PreviewKeyDown(object sender, KeyEventArgs e)
@@ -458,6 +465,31 @@ namespace Alterful
         private void InstructionTextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
             Resize(constInstructionInputMode);
+
+            // Completion
+            foreach (TextChange tc in e.Changes)
+                if (tc.AddedLength > 0)
+                { CompleteInstruction(); break; }
+        }
+
+        /// <summary>
+        /// 指令补全
+        /// </summary>
+        private void CompleteInstruction()
+        {   
+            if (!completing)
+            {
+                InputAttribution ia = ACompletion.GetInstructionCompletion(new InputAttribution { content = InstructionTextBox.Text, caretPosition = InstructionTextBox.CaretIndex, selectEmpty = true });
+                if (!ia.selectEmpty)
+                {
+                    completing = true;
+                    InstructionTextBox.Text = ia.content;
+                    InstructionTextBox.CaretIndex = ia.caretPosition;
+                    InstructionTextBox.SelectionStart = ia.selectStart;
+                    InstructionTextBox.SelectionLength = ia.selectEnd - ia.selectStart + 1;
+                }
+            }
+            completing = false;
         }
 
         /// <summary>
