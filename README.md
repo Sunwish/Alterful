@@ -89,8 +89,9 @@ In order to start debugging successfully, make sure you run visual studio as an 
 - 版本检查 ❌
 - 自动更新 ❌
 - Alterful 配置宏 ❌
-- 系统右键菜单植入 ❌
-- 注册表配置 ❌
+- 主题设置 ❌
+- 系统右键菜单植入 ✅
+- 注册表配置 ✅
 - 局部再重构 ❌
 
 ## 自测与内测（阶段四）Self Test & Internal Test (Stage 4)
