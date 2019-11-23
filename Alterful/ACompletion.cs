@@ -50,8 +50,19 @@ namespace Alterful.Functions
                 retn.content = targetInstructionLeft + cp + targetInstructionRight;
                 retn.selectStart = retn.caretPosition = currentInput.caretPosition;
                 retn.selectEnd = retn.selectStart + cp.Length - targetInstructionPart.Length - 1;
-                retn.selectEmpty = retn.selectEnd == 0;
+                retn.selectEmpty = retn.selectEnd <= 0 || retn.selectEnd < retn.selectStart;
             }
+
+            // Check const-instruction completion at last.
+            if (retn.selectEmpty)
+            {
+                cp = AConstInstruction.GetCompletion(targetInstructionPart);
+                retn.content = targetInstructionLeft + cp + targetInstructionRight;
+                retn.selectStart = retn.caretPosition = currentInput.caretPosition;
+                retn.selectEnd = retn.selectStart + cp.Length - targetInstructionPart.Length - 1;
+                retn.selectEmpty = retn.selectEnd <= 0 || retn.selectEnd< retn.selectStart;
+            }
+
             return retn;
         }
         

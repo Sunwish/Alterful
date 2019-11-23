@@ -78,7 +78,7 @@ In order to start debugging successfully, make sure you run visual studio as an 
   - 启动名智能补全 ✅
   - 常引用名智能补全 ✅
   - 宏指令智能补全 ✅
-  - 常指令智能补全 ❌
+  - 常指令智能补全 ✅
 - 命令行交互
   - 记忆工作目录 ✅
   - 异步命令行 ❌

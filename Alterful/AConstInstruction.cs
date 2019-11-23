@@ -41,6 +41,19 @@ namespace Alterful.Functions
         }
 
         /// <summary>
+        /// 获取补全
+        /// </summary>
+        /// <param name="part"></param>
+        /// <returns></returns>
+        public static string GetCompletion(string part)
+        {
+            List<string> list = new List<string>();
+            foreach(ConstInstruction ci in GetConstInstrcutionItemList())
+                list.Add(ci.constInstructionName);
+            return AHelper.FindCompletion(list, part);
+        }
+
+        /// <summary>
         /// 常指令文件解析
         /// </summary>
         /// <param name="fileName">欲解析的常引用文件名</param>
