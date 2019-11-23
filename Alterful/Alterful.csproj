@@ -73,6 +73,7 @@
     </Compile>
     <Compile Include="AHotKeySetting.cs" />
     <Compile Include="AKey.cs" />
+    <Compile Include="ASettings.cs" />
     <Compile Include="HotKeyHelper.cs" />
     <Compile Include="HotKeyManager.cs" />
     <Compile Include="HotKeyModel.cs" />

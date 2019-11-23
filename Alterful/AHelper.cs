@@ -127,7 +127,7 @@ namespace Alterful.Helper
         }
     }
 
-    static class SysEnviroment
+    public static class SysEnviroment
     {
         /// <summary>
         /// 打开系统环境变量注册表
@@ -195,6 +195,29 @@ namespace Alterful.Helper
             {
                 SetSysEnvironment("PATH", pathlist + strHome + ";");
             }
+        }
+    }
+
+    public static class SysRegedit
+    {
+        public static string GetKeyValue(string keyName, string valueName)
+        {
+            return Registry.GetValue(keyName, valueName, null) as  string;
+        }
+
+        public static void SetKeyValue(string keyName, string valueName, string value)
+        {
+            Registry.SetValue(keyName, valueName, value);
+        }
+        
+        public static void DeleteValue(RegistryKey rk, string subKeyName, string valueName)
+        {
+            rk.OpenSubKey(subKeyName, true).DeleteValue(valueName);
+        }
+
+        public static void DeleteKeyTree(RegistryKey rk, string subKeyName,string subkey)
+        {
+            rk.OpenSubKey(subKeyName, true).DeleteSubKeyTree(subkey, true);
         }
     }
 }

@@ -18,6 +18,7 @@ using Alterful.Helper;
 using Alterful.GlobalHotKey;
 using System.Collections.ObjectModel;
 using System.Windows.Interop;
+using Microsoft.Win32;
 
 namespace Alterful
 {
