@@ -26,7 +26,29 @@ Alterful Keyboard Enhancement is a domestic original efficiency tool for embedde
 
 In order to start debugging successfully, make sure you run visual studio as an administrator and open the project.
 
-## 核心开发（阶段一） Core Development (Stage 1)
+## 重构内容概览 Refactoring Content Overview
+
+- 整体架构及实现细节全部重构。
+
+  Reconstruction overall architecture and all of the implementation details.
+
+- 取消指令输入窗口之外的所有可视化界面。
+
+  Cancel all visual interfaces except command input window.
+
+- 引入新的指令类型：常指令。
+
+  Introduce new instruction types: Const Instruction.
+
+- 引入新的宏指令类型：配置宏。
+
+  Introduce new macro instruction types: @set.
+
+- 引入主题系统。
+
+  Introduction of theme system.
+
+## 核心开发（阶段一） Core Development (Stage 1) ✅
 
 全部完成（All done） ✅
 
@@ -67,7 +89,7 @@ In order to start debugging successfully, make sure you run visual studio as an 
 
 ![Instruction System](https://i.loli.net/2019/11/01/yZrzJ8RN2PiIW45.jpg)
 
-## 深度开发（阶段二） Improvement Development (Stage 2)
+## 深度开发（阶段二） Improvement Development (Stage 2) 🔳
 
 - 常指令语法扩展
   - 常指令重载 ✅
@@ -84,7 +106,7 @@ In order to start debugging successfully, make sure you run visual studio as an 
   - 异步命令行 ❌
 - 规范常引用解析域 ❌
 
-## 扫尾工作（阶段三）  Concluding Work (Stage 3)
+## 扫尾工作（阶段三）  Concluding Work (Stage 3) 🔳
 
 - 版本检查 ❌
 - 自动更新 ❌
@@ -92,8 +114,9 @@ In order to start debugging successfully, make sure you run visual studio as an 
 - 主题设置 ❌
 - 系统右键菜单植入 ✅
 - 注册表配置 ✅
+- 帮助 & 提示 ❌
 - 局部再重构 ❌
 
-## 自测与内测（阶段四）Self Test & Internal Test (Stage 4)
+## 自测与内测（阶段四）Self Test & Internal Test (Stage 4) ❌
 
 - 暂无记录
