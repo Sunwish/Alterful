@@ -53,7 +53,7 @@ namespace Alterful.Functions
             }
         }
 
-        private static AThemeConfig GetThemeConfig()
+        public static AThemeConfig GetThemeConfig()
         {
             switch (theme)
             {

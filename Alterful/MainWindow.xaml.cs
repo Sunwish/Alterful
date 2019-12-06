@@ -43,6 +43,7 @@ namespace Alterful
         double constInstructionInputWidthBias = 120;
         string OldConstInstructionFileName = "";
         bool completing = false;
+        AThemeConfig themeConfig = ATheme.GetThemeConfig();
         ConstInstructionContentRange constInstructionContentRange = new ConstInstructionContentRange();
 
         struct ConstInstructionContentRange
@@ -146,7 +147,7 @@ namespace Alterful
 
                         string outputMsg = "\nOperation [" + InstructionTextBox.Text + "] cancelled.";
                         UpdateMaxWidth(outputMsg);
-                        AppendRTBLine(TestRichTextbox, outputMsg, Brushes.MintCream, Brushes.Red);
+                        AppendRTBLine(TestRichTextbox, outputMsg, themeConfig.ForegroundOutputError, themeConfig.BackgroundOutputError);
                         TestRichTextbox.BorderThickness = new Thickness(1, 1, 1, 0);
                         InstructionTextBox.Focus(); showOutput = true;
                         Resize();
@@ -173,7 +174,7 @@ namespace Alterful
                         }
 
                         string outputMsg = "";
-                        SolidColorBrush colorBackground = Brushes.DarkGreen;
+                        SolidColorBrush colorBackground = themeConfig.BackgroundOutputOk;
                         try
                         {
                             try { File.Delete(AHelper.CONST_INSTRUCTION_PATH + @"\" + OldConstInstructionFileName); } catch { }
@@ -186,12 +187,12 @@ namespace Alterful
                         catch(Exception exception)
                         {
                             outputMsg = "\n" + exception.Message;
-                            colorBackground = Brushes.Red;
+                            colorBackground = themeConfig.BackgroundOutputError;
                         }
                         finally
                         {
                             UpdateMaxWidth(outputMsg);
-                            AppendRTBLine(TestRichTextbox, outputMsg, Brushes.MintCream, colorBackground);
+                            AppendRTBLine(TestRichTextbox, outputMsg, themeConfig.BackgroundOutput, colorBackground);
                             TestRichTextbox.BorderThickness = new Thickness(1, 1, 1, 0);
                             InstructionTextBox.Focus(); showOutput = true;
                             InstructionTextBox.Text = "";
@@ -287,7 +288,7 @@ namespace Alterful
             {
                 constInstructionInputMode = true;
                 TestRichTextbox.IsReadOnly = false; InstructionTextBox.IsEnabled = false;
-                AppendRTBLine(TestRichTextbox, "Confirm: Alt + S / Cancel: Alt + Esc", Brushes.DarkBlue, Brushes.Gold);
+                AppendRTBLine(TestRichTextbox, "Confirm: Alt + S / Cancel: Alt + Esc", themeConfig.ForegroundOutputWarning, themeConfig.BackgroundOutputWarning);
                 TestRichTextbox.BorderThickness = new Thickness(1);
 
                 // Content Start
@@ -305,7 +306,7 @@ namespace Alterful
                         OldConstInstructionFileName = AConstInstruction.GetFileNameFromConstInstruction(ci);
                         foreach (string insLine in ci.instructionLines)
                         {
-                            AppendRTBLine(TestRichTextbox, insLine, Brushes.MintCream, Brushes.Black);
+                            AppendRTBLine(TestRichTextbox, insLine, themeConfig.ForegroundOutput, themeConfig.BackgroundOutput);
                             UpdateMaxWidth(insLine);
                         }
                     }
@@ -321,12 +322,12 @@ namespace Alterful
             }
 
             // Append instruction line.
-            AppendRTBLine(TestRichTextbox, InstructionTextBox.Text, Brushes.MintCream, Brushes.Black);
+            AppendRTBLine(TestRichTextbox, InstructionTextBox.Text, themeConfig.ForegroundOutput, themeConfig.BackgroundOutput);
 
             // Print report.
             foreach (var reportInfo in AInstruction.ReportInfo)
             {
-                AppendRTBLine(TestRichTextbox, reportInfo, Brushes.DarkBlue, Brushes.Gold);
+                AppendRTBLine(TestRichTextbox, reportInfo, themeConfig.ForegroundOutputWarning, themeConfig.BackgroundOutputWarning);
                 UpdateMaxWidth(reportInfo);
                 // If have reportInfo, then show outputBox.
                 showOutput = true;
@@ -337,10 +338,10 @@ namespace Alterful
             SolidColorBrush fgcolor;
             switch (AInstruction.reportType)
             {
-                case AInstruction.ReportType.OK: bgcolor = Brushes.DarkGreen; fgcolor = Brushes.MintCream; if (AInstruction.ReportInfo.Count == 0) showOutput = false; break;
-                case AInstruction.ReportType.WARNING: bgcolor = Brushes.Gold; fgcolor = Brushes.DarkBlue; showOutput = true; break;
-                case AInstruction.ReportType.ERROR: bgcolor = Brushes.Red; fgcolor = Brushes.MintCream; showOutput = true; break;
-                default: bgcolor = Brushes.SlateGray; fgcolor = Brushes.DarkBlue; break;
+                case AInstruction.ReportType.OK: bgcolor = themeConfig.BackgroundOutputOk; fgcolor = themeConfig.ForegroundOutputOk; if (AInstruction.ReportInfo.Count == 0) showOutput = false; break;
+                case AInstruction.ReportType.WARNING: bgcolor = themeConfig.BackgroundOutputWarning; fgcolor = themeConfig.ForegroundOutputWarning; showOutput = true; break;
+                case AInstruction.ReportType.ERROR: bgcolor = themeConfig.BackgroundOutputError; fgcolor = themeConfig.ForegroundOutputError; showOutput = true; break;
+                default: bgcolor = themeConfig.BackgroundOutputWarning; fgcolor = themeConfig.ForegroundOutputWarning; break;
             }
             if (retnInfo != "") AppendRTBLine(TestRichTextbox, retnInfo.Trim(), fgcolor, bgcolor);
 
@@ -507,7 +508,7 @@ namespace Alterful
                 FlowDirection.LeftToRight,
                 new Typeface(textbox.FontFamily, textbox.FontStyle, textbox.FontWeight, textbox.FontStretch),
                 textbox.FontSize,
-                Brushes.Black,
+                themeConfig.BackgroundInput,
                 new NumberSubstitution(),
                 TextFormattingMode.Display);
             return new Size(formattedText.Width, formattedText.Height);
