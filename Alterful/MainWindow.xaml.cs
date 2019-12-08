@@ -272,6 +272,10 @@ namespace Alterful
         private void InitializeGUI()
         {
             Resize();
+            InstructionTextBox.Background = themeConfig.BackgroundInput;
+            InstructionTextBox.Foreground = themeConfig.ForegroundInput;
+            TestRichTextbox.Background = themeConfig.BackgroundOutput;
+            TestRichTextbox.Foreground = themeConfig.ForegroundOutput;
             InstructionTextBox.Focus();
         }
 
