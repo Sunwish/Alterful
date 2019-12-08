@@ -74,6 +74,7 @@ namespace Alterful.Functions
                 case AlterfulTheme.Default: return new AThemeDefault();
                 case AlterfulTheme.Docks: return new AThemeMild();
                 case AlterfulTheme.Fairy: return new AThemeFairy();
+                case AlterfulTheme.Mild: return new AThemeMild();
                 default: return new AThemeConfig();
             }
         }
