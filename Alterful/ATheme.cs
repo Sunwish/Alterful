@@ -9,7 +9,7 @@ namespace Alterful.Functions
 {
     public enum AlterfulTheme
     {
-        Default, Docks, Fairy, Mild
+        Default, Docks, Fairy, Mild, Bright, Classic
     }
 
     class AThemeConfig
@@ -52,11 +52,77 @@ namespace Alterful.Functions
             _output_error_foreground = Brushes.MintCream;
         }
     }
-    class AThemeFairy : AThemeConfig { public AThemeFairy() => throw new NotImplementedException(); }
+    class AThemeBright : AThemeConfig
+    {
+        public AThemeBright()
+        {
+            _input_background = Brushes.White;
+            _input_foreground = Brushes.Black;
+            _output_background = _input_background;
+            _output_foreground = _input_foreground;
+            _output_ok_background = new SolidColorBrush(Color.FromArgb(255, 112, 204, 84));
+            _output_ok_foreground = Brushes.Black;
+            _output_warning_background = Brushes.Gold;
+            _output_warning_foreground = Brushes.DarkBlue;
+            _output_error_background = Brushes.Red;
+            _output_error_foreground = Brushes.MintCream;
+        }
+    }
+
+    class AThemeFairy : AThemeConfig
+    {
+        public AThemeFairy()
+        {
+            _input_background = new SolidColorBrush(Color.FromArgb(255, 239, 231, 212));
+            _input_foreground = new SolidColorBrush(Color.FromArgb(255, 211, 78, 1));
+            _output_background = _input_background;
+            _output_foreground = _input_foreground;
+            _output_ok_background = new SolidColorBrush(Color.FromArgb(255, 20, 88, 4));
+            _output_ok_foreground = Brushes.MintCream;
+            _output_warning_background = new SolidColorBrush(Color.FromArgb(255, 186, 136, 0));
+            _output_warning_foreground = new SolidColorBrush(Color.FromArgb(255, 239, 231, 212));
+            _output_error_background = new SolidColorBrush(Color.FromArgb(255, 208, 84, 0));
+            _output_error_foreground = Brushes.MintCream;
+        }
+    }
+
+    class AThemeDocks : AThemeConfig
+    {
+        public AThemeDocks()
+        {
+            _input_background = new SolidColorBrush(Color.FromArgb(255, 43, 6, 42));
+            _input_foreground = new SolidColorBrush(Color.FromArgb(255, 136, 126, 135));
+            _output_background = _input_background;
+            _output_foreground = _input_foreground;
+            _output_ok_background = new SolidColorBrush(Color.FromArgb(255, 20, 88, 4));
+            _output_ok_foreground = Brushes.MintCream;
+            _output_warning_background = new SolidColorBrush(Color.FromArgb(255, 1, 160, 160));
+            _output_warning_foreground = _input_background;
+            _output_error_background = new SolidColorBrush(Color.FromArgb(255, 255, 122, 33));
+            _output_error_foreground = new SolidColorBrush(Color.FromArgb(255, 13, 21, 43));
+        }
+    }
+
+    class AThemeClassic : AThemeConfig
+    {
+        public AThemeClassic()
+        {
+            _input_background = new SolidColorBrush(Color.FromArgb(255, 0, 0, 170));
+            _input_foreground = new SolidColorBrush(Color.FromArgb(255, 85, 255, 255));
+            _output_background = _input_background;
+            _output_foreground = _input_foreground;
+            _output_ok_background = new SolidColorBrush(Color.FromArgb(255, 0, 170, 170));
+            _output_ok_foreground = _input_background;
+            _output_warning_background = new SolidColorBrush(Color.FromArgb(255, 255, 255, 85));
+            _output_warning_foreground = _input_background;
+            _output_error_background = Brushes.Red;
+            _output_error_foreground = Brushes.MintCream;
+        }
+    }
 
     static class ATheme
     {
-        private static AlterfulTheme theme = AlterfulTheme.Mild;
+        private static AlterfulTheme theme = AlterfulTheme.Classic;
         public static AlterfulTheme Theme
         {
             get => theme;
@@ -72,9 +138,11 @@ namespace Alterful.Functions
             switch (theme)
             {
                 case AlterfulTheme.Default: return new AThemeDefault();
-                case AlterfulTheme.Docks: return new AThemeMild();
+                case AlterfulTheme.Docks: return new AThemeDocks();
                 case AlterfulTheme.Fairy: return new AThemeFairy();
                 case AlterfulTheme.Mild: return new AThemeMild();
+                case AlterfulTheme.Bright: return new AThemeBright();
+                case AlterfulTheme.Classic: return new AThemeClassic();
                 default: return new AThemeConfig();
             }
         }
