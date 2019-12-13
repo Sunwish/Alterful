@@ -223,12 +223,13 @@ namespace Alterful.Functions
     public class MacroFormatException : FormatException { public MacroFormatException() : base(AInstruction_Macro.MSG_MACRO_FORMAT_EXCEPTION) { } }
     public class AInstruction_Macro : AInstruction
     {
-        public enum MacroType { ADD, NEW, DEL }
+        public enum MacroType { ADD, NEW, DEL, SET }
         public enum MacroAddType { STARTUP, CONST_QUOTE }
         public enum MacroDelType { STARTUP, CONST_QUOTE }
         public static string MSG_UNKNOW_MACRO_TYPE { get; } = "Unknow macro type";
         public static string MSG_MACRO_FORMAT_EXCEPTION { get; } = "Unknow macro instruction format.";
-        public AInstruction_Macro(string instruction) : base(instruction) {
+        public AInstruction_Macro(string instruction) : base(instruction)
+        {
             /*try
             {
                 GetMacroType();
@@ -245,7 +246,7 @@ namespace Alterful.Functions
         /// </summary>
         /// <param name="part"></param>
         /// <returns></returns>
-        public static string GetCompletion(string part) => SYMBOL_MACRO + AHelper.FindCompletion(new List<string> { "add", "del", "new" }, part.Substring(1));
+        public static string GetCompletion(string part) => SYMBOL_MACRO + AHelper.FindCompletion(new List<string> { "add", "del", "new", "set" }, part.Substring(1));
 
         /// <summary>
         /// 获取宏指令类型
@@ -263,6 +264,7 @@ namespace Alterful.Functions
                 case "add": return MacroType.ADD;
                 case "new": return MacroType.NEW;
                 case "del": return MacroType.DEL;
+                case "set": return MacroType.SET;
                 default: throw new UnknowMacroType(macroType);
             }
         }
@@ -285,6 +287,7 @@ namespace Alterful.Functions
                     case MacroType.ADD: ExecuteMacroAdd(); break;
                     case MacroType.DEL: ExecuteMacroDel(); break;
                     case MacroType.NEW: ExecuteMacroNew(); break;
+                    case MacroType.SET: ExecuteMacroSet(); break;
                 }
             }
             catch (Exception)
@@ -365,7 +368,7 @@ namespace Alterful.Functions
             int endSymbol = instruction.LastIndexOf(")");
             ciItem.ConstInstruction = instruction.Substring(instruction.IndexOf(" ") + 1, startSymbol - instruction.IndexOf(" ") - 1);
             string paramText = instruction.Substring(instruction.IndexOf("(") + 1, endSymbol - startSymbol - 1);
-            foreach(string param in paramText.Split(','))
+            foreach (string param in paramText.Split(','))
             {
                 if ("" != param.Trim()) ciItem.ParameterList.Add(param.Trim());
             }
@@ -380,7 +383,7 @@ namespace Alterful.Functions
         private void ExecuteMacroAdd()
         {
             // MacroAddType - Const Instruction
-            if ((Instruction.IndexOf("(") < Instruction.IndexOf(")")) && Instruction.IndexOf(")") != -1  && Instruction.IndexOf(")") == Instruction.Length - 1) throw new Exception(AInstruction.ADD_CONST_INSTRUCTION);
+            if ((Instruction.IndexOf("(") < Instruction.IndexOf(")")) && Instruction.IndexOf(")") != -1 && Instruction.IndexOf(")") == Instruction.Length - 1) throw new Exception(AInstruction.ADD_CONST_INSTRUCTION);
 
             // MacroAddType - Startup / Const Quote
             List<string> macroInstructionParametersRaw = GetMacroInstructionParametersList();
@@ -406,7 +409,7 @@ namespace Alterful.Functions
             {
                 throw;
             }
-            
+
         }
 
         /// <summary>
@@ -447,7 +450,7 @@ namespace Alterful.Functions
                 string constQuoteName = AConstQuote.ConstQuoteNamePull(macroInstructionParameters[0]);
                 AConstQuote.Add(constQuoteName, macroInstructionParameters[1]);
             }
-            catch (Exception){ throw; }
+            catch (Exception) { throw; }
         }
 
         /// <summary>
@@ -467,12 +470,12 @@ namespace Alterful.Functions
 
             List<string> macroInstructionParametersRaw = GetMacroInstructionParametersList();
             if (macroInstructionParametersRaw.Count < 1) throw new MacroFormatException();
-            foreach(string delItemString in macroInstructionParametersRaw)
+            foreach (string delItemString in macroInstructionParametersRaw)
             {
-                switch(GetMacroDelType(delItemString))
+                switch (GetMacroDelType(delItemString))
                 {
                     case MacroDelType.STARTUP: AFile.Delete(delItemString); break;
-                    case MacroDelType.CONST_QUOTE: ExecuteMacroDelConstQuote(delItemString);  break;
+                    case MacroDelType.CONST_QUOTE: ExecuteMacroDelConstQuote(delItemString); break;
                 }
             }
         }
@@ -480,6 +483,14 @@ namespace Alterful.Functions
         private void ExecuteMacroDelConstQuote(string delConstQuoteName)
         {
             AConstQuote.Delete(AConstQuote.ConstQuoteNamePull(delConstQuoteName));
+        }
+
+        /// <summary>
+        /// 执行宏设置指令
+        /// </summary>
+        private void ExecuteMacroSet()
+        {
+            throw new NotImplementedException();
         }
     }
 

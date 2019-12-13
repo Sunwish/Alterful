@@ -122,7 +122,7 @@ namespace Alterful.Functions
 
     static class ATheme
     {
-        private static AlterfulTheme theme = AlterfulTheme.Classic;
+        private static AlterfulTheme theme = AlterfulTheme.Mild;
         public static AlterfulTheme Theme
         {
             get => theme;
