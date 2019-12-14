@@ -111,7 +111,7 @@ In order to start debugging successfully, make sure you run visual studio as an 
 - 版本检查 ❌
 - 自动更新 ❌
 - Alterful 配置宏 ❌
-- 主题设置 ❌
+- 主题设置 🔳
 - 系统右键菜单植入 ✅
 - 注册表配置 ✅
 - 帮助 & 提示 ❌
