@@ -480,6 +480,10 @@ namespace Alterful.Functions
             }
         }
 
+        /// <summary>
+        /// 执行宏删除常引用指令
+        /// </summary>
+        /// <param name="delConstQuoteName"></param>
         private void ExecuteMacroDelConstQuote(string delConstQuoteName)
         {
             AConstQuote.Delete(AConstQuote.ConstQuoteNamePull(delConstQuoteName));
