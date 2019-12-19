@@ -3,7 +3,8 @@
 
 FilesExample/
 ATemp/
-APath/demo.lnk
+APath/*.lnk
+!APath/startupItemTest.lnk
 Config/
 
 # User-specific files
