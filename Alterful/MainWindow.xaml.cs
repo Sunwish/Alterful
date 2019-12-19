@@ -350,7 +350,11 @@ namespace Alterful
             if (retnInfo != "") AppendRTBLine(TestRichTextbox, retnInfo.Trim(), fgcolor, bgcolor);
 
             if (AInstruction.GetType(InstructionTextBox.Text) == InstructionType.CMD) { InstructionTextBox.Text = "> "; showOutput = true; }
-            else InstructionTextBox.Text = "";
+            else
+            {
+                InstructionTextBox.Text = "";
+                if (AInstruction.ReportType.OK == AInstruction.reportType && 0 == AInstruction.ReportInfo.Count) Visibility = Visibility.Hidden;
+            }
             InstructionTextBox.SelectionStart = InstructionTextBox.Text.Length;
 
             // Update width and resize.
