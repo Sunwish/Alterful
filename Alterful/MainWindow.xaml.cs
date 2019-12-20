@@ -363,7 +363,7 @@ namespace Alterful
         }
 
         /// <summary>
-        /// 更新最大行款记录
+        /// 更新最大行宽记录
         /// </summary>
         /// <param name="line">欲参与更新的行文本</param>
         public void UpdateMaxWidth(string line)
