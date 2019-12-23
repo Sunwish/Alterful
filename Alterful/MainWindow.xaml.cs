@@ -262,7 +262,7 @@ namespace Alterful
             AHelper.Initialize();
             InitializeComponent();
             InitializeGUI();
-
+            
             // Instruction Test.
             // MainTest();
             // Close();

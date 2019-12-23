@@ -10,6 +10,7 @@ using IWshRuntimeLibrary;
 using System.Diagnostics;
 using Alterful.Functions;
 using System.Threading;
+using System.Net;
 
 namespace Alterful.Helper
 {
@@ -22,6 +23,7 @@ namespace Alterful.Helper
         public const string LNK_EXTENTION = ".lnk";
         public static List<string> InstructionHistory = new List<string>();
         public static int InstructionPointer = -1;
+        public static string RemoteVersionUrl = @"https://alterful.com/versionInf.ini";
         public static void Initialize()
         {
             // Floder Check
@@ -124,6 +126,11 @@ namespace Alterful.Helper
                 throw exception;
             }
             */
+        }
+
+        public static string GetRemoteVersion()
+        {
+            throw new NotImplementedException();
         }
     }
 
