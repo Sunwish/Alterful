@@ -23,7 +23,6 @@ namespace Alterful.Helper
         public const string LNK_EXTENTION = ".lnk";
         public static List<string> InstructionHistory = new List<string>();
         public static int InstructionPointer = -1;
-        public static string RemoteVersionUrl = @"https://alterful.com/versionInf.ini";
         public static void Initialize()
         {
             // Floder Check
@@ -127,8 +126,33 @@ namespace Alterful.Helper
             }
             */
         }
+    }
 
-        public static string GetRemoteVersion()
+    class VersionNumberFormatException : Exception { }
+    public static class AVersion
+    {
+        public static string RemoteVersionUrl = @"https://alterful.com/versionInf.ini";
+        public struct VersionNumberStruct
+        {
+            public VersionNumberStruct(List<string> versionNumberStructList)
+            {
+                if (versionNumberStructList.Count != 4) throw new VersionNumberFormatException();
+                MainVersionNumber = int.Parse(versionNumberStructList[0]);
+                SecVersionNumber = int.Parse(versionNumberStructList[1]);
+                MidVersionNumber = int.Parse(versionNumberStructList[2]);
+                MinVersionNumber = int.Parse(versionNumberStructList[3]);
+            }
+            public int MainVersionNumber;
+            public int SecVersionNumber;
+            public int MidVersionNumber;
+            public int MinVersionNumber;
+        }
+
+        /// <summary>
+        /// 获取远程版本号
+        /// </summary>
+        /// <returns></returns>
+        public static string GetRemoteVersionNumber()
         {
             HttpWebRequest request = WebRequest.Create(RemoteVersionUrl) as HttpWebRequest;
             using (StreamReader reader = new StreamReader(request.GetResponse().GetResponseStream()))
@@ -136,6 +160,87 @@ namespace Alterful.Helper
                 string versionInfoBody = reader.ReadToEnd();
                 return versionInfoBody.Substring(versionInfoBody.IndexOf("=") + 1);
             }
+        }
+
+        /// <summary>
+        /// 获取本地版本号
+        /// </summary>
+        /// <returns></returns>
+        public static string GetLocalVersionNumber()
+        {
+            return Properties.Settings.Default.localVersion;
+        }
+
+        /// <summary>
+        /// 获取版本号结构
+        /// </summary>
+        /// <param name="versionNumber">版本号文本</param>
+        /// <returns></returns>
+        /// <exception cref="VersionNumberFormatException"></exception>
+        private static VersionNumberStruct GetVersionNumberStruct(string versionNumber)
+        {
+            List<string> versionNumberStructList = new List<string>(versionNumber.Split('.'));
+            try
+            {
+                return new VersionNumberStruct(versionNumberStructList);
+            }
+            catch (VersionNumberFormatException) { throw; }
+        }
+
+        /// <summary>
+        /// 获取版本号差异。版本偏低返回负数，最新版本返回0，内测版本返回正数
+        /// </summary>
+        /// <param name="local"></param>
+        /// <param name="remote"></param>
+        /// <returns></returns>
+        public static int GetVersionNumberDiffer()
+        {
+            return VersionNumberDiffer(GetLocalVersionNumber(), GetRemoteVersionNumber());
+        }
+
+        /// <summary>
+        /// 获取版本号差异。版本偏低返回负数，最新版本返回0，内测版本返回正数
+        /// </summary>
+        /// <param name="local"></param>
+        /// <param name="remote"></param>
+        /// <returns></returns>
+        public static int GetVersionNumberDiffer(string local, string remote)
+        {
+            return VersionNumberDiffer(local, remote);
+        }
+
+        private static int VersionNumberDiffer(string local, string remote)
+        {
+            VersionNumberStruct vnsLocal = GetVersionNumberStruct(local);
+            VersionNumberStruct vnsRemote = GetVersionNumberStruct(remote);
+            if (vnsLocal.MainVersionNumber > vnsRemote.MainVersionNumber)
+                return 1;
+            if (vnsLocal.MainVersionNumber < vnsRemote.MainVersionNumber)
+                return -1;
+            if (vnsLocal.MainVersionNumber == vnsRemote.MainVersionNumber)
+            {
+                if (vnsLocal.SecVersionNumber > vnsRemote.SecVersionNumber)
+                    return 1;
+                if (vnsLocal.MainVersionNumber < vnsRemote.MainVersionNumber)
+                    return -1;
+                if (vnsLocal.MainVersionNumber == vnsRemote.MainVersionNumber)
+                {
+                    if (vnsLocal.MidVersionNumber > vnsRemote.MidVersionNumber)
+                        return 1;
+                    if (vnsLocal.MidVersionNumber < vnsRemote.MidVersionNumber)
+                        return -1;
+                    if (vnsLocal.MidVersionNumber == vnsRemote.MidVersionNumber)
+                    {
+                        if (vnsLocal.MinVersionNumber > vnsRemote.MinVersionNumber)
+                            return 1;
+                        if (vnsLocal.MinVersionNumber < vnsRemote.MinVersionNumber)
+                            return -1;
+                        if (vnsLocal.MinVersionNumber == vnsRemote.MinVersionNumber)
+                            return 0;
+                    }
+                }
+            }
+            throw new NotImplementedException();
         }
     }
 

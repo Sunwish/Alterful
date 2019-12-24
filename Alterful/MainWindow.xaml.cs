@@ -263,7 +263,8 @@ namespace Alterful
             InitializeComponent();
             InitializeGUI();
 
-            Console.WriteLine(AHelper.GetRemoteVersion());
+            Console.WriteLine(AVersion.GetRemoteVersionNumber());
+            Console.WriteLine(AVersion.GetVersionNumberDiffer());
 
             // Instruction Test.
             // MainTest();
