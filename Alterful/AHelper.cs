@@ -195,7 +195,7 @@ namespace Alterful.Helper
         /// <returns></returns>
         public static int GetVersionNumberDiffer()
         {
-            return VersionNumberDiffer(GetLocalVersionNumber(), GetRemoteVersionNumber());
+            return GetVersionNumberDiffer(GetLocalVersionNumber(), GetRemoteVersionNumber());
         }
 
         /// <summary>

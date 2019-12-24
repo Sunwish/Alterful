@@ -494,6 +494,8 @@ namespace Alterful.Functions
         /// </summary>
         private void ExecuteMacroSet()
         {
+            // get: @set settingItem
+            // set: @set settingItem value
             throw new NotImplementedException();
         }
     }

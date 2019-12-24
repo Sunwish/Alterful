@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Alterful.Helper;
 using Microsoft.Win32;
 using System.IO;
+using System.Reflection;
 
 namespace Alterful.Functions
 {
@@ -21,6 +22,19 @@ namespace Alterful.Functions
         private static readonly string rightMenuSubKeyName_2 = @"\Directory\shell\" + autoRunValueName + @"Startup\";
         private static readonly string rightMenuKeyName_2 = Registry.ClassesRoot + rightMenuSubKeyName_2;
         private static readonly string rightMenuString = "添加为 Alterful 启动项";
+
+        /// <summary>
+        /// 获取所有的设置项名称
+        /// </summary>
+        /// <returns></returns>
+        public static List<string> GetSettingsPropertiesName()
+        {
+            MemberInfo[] members = typeof(ASettings).GetMembers();
+            List<string> propertiesName = new List<string>();
+            foreach (MemberInfo memberInfo in members.Where(p => p.MemberType == MemberTypes.Property))
+                propertiesName.Add(memberInfo.Name);
+            return propertiesName;
+        }
 
         /// <summary>
         /// 开机自动启动
