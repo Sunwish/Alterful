@@ -108,7 +108,9 @@ In order to start debugging successfully, make sure you run visual studio as an 
 
 ## 扫尾工作（阶段三）  Concluding Work (Stage 3) 🔳
 
-- 版本检查 ❌
+- 版本检查 🔳
+  - 版本号检查 ✅
+  - 文件差异检查 ❌
 - 自动更新 ❌
 - Alterful 配置宏 ❌
 - 主题设置 🔳
