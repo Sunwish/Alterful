@@ -130,7 +130,12 @@ namespace Alterful.Helper
 
         public static string GetRemoteVersion()
         {
-            throw new NotImplementedException();
+            HttpWebRequest request = WebRequest.Create(RemoteVersionUrl) as HttpWebRequest;
+            using (StreamReader reader = new StreamReader(request.GetResponse().GetResponseStream()))
+            {
+                string versionInfoBody = reader.ReadToEnd();
+                return versionInfoBody.Substring(versionInfoBody.IndexOf("=") + 1);
+            }
         }
     }
 

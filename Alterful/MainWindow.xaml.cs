@@ -262,7 +262,9 @@ namespace Alterful
             AHelper.Initialize();
             InitializeComponent();
             InitializeGUI();
-            
+
+            Console.WriteLine(AHelper.GetRemoteVersion());
+
             // Instruction Test.
             // MainTest();
             // Close();
