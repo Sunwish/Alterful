@@ -90,5 +90,11 @@ namespace Alterful.Functions
                 
             }
         }
+
+        public static AlterfulTheme Theme
+        {
+            get { return ATheme.Theme; }
+            set { ATheme.Theme = value; }
+        }
     }
 }

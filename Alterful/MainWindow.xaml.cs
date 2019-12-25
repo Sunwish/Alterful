@@ -261,17 +261,17 @@ namespace Alterful
             // Global Initialization.
             AHelper.Initialize();
             InitializeComponent();
-            InitializeGUI();
+            InitializeGUI(ATheme.GetThemeConfig());
 
             // Instruction Test.
             // MainTest();
             // Close();
-
         }
 
-        private void InitializeGUI()
+        private void InitializeGUI(AThemeConfig tc)
         {
             Resize();
+            themeConfig = tc;
             InstructionTextBox.Background = themeConfig.BackgroundInput;
             InstructionTextBox.Foreground = themeConfig.ForegroundInput;
             TestRichTextbox.Background = themeConfig.BackgroundOutput;
@@ -288,6 +288,7 @@ namespace Alterful
 
             // Execute instruction.
             string retnInfo = ExecuteInstruction(InstructionTextBox.Text);
+            InitializeGUI(ATheme.GetThemeConfig());
             if (AInstruction.ADD_CONST_INSTRUCTION == retnInfo)
             {
                 constInstructionInputMode = true;

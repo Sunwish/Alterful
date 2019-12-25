@@ -109,7 +109,11 @@ namespace Alterful.Functions
         /// </summary>
         /// <param name="part"></param>
         /// <returns></returns>
-        public static string GetCompletion(string part) => AHelper.FindCompletion(AFile.GetLnkList(), part);
+        public static string GetCompletion(string part) {
+            List<string> list = AFile.GetLnkList();
+            list.AddRange(ASettings.GetSettingsPropertiesName());
+            return AHelper.FindCompletion(list, part);
+        }
 
         /// <summary>
         /// 执行指令，启动失败的启动项在ReportInfo中查看
@@ -257,7 +261,7 @@ namespace Alterful.Functions
         public MacroType GetMacroType()
         {
             List<string> macroInstructionParts = new List<string>(Instruction.Split(' '));
-            if (macroInstructionParts.Count < 2) throw new MacroFormatException();
+            // if (macroInstructionParts.Count < 2) throw new MacroFormatException();
             string macroType = macroInstructionParts[0].Substring(1);
             switch (macroType)
             {
@@ -305,7 +309,7 @@ namespace Alterful.Functions
         /// <returns></returns>
         public List<string> GetMacroInstructionPartsList()
         {
-            return new List<string>(Instruction.Split(' '));
+            return new List<string>(Instruction.Trim().Split(' '));
         }
 
         /// <summary>
@@ -314,7 +318,7 @@ namespace Alterful.Functions
         /// <returns></returns>
         public List<string> GetMacroInstructionParametersList()
         {
-            List<string> paramList = GetMacroInstructionPartsList();
+            List<string> paramList = new List<string>(GetMacroInstructionPartsList().Where(p => p != ""));
             paramList.RemoveAt(0);
             return paramList;
         }
@@ -496,7 +500,77 @@ namespace Alterful.Functions
         {
             // get: @set settingItem
             // set: @set settingItem value
-            throw new NotImplementedException();
+            List<string> paramList = GetMacroInstructionParametersList();
+            switch (paramList.Count)
+            {
+                case 0:
+                    // List setting items.
+                    string retnMessage = "Available setting items: ";
+                    foreach(string propertyName in ASettings.GetSettingsPropertiesName())
+                        retnMessage += propertyName + " ";
+                    throw new NotImplementedException(retnMessage);
+                case 1:
+                    // List available value and current value.
+                    if (0 == ASettings.GetSettingsPropertiesName().Where(p => p == paramList[0]).Count())
+                        throw new NotImplementedException("Setting item [" + paramList[0] + "] is not found.");
+                    string targetPropertyName = paramList[0].Trim();
+                    string availableValues = "Available values: ";
+                    Type t = typeof(ASettings).GetProperty(paramList[0]).GetValue(null).GetType();
+                    if (t.Equals(true.GetType()))
+                    {
+                        availableValues += "True / False";
+                    }
+                    else if(t.Equals(typeof(AlterfulTheme)))
+                    {
+                        foreach (AlterfulTheme theme in Enum.GetValues(typeof(AlterfulTheme)))
+                            availableValues += theme + " / ";
+                        availableValues = availableValues.Substring(0, availableValues.Length - 3);
+                    }
+                    throw new NotImplementedException(targetPropertyName + ": " + typeof(ASettings).GetProperty(paramList[0]).GetValue(null) as string + Environment.NewLine + availableValues);
+                case 2:
+                    // Set value.
+                    if (0 == ASettings.GetSettingsPropertiesName().Where(p => p == paramList[0]).Count())
+                        throw new NotImplementedException("Setting item [" + paramList[0] + "] is not found.");
+                    string targetPropertyName2 = paramList[0].Trim();
+                    string setValue = paramList[1].Trim();
+                    string availableValues2 = "Available values: ";
+                    Type t2 = typeof(ASettings).GetProperty(paramList[0]).GetValue(null).GetType();
+                    if (t2.Equals(true.GetType()))
+                    {
+                        switch (setValue)
+                        {
+                            case "True":
+                            case "true":
+                                typeof(ASettings).GetProperty(paramList[0]).SetValue(null, true);
+                                break;
+                            case "False":
+                            case "false":
+                                typeof(ASettings).GetProperty(paramList[0]).SetValue(null, false);
+                                break;
+                            default:
+                                throw new NotImplementedException("Invalid value.");
+                        }
+                        availableValues2 += "True / False";
+                    }
+                    else if (t2.Equals(typeof(AlterfulTheme)))
+                    {
+                        bool found = false;
+                        foreach (AlterfulTheme theme in Enum.GetValues(typeof(AlterfulTheme)))
+                        {
+                            string a = theme.ToString();
+                            if (theme.ToString().ToLower().Trim() == setValue.ToLower())
+                            { 
+                                ATheme.Theme = theme;
+                                found = true;
+                                ReportInfo.Add("Theme config have changed, but early content won't be appply.");
+                            }
+                        }
+                        if (!found) throw new NotImplementedException("Theme [" + setValue + "] is not found.");
+                    }
+                    break;
+                default:
+                    throw new MacroFormatException();
+            }
         }
     }
 
