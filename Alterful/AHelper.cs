@@ -11,6 +11,7 @@ using System.Diagnostics;
 using Alterful.Functions;
 using System.Threading;
 using System.Net;
+using System.Security.Cryptography;
 
 namespace Alterful.Helper
 {
@@ -67,6 +68,19 @@ namespace Alterful.Helper
                     return full;
             }
             return "";
+        }
+
+        public static string GetFileMd5(string filePath)
+        {
+            if (!System.IO.File.Exists(filePath)) return "";
+            using (var md5 = MD5.Create())
+            {
+                using (var stream = System.IO.File.OpenRead(filePath))
+                {
+                    var hash = md5.ComputeHash(stream);
+                    return BitConverter.ToString(hash).Replace("-", "").ToLowerInvariant();
+                }
+            }
         }
 
         /// <summary>
@@ -250,10 +264,16 @@ namespace Alterful.Helper
             public string FileMd5 { get; private set; }
         }
 
-        public static List<FileInfo> SelectFilesDiffer()
+        public static List<FileInfo> GetFilesDiffer()
         {
-            List<FileInfo> remoteFileList = GetRemoteFileList();
-            throw new NotImplementedException();
+            List<FileInfo> differFiles = new List<FileInfo>();
+            foreach(FileInfo remoteFile in GetRemoteFileList())
+            {
+                string localFileMd5 = AHelper.GetFileMd5(remoteFile.FileRoute + remoteFile.FileName).ToLower();
+                if (!localFileMd5.Equals(remoteFile.FileMd5.ToLower()))
+                    differFiles.Add(remoteFile);
+            }
+            return differFiles;
         }
 
         /// <summary>

@@ -262,7 +262,10 @@ namespace Alterful
             AHelper.Initialize();
             InitializeComponent();
             InitializeGUI(ATheme.GetThemeConfig());
-
+            foreach(AUpdate.FileInfo info in AUpdate.GetFilesDiffer())
+            {
+                Console.WriteLine(info.FileRoute + info.FileName + "(" + info.FileMd5 + ")");
+            }
             // Instruction Test.
             // MainTest();
             // Close();
