@@ -131,7 +131,7 @@ namespace Alterful.Helper
     class VersionNumberFormatException : Exception { }
     public static class AVersion
     {
-        public static string RemoteVersionUrl = @"https://alterful.com/versionInf.ini";
+        public const string RemoteVersionUrl = @"https://alterful.com/versionInf.ini";
         public struct VersionNumberStruct
         {
             public VersionNumberStruct(List<string> versionNumberStructList)
@@ -166,10 +166,7 @@ namespace Alterful.Helper
         /// 获取本地版本号
         /// </summary>
         /// <returns></returns>
-        public static string GetLocalVersionNumber()
-        {
-            return Properties.Settings.Default.localVersion;
-        }
+        public static string GetLocalVersionNumber() => Properties.Settings.Default.localVersion;
 
         /// <summary>
         /// 获取版本号结构
@@ -180,10 +177,7 @@ namespace Alterful.Helper
         private static VersionNumberStruct GetVersionNumberStruct(string versionNumber)
         {
             List<string> versionNumberStructList = new List<string>(versionNumber.Split('.'));
-            try
-            {
-                return new VersionNumberStruct(versionNumberStructList);
-            }
+            try { return new VersionNumberStruct(versionNumberStructList); }
             catch (VersionNumberFormatException) { throw; }
         }
 
@@ -193,10 +187,7 @@ namespace Alterful.Helper
         /// <param name="local"></param>
         /// <param name="remote"></param>
         /// <returns></returns>
-        public static int GetVersionNumberDiffer()
-        {
-            return GetVersionNumberDiffer(GetLocalVersionNumber(), GetRemoteVersionNumber());
-        }
+        public static int GetVersionNumberDiffer() => GetVersionNumberDiffer(GetLocalVersionNumber(), GetRemoteVersionNumber());
 
         /// <summary>
         /// 获取版本号差异。版本偏低返回负数，最新版本返回0，内测版本返回正数
@@ -204,10 +195,7 @@ namespace Alterful.Helper
         /// <param name="local"></param>
         /// <param name="remote"></param>
         /// <returns></returns>
-        public static int GetVersionNumberDiffer(string local, string remote)
-        {
-            return VersionNumberDiffer(local, remote);
-        }
+        public static int GetVersionNumberDiffer(string local, string remote) => VersionNumberDiffer(local, remote);
 
         private static int VersionNumberDiffer(string local, string remote)
         {
@@ -241,6 +229,67 @@ namespace Alterful.Helper
                 }
             }
             throw new NotImplementedException();
+        }
+    }
+
+    public static class AUpdate
+    {
+        public const char FileDivide = '>';
+        public const char FileInfoDivide = '|';
+        public const string RemoteFileListUrl = @"https://alterful.com/filelist.ini";
+        public struct FileInfo
+        {
+            public FileInfo(string fileName, string fileMd5, string fileRoute)
+            {
+                FileName = fileName;
+                FileMd5 = fileMd5;
+                FileRoute = fileRoute;
+            }
+            public string FileRoute { get; private set; }
+            public string FileName { get; private set; }
+            public string FileMd5 { get; private set; }
+        }
+
+        public static List<FileInfo> SelectFilesDiffer()
+        {
+            List<FileInfo> remoteFileList = GetRemoteFileList();
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// 获取远程文件列表
+        /// </summary>
+        /// <param name="fileListString"></param>
+        /// <returns></returns>
+        public static List<FileInfo> GetRemoteFileList() => GetRemoteFileList(GetRemoteFileListString());
+
+        /// <summary>
+        /// 获取远程文件列表
+        /// </summary>
+        /// <param name="fileListString"></param>
+        /// <returns></returns>
+        public static List<FileInfo> GetRemoteFileList(string fileListString)
+        {
+            List<FileInfo> fileInfo = new List<FileInfo>();
+            foreach(string info in fileListString.Split(FileDivide)){
+                List<string> infoDetile = new List<string>(info.Split(FileInfoDivide));
+                if (infoDetile.Count != 3) continue;
+                fileInfo.Add(new FileInfo(infoDetile[0], infoDetile[1], infoDetile[2]));
+            }
+            return fileInfo;
+        }
+
+        /// <summary>
+        /// 获取远程文件列表文本
+        /// </summary>
+        /// <returns></returns>
+        public static string GetRemoteFileListString()
+        {
+            string fileListBody = "";
+            HttpWebRequest request = WebRequest.Create(RemoteFileListUrl) as HttpWebRequest;
+            using (StreamReader reader = new StreamReader(request.GetResponse().GetResponseStream()))
+                fileListBody = reader.ReadToEnd();
+            return fileListBody;
         }
     }
 
