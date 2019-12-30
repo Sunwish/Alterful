@@ -112,9 +112,11 @@ In order to start debugging successfully, make sure you run visual studio as an 
   - 版本号检查 ✅
   - 文件差异检查 ✅
 - 自动更新 ❌
+- 自动扫描启动项 ❌
 - Alterful 配置宏 ✅
 - 主题设置 ✅
 - 系统右键菜单植入 ✅
+- 右键菜单调用实现 ❌
 - 注册表配置 ✅
 - 帮助 & 提示 ❌
 - 局部再重构 ❌
