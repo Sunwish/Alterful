@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -123,12 +124,29 @@ namespace Alterful.Functions
     static class ATheme
     {
         private static AlterfulTheme theme = AlterfulTheme.Mild;
+        static string THEME_CONFIG_FILE_PATH = AFile.BASE_PATH + @"\Config\ThemeConfig";
+
+        public static AlterfulTheme GetThemeByString(string themeString)
+        {
+            AlterfulTheme retn = AlterfulTheme.Default;
+            foreach (AlterfulTheme theme in Enum.GetValues(typeof(AlterfulTheme)))
+            {
+                if (theme.ToString().ToLower().Trim() == themeString.ToLower().Trim())
+                {
+                    retn = theme;
+                    break;
+                }
+            }
+            return retn;
+        }
+
         public static AlterfulTheme Theme
         {
             get => theme;
             set
             {
                 if (value == theme) return;
+                WriteAllConfig(value.ToString());
                 theme = value;
             }
         }
@@ -145,6 +163,48 @@ namespace Alterful.Functions
                 case AlterfulTheme.Classic: return new AThemeClassic();
                 default: return new AThemeConfig();
             }
+        }
+
+        public static bool IsThemeConfigFileExists()
+        {
+            return File.Exists(THEME_CONFIG_FILE_PATH);
+        }
+
+        /// <summary>
+        /// 创建常引用文件，若原本已存在常引用文件则不进行操作
+        /// </summary>
+        /// <exception cref="UnauthorizedAccessException"></exception>
+        public static void CreateThemeConfigFile()
+        {
+            if (!IsThemeConfigFileExists())
+                WriteAllConfig(AlterfulTheme.Default.ToString());
+        }
+
+        /// <summary>
+        /// 写出主题配置
+        /// </summary>
+        /// <param name="config">主题名</param>
+        public static void WriteAllConfig(string config)
+        {
+            using (StreamWriter streamWriter = new StreamWriter(THEME_CONFIG_FILE_PATH, false)) { streamWriter.WriteLine(config); }
+        }
+
+        /// <summary>
+        /// 读取主题配置并立即生效
+        /// </summary>
+        /// <exception cref="FileNotFoundException"></exception>
+        public static void ReadAllConfig()
+        {
+            try
+            {
+                AlterfulTheme configTheme = AlterfulTheme.Default;
+                using (StreamReader streamReader = new StreamReader(THEME_CONFIG_FILE_PATH))
+                {
+                    configTheme = GetThemeByString(streamReader.ReadToEnd());
+                }
+                ATheme.Theme = configTheme;
+            }
+            catch (Exception) { throw; }
         }
     }
 }

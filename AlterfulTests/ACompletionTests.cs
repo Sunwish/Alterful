@@ -37,7 +37,7 @@ namespace Alterful.Functions.Tests
         {
             Assert.AreEqual(InstructionType.STARTUP, ACompletion.GetInstructionCompletionPartType("chro"));
             Assert.AreEqual(InstructionType.MACRO, ACompletion.GetInstructionCompletionPartType("@ha"));
-            Assert.AreEqual(InstructionType.STARTUP, ACompletion.GetInstructionCompletionPartType("#ha"));
+            Assert.AreEqual(InstructionType.CONST, ACompletion.GetInstructionCompletionPartType("#ha"));
             Assert.AreEqual(InstructionType.BUILDIN, ACompletion.GetInstructionCompletionPartType(".ha"));
         }
     }

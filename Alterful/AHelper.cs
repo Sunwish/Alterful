@@ -34,9 +34,11 @@ namespace Alterful.Helper
 
             // File Check
             AConstQuote.CreateConstQuoteFile();
-            
+            ATheme.CreateThemeConfigFile();
+
             // Config Check
             AConstQuote.ReadAllConfig();
+            ATheme.ReadAllConfig();
 
             // Enviroment Check
             SysEnviroment.SetPathAfter(APATH_PATH);
