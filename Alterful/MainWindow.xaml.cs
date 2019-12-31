@@ -262,10 +262,15 @@ namespace Alterful
             AHelper.Initialize();
             InitializeComponent();
             InitializeGUI(ATheme.GetThemeConfig());
-            foreach(AUpdate.FileInfo info in AUpdate.GetFilesDiffer())
+            List<string> argList = new List<string>(Environment.GetCommandLineArgs());
+            argList.RemoveAt(0);
+            foreach (string arg in argList)
             {
-                Console.WriteLine(info.FileRoute + info.FileName + "(" + info.FileMd5 + ")");
+                string append = "CommandLineArg: " + arg;
+                UpdateMaxWidth(append);
+                AppendRTBLine(TestRichTextbox, append, themeConfig.ForegroundOutput, themeConfig.BackgroundOutput);
             }
+                
             // Instruction Test.
             // MainTest();
             // Close();
