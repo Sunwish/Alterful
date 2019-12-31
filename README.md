@@ -117,6 +117,7 @@ In order to start debugging successfully, make sure you run visual studio as an 
 - 主题设置 ✅
 - 系统右键菜单植入 ✅
 - 右键菜单调用实现 ❌
+- 互斥检测 ❌
 - 注册表配置 ✅
 - 帮助 & 提示 ❌
 - 局部再重构 ❌
