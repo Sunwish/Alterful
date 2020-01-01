@@ -258,8 +258,13 @@ namespace Alterful
             // ----Sample For fun----
 
         }
+
+        static bool GotMutex = false;
+        System.Threading.Mutex mutex = new System.Threading.Mutex(true, "Test", out GotMutex);
         public MainWindow()
-        {
+        {   
+            if (!GotMutex) Environment.Exit(1);//退出程序
+
             // Global Initialization.
             AHelper.Initialize();
             InitializeComponent();

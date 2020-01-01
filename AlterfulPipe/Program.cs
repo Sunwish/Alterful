@@ -7,6 +7,7 @@ using System.IO.Pipes;
 using System.Threading;
 using System.Security.Principal;
 using System.IO;
+using System.Diagnostics;
 
 namespace AlterfulPipe
 {
@@ -20,11 +21,43 @@ namespace AlterfulPipe
             targetPath = args[0].Trim();
             if (!System.IO.File.Exists(targetPath) && !System.IO.Directory.Exists(targetPath)) return;
 
-            Thread pipeThread = new Thread(new ThreadStart(SendData));
-            pipeThread.IsBackground = true;
-            pipeThread.Start();
+            // Is alterful is running
+            string selfLocation = System.Reflection.Assembly.GetEntryAssembly().Location;
+            string alterfulPath = Path.GetDirectoryName(selfLocation) + @"\Alterful.exe";
 
-            Thread.Sleep(251);
+            bool flag = false;
+            for(int i = 0; i < 2; i++)
+            {
+                System.Threading.Mutex mutex = new System.Threading.Mutex(true, "Test", out flag);
+                if (!flag) // running
+                {
+                    Thread pipeThread = new Thread(new ThreadStart(SendData));
+                    pipeThread.IsBackground = true;
+                    pipeThread.Start();
+                    Thread.Sleep(251);
+                    break;
+                }
+                else // not running
+                {
+                    mutex.Close();
+
+                    // Start alterful
+                    if (!File.Exists(alterfulPath)) break;
+                    Process newProcess = new Process()
+                    {
+                        StartInfo = new ProcessStartInfo()
+                        {
+                            UseShellExecute = true,
+                            Arguments = "",
+                            FileName = alterfulPath,
+                        }
+                    };
+                    newProcess.StartInfo.Verb = "runas";
+                    newProcess.Start();
+
+                    Thread.Sleep(996);
+                }
+            }
         }
 
 
