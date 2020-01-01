@@ -74,13 +74,14 @@ namespace Alterful.Functions
                 // if (value == DisplayRightMenu) return;
                 if (value)
                 {
+                    string pipePath = Path.GetDirectoryName(selfLocation) + @"\AlterfulPipe.exe";
                     SysRegedit.SetKeyValue(rightMenuKeyName_1, null, rightMenuString);
                     SysRegedit.SetKeyValue(rightMenuKeyName_1, "icon", "\"" + Directory.GetCurrentDirectory() + @"\Alterful.ico" + "\"");
-                    SysRegedit.SetKeyValue(rightMenuKeyName_1 + "Command", null, "\"" + selfLocation + "\"" + " StartupAdd" + "\"" + "%1" + "\"");
+                    SysRegedit.SetKeyValue(rightMenuKeyName_1 + "Command", null, "\"" + pipePath + "\"" + " " + "\"" + "%1" + "\"");
 
                     SysRegedit.SetKeyValue(rightMenuKeyName_2, null, rightMenuString);
                     SysRegedit.SetKeyValue(rightMenuKeyName_2, "icon", "\"" + Directory.GetCurrentDirectory() + @"\Alterful.ico" + "\"");
-                    SysRegedit.SetKeyValue(rightMenuKeyName_2 + "Command", null, "\"" + selfLocation + "\"" + " StartupAdd" + "\"" + "%1" + "\"");
+                    SysRegedit.SetKeyValue(rightMenuKeyName_2 + "Command", null, "\"" + pipePath + "\"" + " " + "\"" + "%1" + "\"");
                 }
                 else
                 {

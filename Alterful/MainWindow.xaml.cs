@@ -19,6 +19,8 @@ using Alterful.GlobalHotKey;
 using System.Collections.ObjectModel;
 using System.Windows.Interop;
 using Microsoft.Win32;
+using System.Threading;
+using System.IO.Pipes;
 
 namespace Alterful
 {
@@ -262,18 +264,50 @@ namespace Alterful
             AHelper.Initialize();
             InitializeComponent();
             InitializeGUI(ATheme.GetThemeConfig());
-            List<string> argList = new List<string>(Environment.GetCommandLineArgs());
-            argList.RemoveAt(0);
-            foreach (string arg in argList)
-            {
-                string append = "CommandLineArg: " + arg;
-                UpdateMaxWidth(append);
-                AppendRTBLine(TestRichTextbox, append, themeConfig.ForegroundOutput, themeConfig.BackgroundOutput);
-            }
+            InitializePipe();
                 
             // Instruction Test.
             // MainTest();
             // Close();
+        }
+
+        private void InitializePipe()
+        {
+            Thread receiveDataThread = new Thread(new ThreadStart(ReceiveDataFromClient));
+            receiveDataThread.IsBackground = true;
+            receiveDataThread.Start();
+           
+        }
+
+        private void ReceiveDataFromClient()
+        {
+            while (true)
+            {
+                try
+                {
+                    PipeSecurity pse = new PipeSecurity();
+                    pse.SetAccessRule(new PipeAccessRule("Everyone", PipeAccessRights.ReadWrite, System.Security.AccessControl.AccessControlType.Allow));//设置访问规则
+                    NamedPipeServerStream _pipeServer = new NamedPipeServerStream("StartupAddPipe", PipeDirection.InOut, 10, PipeTransmissionMode.Message, PipeOptions.Asynchronous, 1024, 1024, pse, HandleInheritability.None);
+
+                    _pipeServer.WaitForConnection(); //Waiting
+                    using (StreamReader sr = new StreamReader(_pipeServer))
+                    {
+                        string path = sr.ReadLine().Trim();
+                        string defaultName = System.IO.Path.GetFileNameWithoutExtension(path).ToLower();
+                        // InstructionTextBox 被主线程占用，利用 Dispatcher 进行操作
+                        InstructionTextBox.Dispatcher.BeginInvoke((Action)(() => {
+                            InstructionTextBox.Text = "@add" + " " + defaultName + " " + path;
+                            InstructionTextBox.SelectionStart = ("@add" + " ").Length;
+                            InstructionTextBox.SelectionLength = defaultName.Length;
+                            InstructionTextBox.Focus();
+                        }));
+
+                        Visibility = Visibility.Visible;
+                    }
+                    Thread.Sleep(1000);
+                }
+                catch (Exception) { /* I don't care */ }
+            }
         }
 
         private void InitializeGUI(AThemeConfig tc)
