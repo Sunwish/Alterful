@@ -260,7 +260,7 @@ namespace Alterful
         }
 
         static bool GotMutex = false;
-        System.Threading.Mutex mutex = new System.Threading.Mutex(true, "Test", out GotMutex);
+        System.Threading.Mutex mutex = new System.Threading.Mutex(true, "Alterful", out GotMutex);
         public MainWindow()
         {   
             if (!GotMutex) Environment.Exit(1);//退出程序

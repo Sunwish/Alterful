@@ -28,7 +28,7 @@ namespace AlterfulPipe
             bool flag = false;
             for(int i = 0; i < 2; i++)
             {
-                System.Threading.Mutex mutex = new System.Threading.Mutex(true, "Test", out flag);
+                System.Threading.Mutex mutex = new System.Threading.Mutex(true, "Alterful", out flag);
                 if (!flag) // running
                 {
                     Thread pipeThread = new Thread(new ThreadStart(SendData));
