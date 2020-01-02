@@ -26,37 +26,33 @@ namespace AlterfulPipe
             string alterfulPath = Path.GetDirectoryName(selfLocation) + @"\Alterful.exe";
 
             bool flag = false;
-            for(int i = 0; i < 2; i++)
+            System.Threading.Mutex mutex = new System.Threading.Mutex(true, "Alterful", out flag);
+            if (!flag) // running
             {
-                System.Threading.Mutex mutex = new System.Threading.Mutex(true, "Alterful", out flag);
-                if (!flag) // running
-                {
-                    Thread pipeThread = new Thread(new ThreadStart(SendData));
-                    pipeThread.IsBackground = true;
-                    pipeThread.Start();
-                    Thread.Sleep(251);
-                    break;
-                }
-                else // not running
-                {
-                    mutex.Close();
+                Thread pipeThread = new Thread(new ThreadStart(SendData));
+                pipeThread.IsBackground = true;
+                pipeThread.Start();
+                Thread.Sleep(251);
+            }
+            else // not running
+            {
+                mutex.Close();
 
-                    // Start alterful
-                    if (!File.Exists(alterfulPath)) break;
-                    Process newProcess = new Process()
+                // Start alterful
+                if (!File.Exists(alterfulPath)) return;
+                Process newProcess = new Process()
+                {
+                    StartInfo = new ProcessStartInfo()
                     {
-                        StartInfo = new ProcessStartInfo()
-                        {
-                            UseShellExecute = true,
-                            Arguments = "",
-                            FileName = alterfulPath,
-                        }
-                    };
-                    newProcess.StartInfo.Verb = "runas";
-                    newProcess.Start();
+                        UseShellExecute = true,
+                        Arguments = targetPath,
+                        FileName = alterfulPath,
+                    }
+                };
+                newProcess.StartInfo.Verb = "runas";
+                newProcess.Start();
 
-                    Thread.Sleep(996);
-                }
+                Thread.Sleep(996);
             }
         }
 

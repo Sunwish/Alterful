@@ -27,6 +27,13 @@ namespace Alterful.Helper
         public static void Initialize()
         {
             // Floder Check
+            if(!Directory.Exists(BASE_PATH + @"\Config"))
+            {
+                // First start alterful
+                ASettings.DisplayRightMenu = true;
+                ASettings.AutoRunWithSystem = true;
+                CreateShortcut(APATH_PATH + @"\alterful"  + AFile.LNK_EXTENTION, BASE_PATH + @"\Alterful.exe");
+            }
             Directory.CreateDirectory(BASE_PATH + @"\APath");
             Directory.CreateDirectory(BASE_PATH + @"\ATemp");
             Directory.CreateDirectory(BASE_PATH + @"\Config");

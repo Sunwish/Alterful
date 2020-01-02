@@ -264,16 +264,32 @@ namespace Alterful
         public MainWindow()
         {   
             if (!GotMutex) Environment.Exit(1);//退出程序
-
+            
             // Global Initialization.
             AHelper.Initialize();
             InitializeComponent();
             InitializeGUI(ATheme.GetThemeConfig());
             InitializePipe();
-                
+            CheckCommandLine();
+            
             // Instruction Test.
             // MainTest();
             // Close();
+        }
+
+        private void CheckCommandLine()
+        {
+            List<string> commandLineArgList = new List<string>(Environment.GetCommandLineArgs());
+            if (commandLineArgList.Count == 0) return;
+            string path = commandLineArgList[commandLineArgList.Count - 1].Trim();
+            if (path != "" && path != AHelper.BASE_PATH + @"\Alterful.exe" && (File.Exists(path) || Directory.Exists(path)))
+            {
+                string defaultName = System.IO.Path.GetFileNameWithoutExtension(path).ToLower();
+                InstructionTextBox.Text = "@add" + " " + defaultName + " " + path;
+                InstructionTextBox.SelectionStart = ("@add" + " ").Length;
+                InstructionTextBox.SelectionLength = defaultName.Length;
+                InstructionTextBox.Focus();
+            }
         }
 
         private void InitializePipe()
@@ -304,10 +320,9 @@ namespace Alterful
                             InstructionTextBox.Text = "@add" + " " + defaultName + " " + path;
                             InstructionTextBox.SelectionStart = ("@add" + " ").Length;
                             InstructionTextBox.SelectionLength = defaultName.Length;
+                            Visibility = Visibility.Visible;
                             InstructionTextBox.Focus();
                         }));
-
-                        Visibility = Visibility.Visible;
                     }
                     Thread.Sleep(1000);
                 }
