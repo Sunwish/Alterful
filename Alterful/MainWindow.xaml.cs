@@ -265,7 +265,7 @@ namespace Alterful
         public MainWindow()
         {
             if (!GotMutex) Environment.Exit(1);//退出程序
-            
+
             // Global Initialization.
             AHelper.Initialize();
             InitializeComponent();
@@ -273,11 +273,27 @@ namespace Alterful
             InitializePipe();
             CheckCommandLine();
 
-            // AUpdate.UpdateAndRestart();
+            Thread thread = new Thread(new ThreadStart(CheckUpdate));
+            thread.Start();
 
             // Instruction Test.
             // MainTest();
             // Close();
+        }
+
+        private void CheckUpdate()
+        {
+            if (AVersion.GetVersionNumberDiffer() >= 0) return;
+            string outInfo = "A new version is detected, execute @update to enable the Updater."/*"检查到有新版本，执行 @update 来启用更新程序"*/;
+
+            // InstructionTextBox 被主线程占用，利用 Dispatcher 进行操作
+            TestRichTextbox.Dispatcher.BeginInvoke((Action)(() => {
+                UpdateMaxWidth(outInfo);
+                AppendRTBLine(TestRichTextbox, outInfo, themeConfig.ForegroundOutputWarning, themeConfig.BackgroundOutputWarning);
+                Visibility = Visibility.Visible;
+                showOutput = true;
+                Resize();
+            }));
         }
 
         private void CheckCommandLine()
@@ -344,6 +360,8 @@ namespace Alterful
             InstructionTextBox.Focus();
         }
 
+        
+
         /// <summary>
         /// 执行指令框中的指令
         /// </summary>
@@ -388,6 +406,32 @@ namespace Alterful
                 UpdateMaxWidth("Confirm: Alt + S / Cancel: Alt + Esc");
                 Resize(true, constInstructionInputWidthBias);
                 TestRichTextbox.Focus(); showOutput = true;
+                return;
+            }
+            else if (AInstruction.UPDATE_INSTRUCTION == retnInfo)
+            {
+                AppendRTBLine(TestRichTextbox, InstructionTextBox.Text, themeConfig.ForegroundOutput, themeConfig.BackgroundOutput);
+                InstructionTextBox.Text = "";
+                Resize();
+
+                AHelper.AppendString appendString = delegate (string content, AInstruction.ReportType type)
+                {
+                    // InstructionTextBox 被主线程占用，利用 Dispatcher 进行操作
+                    TestRichTextbox.Dispatcher.BeginInvoke((Action)(() => {
+                        switch (type)
+                        {
+                            case AInstruction.ReportType.NONE: AppendRTBLine(TestRichTextbox, content, themeConfig.ForegroundOutput, themeConfig.BackgroundOutput); break;
+                            case AInstruction.ReportType.WARNING: AppendRTBLine(TestRichTextbox, content, themeConfig.ForegroundOutputWarning, themeConfig.BackgroundOutputWarning); break;
+                            case AInstruction.ReportType.OK: AppendRTBLine(TestRichTextbox, content, themeConfig.ForegroundOutputOk, themeConfig.BackgroundOutputOk); break;
+                            case AInstruction.ReportType.ERROR: AppendRTBLine(TestRichTextbox, content, themeConfig.ForegroundOutputError, themeConfig.BackgroundOutputError); break;
+                        }
+                        
+                        InstructionTextBox.Text = "";
+                        Resize();
+                    }));
+                };
+
+                new Thread(AUpdate.UpdateAndRestart).Start(appendString);
                 return;
             }
 

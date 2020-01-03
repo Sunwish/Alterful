@@ -15,6 +15,7 @@ namespace Alterful.Functions.Tests
         [DataRow("@new a.txt", AInstruction_Macro.MacroType.NEW)]
         [DataRow("@add #const instruction", AInstruction_Macro.MacroType.ADD)]
         [DataRow("@del #const", AInstruction_Macro.MacroType.DEL)]
+        [DataRow("@update", AInstruction_Macro.MacroType.UPDATE)]
         public void GetMacroTypeTest(string instruction, AInstruction_Macro.MacroType expected)
         {
             AInstruction_Macro ins = new AInstruction_Macro(instruction);

@@ -23,12 +23,13 @@ namespace Alterful.Functions
         public const char SYMBOL_CONST_ADD = '+';
         public const char SYMBOL_CONST_CMD = '>';
         public const string ADD_CONST_INSTRUCTION = "ADD_CONST_INSTRUCTION";
+        public const string UPDATE_INSTRUCTION = "UPDATE_INSTRUCTION";
         public const string MSG_EXECUTE_SUCCESSFULLY = "Execute successfully.";
         public string Instruction { get; }
         public static List<string> ReportInfo { get; } = new List<string>();
         public static ReportType reportType = ReportType.OK;
 
-        public enum ReportType { OK, WARNING, ERROR }
+        public enum ReportType { OK, WARNING, ERROR, NONE }
 
         protected AInstruction(string instruction)
         {
@@ -227,7 +228,7 @@ namespace Alterful.Functions
     public class MacroFormatException : FormatException { public MacroFormatException() : base(AInstruction_Macro.MSG_MACRO_FORMAT_EXCEPTION) { } }
     public class AInstruction_Macro : AInstruction
     {
-        public enum MacroType { ADD, NEW, DEL, SET }
+        public enum MacroType { ADD, NEW, DEL, SET, UPDATE }
         public enum MacroAddType { STARTUP, CONST_QUOTE }
         public enum MacroDelType { STARTUP, CONST_QUOTE }
         public static string MSG_UNKNOW_MACRO_TYPE { get; } = "Unknow macro type";
@@ -250,7 +251,7 @@ namespace Alterful.Functions
         /// </summary>
         /// <param name="part"></param>
         /// <returns></returns>
-        public static string GetCompletion(string part) => SYMBOL_MACRO + AHelper.FindCompletion(new List<string> { "add", "del", "new", "set" }, part.Substring(1));
+        public static string GetCompletion(string part) => SYMBOL_MACRO + AHelper.FindCompletion(new List<string> { "add", "del", "new", "set", "update" }, part.Substring(1));
 
         /// <summary>
         /// 获取宏指令类型
@@ -269,6 +270,7 @@ namespace Alterful.Functions
                 case "new": return MacroType.NEW;
                 case "del": return MacroType.DEL;
                 case "set": return MacroType.SET;
+                case "update": return MacroType.UPDATE;
                 default: throw new UnknowMacroType(macroType);
             }
         }
@@ -292,6 +294,7 @@ namespace Alterful.Functions
                     case MacroType.DEL: ExecuteMacroDel(); break;
                     case MacroType.NEW: ExecuteMacroNew(); break;
                     case MacroType.SET: ExecuteMacroSet(); break;
+                    case MacroType.UPDATE: ExecuteMacroUpdate(); break;
                 }
             }
             catch (Exception)
@@ -571,6 +574,11 @@ namespace Alterful.Functions
                 default:
                     throw new MacroFormatException();
             }
+        }
+
+        private void ExecuteMacroUpdate()
+        {
+            throw new Exception(AInstruction.UPDATE_INSTRUCTION);
         }
     }
 

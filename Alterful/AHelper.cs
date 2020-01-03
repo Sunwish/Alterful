@@ -21,9 +21,11 @@ namespace Alterful.Helper
         public static string APATH_PATH { get; } = BASE_PATH + @"\APath";
         public static string ATEMP_PATH { get; } = BASE_PATH + @"\ATemp";
         public static string CONST_INSTRUCTION_PATH { get; } = BASE_PATH + @"\Config\ConstInstruction";
+        public const string RemoteUrl = @"https://alterful.com/bin/";
         public const string LNK_EXTENTION = ".lnk";
         public static List<string> InstructionHistory = new List<string>();
         public static int InstructionPointer = -1;
+        public delegate void AppendString(string content, AInstruction.ReportType type);
         public static void Initialize()
         {
             // Floder Check
@@ -53,7 +55,7 @@ namespace Alterful.Helper
             // Regedit Check
 
             // Others
-
+            System.IO.File.Delete(@".\restart.bat");
         }
 
         /// <summary>
@@ -150,7 +152,7 @@ namespace Alterful.Helper
     class VersionNumberFormatException : Exception { }
     public static class AVersion
     {
-        public const string RemoteVersionUrl = @"https://alterful.com/versionInf.ini";
+        public const string RemoteVersionUrl = AHelper.RemoteUrl + @"AVersionInfo.ini";
         public struct VersionNumberStruct
         {
             public VersionNumberStruct(List<string> versionNumberStructList)
@@ -255,7 +257,7 @@ namespace Alterful.Helper
     {
         public const char FileDivide = '>';
         public const char FileInfoDivide = '|';
-        public const string RemoteFileListUrl = @"https://alterful.com/filelist.ini";
+        public const string RemoteFileListUrl = AHelper.RemoteUrl + @"AFileList.ini";
         public struct FileInfo
         {
             public FileInfo(string fileName, string fileMd5, string fileRoute)
@@ -273,36 +275,37 @@ namespace Alterful.Helper
         /// 更新并重启Alterful，若无更新则不操作
         /// </summary>
         /// <exception cref="WebException"></exception>
-        public static void UpdateAndRestart()
+        public static void UpdateAndRestart(object msgHandler)
         {
             // 已是最新或内测版本
             if (AVersion.GetVersionNumberDiffer() >= 0) return;
 
             float count = 0.0f;
             bool updateSelf = false;
+            AHelper.AppendString handler = msgHandler as AHelper.AppendString;
             using (var client = new WebClient())
             {
+                handler("[update] Getting file list...", AInstruction.ReportType.NONE);
                 List<FileInfo> differFiles = GetFilesDiffer();
                 Console.WriteLine((100 * count / differFiles.Count) + "%");
                 try
                 {
                     foreach (FileInfo differFile in differFiles)
                     {
-                        if ("Alterful.exe".ToLower() == differFile.FileName.Trim().ToLower())
+                       if ("Alterful.exe".ToLower() == differFile.FileName.Trim().ToLower())
                         {
                             updateSelf = true;
-                            client.DownloadFile(@"https://alterful.com/" + differFile.FileName, differFile.FileRoute + "Alterful.exe.temp");
+                            client.DownloadFile(AHelper.RemoteUrl + differFile.FileName, differFile.FileRoute + "Alterful.exe.temp");
                         }
                         else
                         {
                             Directory.CreateDirectory(differFile.FileRoute);
-                            client.DownloadFile(@"https://alterful.com/" + differFile.FileName, differFile.FileRoute + differFile.FileName);
-                            Console.WriteLine(differFile.FileRoute + differFile.FileName);
+                            client.DownloadFile(AHelper.RemoteUrl + differFile.FileName, differFile.FileRoute + differFile.FileName);
                         }
                         count++;
-                        Console.WriteLine((100 * count / differFiles.Count) + "%");
+                        handler("[update] Updating " + differFile.FileName + "... (" + count + "/" + differFiles.Count + ", " + (100 * count / differFiles.Count) + "%)", AInstruction.ReportType.NONE);
                     }
-
+                    handler("Update finished.", AInstruction.ReportType.OK);
                 }
                 catch (Exception) { throw; }
                 
@@ -310,7 +313,35 @@ namespace Alterful.Helper
             if(updateSelf)
             {
                 // Restart.
-                Console.WriteLine("Restart");
+                handler("The update just now needs to be restarted to take full effect.", AInstruction.ReportType.WARNING);
+                handler("[restart] Alterful will auto restart in 3 seconds.", AInstruction.ReportType.NONE);
+                Thread.Sleep(3000);
+
+                System.IO.File.Delete(@".\restart.bat");
+                using (StreamWriter writer = new StreamWriter(@".\restart.bat", true))
+                {
+                    // Write out restart.bat
+                    writer.WriteLine(@"@echo off & cls");
+                    writer.WriteLine(@"taskkill /f /im alterful.exe");
+                    writer.WriteLine(@"ping 127.0.01 -n 1");
+                    writer.WriteLine(@"copy /y " + AHelper.BASE_PATH + @"\Alterful.exe.temp " + AHelper.BASE_PATH + @"\Alterful.exe");
+                    writer.WriteLine(@"del /f /s /q " + AHelper.BASE_PATH + @"\Alterful.exe.temp");
+                    writer.WriteLine(@"start " + AHelper.BASE_PATH + @"\Alterful.exe");
+
+                    // Execute restart.bat
+                    Process newProcess = new Process()
+                    {
+                        StartInfo = new ProcessStartInfo()
+                        {
+                            WindowStyle = ProcessWindowStyle.Hidden,
+                            UseShellExecute = true,
+                            Arguments = "",
+                            FileName = @".\restart.bat",
+                        }
+                    };
+                    newProcess.StartInfo.Verb = "runas";
+                    newProcess.Start();
+                }
             }
         }
 
