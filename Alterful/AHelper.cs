@@ -118,11 +118,7 @@ namespace Alterful.Helper
                 if (standardError != "") throw new Exception(standardError);
                 return standardOutput;
             }
-            catch (Exception exception)
-            {
-                // Console.WriteLine(exception.Message);
-                throw;
-            }
+            catch (Exception) { throw; }
         }
 
         /// <summary>
@@ -271,6 +267,51 @@ namespace Alterful.Helper
             public string FileRoute { get; private set; }
             public string FileName { get; private set; }
             public string FileMd5 { get; private set; }
+        }
+
+        /// <summary>
+        /// 更新并重启Alterful，若无更新则不操作
+        /// </summary>
+        /// <exception cref="WebException"></exception>
+        public static void UpdateAndRestart()
+        {
+            // 已是最新或内测版本
+            if (AVersion.GetVersionNumberDiffer() >= 0) return;
+
+            float count = 0.0f;
+            bool updateSelf = false;
+            using (var client = new WebClient())
+            {
+                List<FileInfo> differFiles = GetFilesDiffer();
+                Console.WriteLine((100 * count / differFiles.Count) + "%");
+                try
+                {
+                    foreach (FileInfo differFile in differFiles)
+                    {
+                        if ("Alterful.exe".ToLower() == differFile.FileName.Trim().ToLower())
+                        {
+                            updateSelf = true;
+                            client.DownloadFile(@"https://alterful.com/" + differFile.FileName, differFile.FileRoute + "Alterful.exe.temp");
+                        }
+                        else
+                        {
+                            Directory.CreateDirectory(differFile.FileRoute);
+                            client.DownloadFile(@"https://alterful.com/" + differFile.FileName, differFile.FileRoute + differFile.FileName);
+                            Console.WriteLine(differFile.FileRoute + differFile.FileName);
+                        }
+                        count++;
+                        Console.WriteLine((100 * count / differFiles.Count) + "%");
+                    }
+
+                }
+                catch (Exception) { throw; }
+                
+            }
+            if(updateSelf)
+            {
+                // Restart.
+                Console.WriteLine("Restart");
+            }
         }
 
         public static List<FileInfo> GetFilesDiffer()

@@ -140,7 +140,7 @@ namespace Alterful.Functions
                         switch (suffix)
                         {
                             case "f": AFile.ShowInExplorer(item.StartupName); break;
-                            case "c": throw new NotImplementedException(); AFile.GetFullPath(item.StartupName);
+                            case "c": throw new NotImplementedException(); /*AFile.GetFullPath(item.StartupName);*/
                             case "o": AFile.Launch(item.StartupName, item.StartupParameter); break;
                             case "oa": AFile.Launch(item.StartupName, item.StartupParameter, true); break;
                             case "t": AFile.MoveToATemp(item.StartupName); break;

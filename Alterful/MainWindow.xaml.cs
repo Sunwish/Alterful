@@ -205,6 +205,7 @@ namespace Alterful
                     handled = true;
                     break;
             }
+            hotkeySetting = hotkeySetting + 0; // Meaningless, just for clearing up warnning
             return IntPtr.Zero;
         }
 
@@ -262,7 +263,7 @@ namespace Alterful
         static bool GotMutex = false;
         System.Threading.Mutex mutex = new System.Threading.Mutex(true, "Alterful", out GotMutex);
         public MainWindow()
-        {   
+        {
             if (!GotMutex) Environment.Exit(1);//退出程序
             
             // Global Initialization.
@@ -271,7 +272,9 @@ namespace Alterful
             InitializeGUI(ATheme.GetThemeConfig());
             InitializePipe();
             CheckCommandLine();
-            
+
+            // AUpdate.UpdateAndRestart();
+
             // Instruction Test.
             // MainTest();
             // Close();
