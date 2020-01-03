@@ -25,7 +25,7 @@ namespace Alterful.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("1.02.202.08")]
+        [global::System.Configuration.DefaultSettingValueAttribute("2.02.202.08")]
         public string localVersion {
             get {
                 return ((string)(this["localVersion"]));

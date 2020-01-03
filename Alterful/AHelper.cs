@@ -26,7 +26,7 @@ namespace Alterful.Helper
         public static List<string> InstructionHistory = new List<string>();
         public static int InstructionPointer = -1;
         public delegate void AppendString(string content, AInstruction.ReportType type);
-        public static void Initialize()
+        public static void Initialize(AppendString appendString)
         {
             // Floder Check
             if(!Directory.Exists(BASE_PATH + @"\Config"))
@@ -56,6 +56,35 @@ namespace Alterful.Helper
 
             // Others
             System.IO.File.Delete(@".\restart.bat");
+            string ANewPath = @".\ANew.ini";
+            if (System.IO.File.Exists(ANewPath))
+            {
+                using(StreamReader reader = new StreamReader(ANewPath))
+                {
+                    appendString("What's new in version " + Properties.Settings.Default.localVersion + ":", AInstruction.ReportType.OK);
+                    foreach (string line in reader.ReadToEnd().Split('\n'))
+                    {
+                        if (0 == line.Length) continue;
+                        if ('*' != line[0])
+                        {
+                            appendString(line.Trim(), AInstruction.ReportType.NONE);
+                        }
+                        else if (0 == line.IndexOf("***"))
+                        {
+                            appendString(line.Trim().Substring(3), AInstruction.ReportType.ERROR);
+                        }
+                        else if (0 == line.IndexOf("**"))
+                        {
+                            appendString(line.Trim().Substring(2), AInstruction.ReportType.WARNING);
+                        }
+                        else if (0 == line.IndexOf("*"))
+                        {
+                            appendString(line.Trim().Substring(1), AInstruction.ReportType.OK);
+                        }
+                    }
+                }
+                System.IO.File.Delete(ANewPath);
+            }
         }
 
         /// <summary>
@@ -278,7 +307,7 @@ namespace Alterful.Helper
         public static void UpdateAndRestart(object msgHandler)
         {
             // 已是最新或内测版本
-            if (AVersion.GetVersionNumberDiffer() >= 0) return;
+            // if (AVersion.GetVersionNumberDiffer() >= 0) return;
 
             float count = 0.0f;
             bool updateSelf = false;
@@ -287,6 +316,7 @@ namespace Alterful.Helper
             {
                 handler("[update] Getting file list...", AInstruction.ReportType.NONE);
                 List<FileInfo> differFiles = GetFilesDiffer();
+                if (0 == differFiles.Count) { handler("The current version is already the latest version.", AInstruction.ReportType.OK); return; }
                 Console.WriteLine((100 * count / differFiles.Count) + "%");
                 try
                 {
