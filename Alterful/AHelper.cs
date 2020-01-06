@@ -12,6 +12,8 @@ using Alterful.Functions;
 using System.Threading;
 using System.Net;
 using System.Security.Cryptography;
+using System.Windows.Forms;
+using System.Drawing;
 
 namespace Alterful.Helper
 {
@@ -57,6 +59,7 @@ namespace Alterful.Helper
             // Others
             System.IO.File.Delete(@".\restart.bat");
             ShowANew(appendString);
+            ShowANotification();
         }
 
         private static void ShowANew(AppendString appendString)
@@ -90,6 +93,20 @@ namespace Alterful.Helper
                 }
                 System.IO.File.Delete(ANewPath);
             }
+        }
+
+        private static void ShowANotification()
+        {
+            NotifyIcon icon = new NotifyIcon()
+            {
+                Text = "Alterful",
+                Icon = new Icon(@"C:\Users\Machenike\Desktop\Alterful_Preview\AIcon.ico"),
+                BalloonTipIcon = ToolTipIcon.None,
+                BalloonTipTitle = "Alterful 正在后台运行",
+                BalloonTipText = "Alterful is running in background"
+            };
+            icon.Visible = true;
+            icon.ShowBalloonTip(3000);
         }
 
         /// <summary>
