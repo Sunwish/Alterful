@@ -264,6 +264,11 @@ namespace Alterful
         System.Threading.Mutex mutex = new System.Threading.Mutex(true, "Alterful", out GotMutex);
         public MainWindow()
         {
+            foreach (AHelper.SoftwareInstalled software in AHelper.GetInstalledSoftwareList())
+            {
+                Console.WriteLine(software.DisplayName + " (" + software.InstallLocation + ")");
+            }
+
             if (!GotMutex) Environment.Exit(1);//退出程序
 
             // Global Initialization.

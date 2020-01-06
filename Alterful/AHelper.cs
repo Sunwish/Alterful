@@ -56,10 +56,15 @@ namespace Alterful.Helper
 
             // Others
             System.IO.File.Delete(@".\restart.bat");
+            ShowANew(appendString);
+        }
+
+        private static void ShowANew(AppendString appendString)
+        {
             string ANewPath = @".\ANew.ini";
             if (System.IO.File.Exists(ANewPath))
             {
-                using(StreamReader reader = new StreamReader(ANewPath))
+                using (StreamReader reader = new StreamReader(ANewPath))
                 {
                     appendString("What's new in version " + Properties.Settings.Default.localVersion + ":", AInstruction.ReportType.OK);
                     foreach (string line in reader.ReadToEnd().Split('\n'))
@@ -175,6 +180,106 @@ namespace Alterful.Helper
                 throw exception;
             }
             */
+        }
+
+        public static void Restart()
+        {
+            using (StreamWriter writer = new StreamWriter(@".\restart.bat", true))
+            {
+                // Write out restart.bat
+                writer.WriteLine(@"@echo off & cls");
+                writer.WriteLine(@"taskkill /f /im alterful.exe");
+                writer.WriteLine(@"ping 127.0.01 -n 2");
+                writer.WriteLine(@"start " + AHelper.BASE_PATH + @"\Alterful.exe");
+
+                // Execute restart.bat
+                Process newProcess = new Process()
+                {
+                    StartInfo = new ProcessStartInfo()
+                    {
+                        WindowStyle = ProcessWindowStyle.Hidden,
+                        UseShellExecute = true,
+                        Arguments = "",
+                        FileName = @".\restart.bat",
+                    }
+                };
+                newProcess.StartInfo.Verb = "runas";
+                newProcess.Start();
+            }
+        }
+
+        public struct SoftwareInstalled
+        {
+            public SoftwareInstalled(string displayName, string installLocation) { DisplayName = displayName; InstallLocation = installLocation; }
+            public string DisplayName { get; private set; }
+            public string InstallLocation { get; private set; }
+        }
+
+        public static List<SoftwareInstalled> GetInstalledSoftwareList()
+        {
+            string displayName;
+            string installLocation;
+            List<SoftwareInstalled> gInstalledSoftware = new List<SoftwareInstalled>();
+
+            using (RegistryKey key = Registry.CurrentUser.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall", false))
+            {
+                foreach (String keyName in key.GetSubKeyNames())
+                {
+                    RegistryKey subkey = key.OpenSubKey(keyName);
+                    displayName = subkey.GetValue("DisplayName") as string;
+                    installLocation = subkey.GetValue("InstallLocation") as string;
+                    if (string.IsNullOrEmpty(displayName) || string.IsNullOrEmpty(installLocation))
+                        continue;
+                    
+                    gInstalledSoftware.Add(new SoftwareInstalled(displayName.ToLower(), installLocation.ToLower()));
+                }
+            }
+
+            //using (RegistryKey key = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall", false))
+            using (var localMachine = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry64))
+            {
+                var key = localMachine.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall", false);
+                foreach (String keyName in key.GetSubKeyNames())
+                {
+                    RegistryKey subkey = key.OpenSubKey(keyName);
+                    displayName = subkey.GetValue("DisplayName") as string;
+                    installLocation = subkey.GetValue("InstallLocation") as string;
+                    if (string.IsNullOrEmpty(displayName) || string.IsNullOrEmpty(installLocation))
+                        continue;
+
+                    gInstalledSoftware.Add(new SoftwareInstalled(displayName.ToLower(), installLocation.ToLower()));
+                }
+            }
+
+            using (var localMachine = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry32))
+            {
+                var key = localMachine.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall", false);
+                foreach (String keyName in key.GetSubKeyNames())
+                {
+                    RegistryKey subkey = key.OpenSubKey(keyName);
+                    displayName = subkey.GetValue("DisplayName") as string;
+                    installLocation = subkey.GetValue("InstallLocation") as string;
+                    if (string.IsNullOrEmpty(displayName) || string.IsNullOrEmpty(installLocation))
+                        continue;
+
+                    gInstalledSoftware.Add(new SoftwareInstalled(displayName.ToLower(), installLocation.ToLower()));
+                }
+            }
+
+            using (RegistryKey key = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall", false))
+            {
+                foreach (String keyName in key.GetSubKeyNames())
+                {
+                    RegistryKey subkey = key.OpenSubKey(keyName);
+                    displayName = subkey.GetValue("DisplayName") as string;
+                    installLocation = subkey.GetValue("InstallLocation") as string;
+                    if (string.IsNullOrEmpty(displayName) || string.IsNullOrEmpty(installLocation))
+                        continue;
+
+                    gInstalledSoftware.Add(new SoftwareInstalled(displayName.ToLower(), installLocation.ToLower()));
+                }
+            }
+            return gInstalledSoftware;
         }
     }
 
@@ -344,8 +449,8 @@ namespace Alterful.Helper
             {
                 // Restart.
                 handler("The update just now needs to be restarted to take full effect.", AInstruction.ReportType.WARNING);
-                handler("[restart] Alterful will auto restart in 3 seconds.", AInstruction.ReportType.NONE);
-                Thread.Sleep(3000);
+                handler("[restart] Alterful will auto restart in 10 seconds.", AInstruction.ReportType.NONE);
+                Thread.Sleep(10000);
 
                 System.IO.File.Delete(@".\restart.bat");
                 using (StreamWriter writer = new StreamWriter(@".\restart.bat", true))
@@ -372,6 +477,10 @@ namespace Alterful.Helper
                     newProcess.StartInfo.Verb = "runas";
                     newProcess.Start();
                 }
+            }
+            else
+            {
+                handler("Execute @restart to list what's new.", AInstruction.ReportType.NONE);
             }
         }
 
