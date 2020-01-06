@@ -547,7 +547,10 @@ namespace Alterful
             if (e.Key == Key.Enter && "" != InstructionTextBox.Text)
             {
                 e.Handled = true;
-                if (!constInstructionInputMode) { ExecuteTextBoxInstrution(); }
+                if (!constInstructionInputMode)
+                {
+                    new Thread(() => { InstructionTextBox.Dispatcher.BeginInvoke((Action)(() => ExecuteTextBoxInstrution())); }).Start();
+                }
                 else { e.Handled = false; Resize(true, 12, 500); InstructionTextBox.Height = 500; InstructionTextBox.MaxLines = 500; }
                 return;
             }

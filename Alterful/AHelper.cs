@@ -106,7 +106,7 @@ namespace Alterful.Helper
                 BalloonTipText = "Alterful is running in background"
             };
             icon.Visible = true;
-            icon.ShowBalloonTip(3000);
+            icon.ShowBalloonTip(3600);
         }
 
         /// <summary>
