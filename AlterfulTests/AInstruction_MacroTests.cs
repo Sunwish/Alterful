@@ -1,11 +1,11 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Alterful.Functions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using static Alterful.Functions.AInstruction;
+using Alterful.Instruction;
+
 namespace Alterful.Functions.Tests
 {
     [TestClass()]

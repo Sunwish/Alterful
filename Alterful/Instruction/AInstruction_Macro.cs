@@ -1,231 +1,14 @@
-﻿using System;
+﻿using Alterful.Functions;
+using Alterful.Helper;
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.IO;
-using Alterful.Helper;
-using System.Text.RegularExpressions;
-using Alterful;
-namespace Alterful.Functions
+
+namespace Alterful.Instruction
 {
-    public enum InstructionType
-    {
-        STARTUP, MACRO, CONST, BUILDIN, CMD
-    }
-    class InvalidInstructionException : FormatException { }
-    class ConstQuoteParseError : FormatException{ }
-    public abstract class AInstruction
-    {
-        public const char SYMBOL_MACRO = '@';
-        public const char SYMBOL_CONST = '#';
-        public const char SYMBOL_BUILDIN = '.';
-        public const char SYMBOL_CONST_ADD = '+';
-        public const char SYMBOL_CONST_CMD = '>';
-        public const string ADD_CONST_INSTRUCTION = "ADD_CONST_INSTRUCTION";
-        public const string UPDATE_INSTRUCTION = "UPDATE_INSTRUCTION";
-        public const string MSG_EXECUTE_SUCCESSFULLY = "Execute successfully.";
-        public string Instruction { get; }
-        public static List<string> ReportInfo { get; } = new List<string>();
-        public static ReportType reportType = ReportType.OK;
-
-        public enum ReportType { OK, WARNING, ERROR, NONE }
-
-        protected AInstruction(string instruction)
-        {
-            Instruction = instruction;
-        }
-
-        /// <summary>
-        /// 获取指令类型
-        /// </summary>
-        /// <param name="instruction">欲获取类型的指令</param>
-        /// <returns></returns>
-        public static InstructionType GetType(string instruction)
-        {
-            if (0 == instruction.Length) return InstructionType.STARTUP;
-            switch (instruction[0])
-            {
-                case SYMBOL_MACRO: return InstructionType.MACRO;
-                case SYMBOL_BUILDIN: return InstructionType.BUILDIN;
-                case SYMBOL_CONST_CMD: return InstructionType.CMD;
-                case SYMBOL_CONST:
-                    if (instruction[instruction.Length - 1] == ')') // Const Function
-                        return InstructionType.CONST;
-                    else // Startup Instrcution with const quote
-                        return InstructionType.STARTUP;
-            }
-            if ((instruction.IndexOf("(") < instruction.IndexOf(")")) && instruction.IndexOf(")") != -1 && instruction.IndexOf(")") == instruction.Length - 1) return InstructionType.CONST;
-            else return InstructionType.STARTUP;
-        }
-
-        /// <summary>
-        /// 获取可执行的Alterful指令
-        /// </summary>
-        /// <param name="instruction"></param>
-        /// <returns></returns>
-        public static AInstruction GetInstruction(string instruction)
-        {
-            switch (GetType(instruction))
-            {
-                case InstructionType.MACRO: return new AInstruction_Macro(instruction);
-                case InstructionType.STARTUP: return new AInstruction_Startup(AConstQuote.ConstQuoteParse(instruction));
-                case InstructionType.CONST: return new AInstruction_Const(instruction);
-                case InstructionType.CMD: return new AInstruction_CMD(instruction);
-                default: return new AInstruction_Startup(AConstQuote.ConstQuoteParse(instruction));
-            }
-        }
-
-        /// <summary>
-        /// 指令有效性检查
-        /// </summary>
-        /// <returns></returns>
-        // public abstract bool Check();
-        
-        /// <summary>
-        /// 执行指令
-        /// </summary>
-        /// <exception cref="AFile.StartupItemNotFoundException"></exception>
-        /// <exception cref="UnauthorizedAccessException"></exception>
-        public abstract string Execute();
-    }
-
-    public struct StartupItem
-    {
-        public string StartupName { get; set; }
-        public string StartupParameter { get; set; }
-        public List<string> SuffixList { get; set; }
-    }
-
-    public class AInstruction_Startup : AInstruction
-    {
-        /// <summary>
-        /// 指令中包含的启动项个数
-        /// </summary>
-        public int Count { get; }
-        public AInstruction_Startup(string instruction) : base(instruction) => Count = instruction.Split(' ').Length;
-
-        /// <summary>
-        /// 获取补全
-        /// </summary>
-        /// <param name="part"></param>
-        /// <returns></returns>
-        public static string GetCompletion(string part) {
-            List<string> list = AFile.GetLnkList();
-            list.AddRange(ASettings.GetSettingsPropertiesName());
-            return AHelper.FindCompletion(list, part);
-        }
-
-        /// <summary>
-        /// 执行指令，启动失败的启动项在ReportInfo中查看
-        /// </summary>
-        public override string Execute()
-        {
-            int existCount = 0;
-            ReportInfo.Clear();
-            AHelper.InstructionHistory.Insert(0, Instruction);
-            foreach (var item in GetStartupItems())
-            {
-                if (item.StartupName == "") continue;
-
-                if (AFile.Exists(item.StartupName))
-                {
-                    existCount++;
-                    if (item.SuffixList == null)
-                    {
-                        AFile.Launch(item.StartupName, item.StartupParameter);
-                        continue;
-                    }
-                    foreach (var suffix in item.SuffixList)
-                    {
-                        switch (suffix)
-                        {
-                            case "f": AFile.ShowInExplorer(item.StartupName); break;
-                            case "c": throw new NotImplementedException(); /*AFile.GetFullPath(item.StartupName);*/
-                            case "o": AFile.Launch(item.StartupName, item.StartupParameter); break;
-                            case "oa": AFile.Launch(item.StartupName, item.StartupParameter, true); break;
-                            case "t": AFile.MoveToATemp(item.StartupName); break;
-                        }
-                    }
-                }
-                else
-                {
-                    ReportInfo.Add("Starup item [" + item.StartupName + "] is not exist.");
-                }
-            }
-            reportType = ReportType.OK;
-            return existCount!=0 ? AInstruction.MSG_EXECUTE_SUCCESSFULLY : "";
-        }
-
-        /// <summary>
-        /// 获取指令包含的启动项文本列表
-        /// </summary>
-        /// <returns></returns>
-        public List<string> GetStartupItemStringList()
-        {
-            return new List<string>(Instruction.Split(' '));
-        }
-
-        /// <summary>
-        /// 获取分离参数的启动项列表
-        /// </summary>
-        /// <param name="singleStartupItemString"></param>
-        /// <returns></returns>
-        public static string GetStartupItemParameterDepart(ref string singleStartupItemString)
-        {
-            int paramSymbolPosition = singleStartupItemString.IndexOf('/');
-            if (-1 == paramSymbolPosition) return "";
-            string param = singleStartupItemString.Substring(paramSymbolPosition + 1);
-            singleStartupItemString = singleStartupItemString.Substring(0, paramSymbolPosition);
-            return param;
-        }
-
-        /// <summary>
-        /// 获取指令中包含的启动项
-        /// </summary>
-        /// <returns></returns>
-        public List<StartupItem> GetStartupItems()
-        {
-            List<string> startupItemStringList = GetStartupItemStringList();
-            List<StartupItem> startupItemList = new List<StartupItem>();
-            for(int i = 0; i < startupItemStringList.Count; i++)
-            {
-                string singleItem = startupItemStringList[i];
-                string param = GetStartupItemParameterDepart(ref singleItem);
-                StartupItem item = StartupNameSuffixesParse(singleItem);
-                item.StartupParameter = param;
-                startupItemList.Add(item);
-            }
-            return startupItemList;
-        }
-
-        /// <summary>
-        /// 启动项解析
-        /// </summary>
-        /// <param name="singleStartupItem">单个的启动项原文本，可调用 GetStartupItems() 方法获得</param>
-        /// <returns></returns>
-        public static StartupItem StartupNameSuffixesParse(string singleStartupItem)
-        {
-            if (singleStartupItem.IndexOf('-') == -1) return new StartupItem() { StartupName = singleStartupItem, SuffixList = null };
-
-            StartupItem item = new StartupItem();
-            List<string> suffixList = new List<string>(singleStartupItem.Split('-'));
-            item.StartupName = suffixList[0];
-            suffixList.RemoveAt(0);
-            item.SuffixList = suffixList;
-
-            return item;
-        }
-    }
-
-    public struct ConstInstructionItem
-    {
-        public string ConstInstruction { get; set; }
-        public List<string> ParameterList { get; set; }
-    }
-
-    public class UnknowMacroType : FormatException { public UnknowMacroType(string unknowType) : base(AInstruction_Macro.MSG_UNKNOW_MACRO_TYPE + " [" + unknowType + "].") { } }
-    public class MacroFormatException : FormatException { public MacroFormatException() : base(AInstruction_Macro.MSG_MACRO_FORMAT_EXCEPTION) { } }
     public class AInstruction_Macro : AInstruction
     {
         public enum MacroType { ADD, NEW, DEL, SET, UPDATE, RESTART }
@@ -511,7 +294,7 @@ namespace Alterful.Functions
                 case 0:
                     // List setting items.
                     string retnMessage = "Available setting items: ";
-                    foreach(string propertyName in ASettings.GetSettingsPropertiesName())
+                    foreach (string propertyName in ASettings.GetSettingsPropertiesName())
                         retnMessage += propertyName + " ";
                     throw new NotImplementedException(retnMessage);
                 case 1:
@@ -525,7 +308,7 @@ namespace Alterful.Functions
                     {
                         availableValues += "True / False";
                     }
-                    else if(t.Equals(typeof(AlterfulTheme)))
+                    else if (t.Equals(typeof(AlterfulTheme)))
                     {
                         foreach (AlterfulTheme theme in Enum.GetValues(typeof(AlterfulTheme)))
                             availableValues += theme + " / ";
@@ -564,7 +347,7 @@ namespace Alterful.Functions
                         {
                             string a = theme.ToString();
                             if (theme.ToString().ToLower().Trim() == setValue.ToLower())
-                            { 
+                            {
                                 ATheme.Theme = theme;
                                 found = true;
                                 ReportInfo.Add("Theme config have changed, but early content won't be appply.");
@@ -582,90 +365,4 @@ namespace Alterful.Functions
         private void ExecuteMacroRestart() => AHelper.Restart();
     }
 
-    public class AInstruction_CMD : AInstruction
-    {
-        public AInstruction_CMD(string instruction) : base(instruction) {}
-
-        public static string GetCompletion(string part) => "";
-
-        public override string Execute()
-        {
-            ReportInfo.Clear();
-            AHelper.InstructionHistory.Insert(0, Instruction);
-            try
-            {
-                string output = AHelper.ExecuteCommand(Instruction.Substring(1).Trim());
-
-                // cd detect
-                List<string> cmdParts = new List<string>(Instruction.Split(' '));
-                cmdParts.RemoveAt(0); // Remove symbol '>'
-                if (cmdParts.Count > 1 && "cd" == cmdParts[0])
-                    Directory.SetCurrentDirectory(cmdParts[1]);
-
-                reportType = ReportType.OK;
-                return output;
-            }
-            catch (Exception exception)
-            {
-                reportType = ReportType.ERROR;
-                return exception.Message;
-            }
-        }
-    }
-
-    public class AInstruction_Const : AInstruction
-    {
-        public AInstruction_Const(string instruction) : base(instruction) { }
-
-        /// <summary>
-        /// 从宏指令中分离出常指令部分
-        /// </summary>
-        /// <param name="macroInstruction"></param>
-        /// <returns></returns>
-        public static string GetConstInstructionFromMacroInstruction(string macroInstruction)
-        {
-            return macroInstruction.Substring(macroInstruction.IndexOf(" ") + 1, macroInstruction.Length - macroInstruction.IndexOf(" ") - 1);
-        }
-
-        public static string GetCompletion(string part) => throw new NotImplementedException();
-
-        /// <summary>
-        /// 执行指令，启动失败的启动项在ReportInfo中查看
-        /// </summary>
-        /// <exception cref="ConstInstructionParameterParseException"></exception>
-        public override string Execute()
-        {
-            ReportInfo.Clear();
-            AHelper.InstructionHistory.Insert(0, Instruction);
-
-            ConstInstruction ci = new ConstInstruction();
-            if(AConstInstruction.GetConstInstructionFrame(Instruction, ref ci))
-            {
-                bool allRight = true;
-                try
-                {
-                    foreach (string instructionLine in ci.instructionLines)
-                    {
-                        // Instruction here firstly need to be parse (const quote / parameter parse).
-                        // Const quote parse.
-                        string instructionLine_cqp = AConstQuote.ConstQuoteParse(instructionLine);
-                        // Parameter parse
-                        ConstInstruction instructionAttribute = AConstInstruction.ConstInstructionFileNameParse(Instruction, false);
-                        string instructionLine_cpq_pp = AConstInstruction.ConstInstructionParameterParse(ci, instructionLine_cqp, instructionAttribute.parameterList);
-                        // Execute
-                        AInstruction.GetInstruction(instructionLine_cpq_pp).Execute();
-                        if (reportType != ReportType.OK) allRight = false;
-                    }
-                }
-                catch(Exception exception) { throw exception; }
-                finally { if (!allRight) reportType = ReportType.WARNING; }
-                return AInstruction.MSG_EXECUTE_SUCCESSFULLY;
-            }
-            else
-            {
-                reportType = ReportType.ERROR;
-                throw new ConstInstructionNotFoundException(Instruction);
-            }
-        }
-    }
 }

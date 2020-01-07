@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using System.Text.RegularExpressions;
 using Alterful.Helper;
 using System.IO;
+using Alterful.Instruction;
+
 namespace Alterful.Functions
 {
     public class ConstQuoteMapConfigFormatException : FormatException { }

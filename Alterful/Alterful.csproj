@@ -69,18 +69,22 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Compile Include="ACompletion.cs" />
-    <Compile Include="AConstInstruction.cs" />
-    <Compile Include="AConstQuote.cs" />
-    <Compile Include="AFile.cs" />
-    <Compile Include="AHelper.cs" />
-    <Compile Include="AInstruction.cs" />
+    <Compile Include="Function\ACompletion.cs" />
+    <Compile Include="Function\AConstInstruction.cs" />
+    <Compile Include="Function\AConstQuote.cs" />
+    <Compile Include="Function\AFile.cs" />
+    <Compile Include="Common\AHelper.cs" />
+    <Compile Include="Instruction\AInstruction.cs" />
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="ASettings.cs" />
-    <Compile Include="ATheme.cs" />
+    <Compile Include="Common\ASettings.cs" />
+    <Compile Include="Common\ATheme.cs" />
+    <Compile Include="Instruction\AInstruction_CMD.cs" />
+    <Compile Include="Instruction\AInstruction_Const.cs" />
+    <Compile Include="Instruction\AInstruction_Macro.cs" />
+    <Compile Include="Instruction\AInstruction_Startup.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>

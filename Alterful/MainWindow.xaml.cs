@@ -21,6 +21,7 @@ using System.Windows.Interop;
 using Microsoft.Win32;
 using System.Threading;
 using System.IO.Pipes;
+using Alterful.Instruction;
 
 namespace Alterful
 {

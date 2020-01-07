@@ -14,6 +14,7 @@ using System.Net;
 using System.Security.Cryptography;
 using System.Windows.Forms;
 using System.Drawing;
+using Alterful.Instruction;
 
 namespace Alterful.Helper
 {
