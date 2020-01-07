@@ -7,7 +7,7 @@ namespace Alterful.GlobalHotKey
     /// <summary>
     /// 快捷键模型
     /// </summary>
-    class HotKeyModel
+    public class HotKeyModel
     {
         /// <summary>
         /// 设置项名称

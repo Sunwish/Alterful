@@ -7,7 +7,7 @@ namespace Alterful.GlobalHotKey
     /// <summary>
     /// 热键注册帮助
     /// </summary>
-    class HotKeyHelper
+    public class HotKeyHelper
     {
         /// <summary>
         /// 记录快捷键注册项的唯一标识符

@@ -79,14 +79,8 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="AHotKeySetting.cs" />
-    <Compile Include="AKey.cs" />
     <Compile Include="ASettings.cs" />
     <Compile Include="ATheme.cs" />
-    <Compile Include="HotKeyHelper.cs" />
-    <Compile Include="HotKeyManager.cs" />
-    <Compile Include="HotKeyModel.cs" />
-    <Compile Include="HotKeySettingsManager.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -132,6 +126,12 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="AIcon.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Alterful.GlobalHotKey\Alterful.GlobalHotKey.csproj">
+      <Project>{c0ebc6e1-fb4c-46b1-abec-0192a46c4b47}</Project>
+      <Name>Alterful.GlobalHotKey</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

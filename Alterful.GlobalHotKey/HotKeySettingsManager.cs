@@ -5,7 +5,7 @@ namespace Alterful.GlobalHotKey
     /// <summary>
     /// 快捷键设置管理器
     /// </summary>
-    class HotKeySettingsManager
+    public class HotKeySettingsManager
     {
         private static HotKeySettingsManager m_Instance;
         /// <summary>

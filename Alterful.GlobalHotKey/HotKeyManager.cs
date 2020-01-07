@@ -7,7 +7,7 @@ namespace Alterful.GlobalHotKey
     /// <summary>
     /// 热键管理器
     /// </summary>
-    class HotKeyManager
+    public class HotKeyManager
     {
         /// <summary>
         /// 热键消息
