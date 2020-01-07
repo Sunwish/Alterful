@@ -382,14 +382,17 @@ namespace Alterful.Helper
             {
                 if (vnsLocal.SecVersionNumber > vnsRemote.SecVersionNumber)
                     return 1;
-                if (vnsLocal.MainVersionNumber < vnsRemote.MainVersionNumber)
+                if (vnsLocal.SecVersionNumber < vnsRemote.SecVersionNumber)
                     return -1;
-                if (vnsLocal.MainVersionNumber == vnsRemote.MainVersionNumber)
+                if (vnsLocal.SecVersionNumber == vnsRemote.SecVersionNumber)
                 {
                     if (vnsLocal.MidVersionNumber > vnsRemote.MidVersionNumber)
                         return 1;
                     if (vnsLocal.MidVersionNumber < vnsRemote.MidVersionNumber)
                         return -1;
+                    if (vnsLocal.MidVersionNumber == vnsRemote.MidVersionNumber)
+                        return 0;
+                    /* Ignore MinVersion
                     if (vnsLocal.MidVersionNumber == vnsRemote.MidVersionNumber)
                     {
                         if (vnsLocal.MinVersionNumber > vnsRemote.MinVersionNumber)
@@ -398,7 +401,7 @@ namespace Alterful.Helper
                             return -1;
                         if (vnsLocal.MinVersionNumber == vnsRemote.MinVersionNumber)
                             return 0;
-                    }
+                    }*/
                 }
             }
             throw new NotImplementedException();

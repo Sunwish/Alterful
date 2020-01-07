@@ -3,7 +3,7 @@
   <Profiles />
   <Settings>
     <Setting Name="localVersion" Type="System.String" Scope="Application">
-      <Value Profile="(Default)">2.02.202.08</Value>
+      <Value Profile="(Default)">2.0.1.101</Value>
     </Setting>
   </Settings>
 </SettingsFile>
