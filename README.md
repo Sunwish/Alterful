@@ -14,7 +14,7 @@ Get started quickly with the **command start** function:
 
 1. 前往 [Release](https://github.com/Sunwish/Alterful/releases) 页面或 [Alterful 官网](https://www.alterful.com/) 下载最新版本；
 
-   Go to the [Release](https://github.com/Sunwish/Alterful/releases) page or [Alterful]((https://www.alterful.com/)) website to download the latest version;
+   Go to the [Release](https://github.com/Sunwish/Alterful/releases) page or [Alterful](https://www.alterful.com/) website to download the latest version;
 
 2. 将文件解压到磁盘，运行主程序 Alterful.exe；
 
@@ -38,7 +38,7 @@ Get started quickly with the **command start** function:
 
 更多功能见 [帮助文档](http://help.alterful.com/)。
 
-See [help documentation]((http://help.alterful.com/)) for more functions.
+See [help documentation](http://help.alterful.com/) for more functions.
 
 ## 调试说明 Debugging Instructions
 
@@ -54,4 +54,4 @@ One of the major characteristics of Alterful is the high degree of non visualiza
 
 如果你在 Alterful 的使用过程中遇到了任何问题或困难，亦或是有精彩的改进想法，我们都诚挚地欢迎你加入我们的 [QQ交流群](https://jq.qq.com/?_wv=1027&k=5JIkL4A)，与我们共同分享、讨论。
 
-If you encounter any problems or difficulties in the use of Alterful, or have brilliant ideas for improvement, we sincerely welcome you to join our [QQ group]((https://jq.qq.com/?_wv=1027&k=5JIkL4A)) to share and discuss with us.
+If you encounter any problems or difficulties in the use of Alterful, or have brilliant ideas for improvement, we sincerely welcome you to join our [QQ group](https://jq.qq.com/?_wv=1027&k=5JIkL4A) to share and discuss with us.
