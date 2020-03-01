@@ -8,7 +8,6 @@ using Alterful.Helper;
 using System.Text.RegularExpressions;
 using Alterful;
 using Alterful.Functions;
-using Alterful.Helper;
 namespace Alterful.Instruction
 {
     public enum InstructionType
