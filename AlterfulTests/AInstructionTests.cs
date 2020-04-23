@@ -1,5 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Alterful.Functions;
+using Alterful.Instruction;
 using System;
 using System.Collections.Generic;
 using System.Linq;
