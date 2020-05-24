@@ -98,16 +98,20 @@ namespace Alterful.Helper
 
         private static void ShowANotification()
         {
-            NotifyIcon icon = new NotifyIcon()
+            try
             {
-                Text = "Alterful",
-                Icon = new Icon(@"C:\Users\Machenike\Desktop\Alterful_Preview\AIcon.ico"),
-                BalloonTipIcon = ToolTipIcon.None,
-                BalloonTipTitle = "Alterful 正在后台运行",
-                BalloonTipText = "Alterful is running in background"
-            };
-            icon.Visible = true;
-            icon.ShowBalloonTip(3600);
+                NotifyIcon icon = new NotifyIcon()
+                {
+                    Text = "Alterful",
+                    Icon = new Icon(BASE_PATH + @"\AIcon.ico"),
+                    BalloonTipIcon = ToolTipIcon.None,
+                    BalloonTipTitle = "Alterful 正在后台运行",
+                    BalloonTipText = "Alterful is running in background"
+                };
+                icon.Visible = true;
+                icon.ShowBalloonTip(3600);
+            }
+            catch {}
         }
 
         /// <summary>
