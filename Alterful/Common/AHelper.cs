@@ -39,6 +39,11 @@ namespace Alterful.Helper
                 ASettings.AutoRunWithSystem = true;
                 CreateShortcut(APATH_PATH + @"\alterful"  + AFile.LNK_EXTENTION, BASE_PATH + @"\Alterful.exe");
             }
+
+            // Old version auto startup alterful.exe but new version startup AlterfulPiple.exe, 
+            // so over execute to overwrite the old auto startup register configurate.
+            if (ASettings.AutoRunWithSystem) ASettings.AutoRunWithSystem = true;
+
             Directory.CreateDirectory(BASE_PATH + @"\APath");
             Directory.CreateDirectory(BASE_PATH + @"\ATemp");
             Directory.CreateDirectory(BASE_PATH + @"\Config");
@@ -60,7 +65,7 @@ namespace Alterful.Helper
             // Others
             System.IO.File.Delete(@".\restart.bat");
             ShowANew(appendString);
-            ShowANotification("Alterful 正在后台运行", "Alterful is running in background");
+            ShowANotification("Alterful 正在后台运行", "Press Alt+A to active Alterful");
         }
 
         private static void ShowANew(AppendString appendString)

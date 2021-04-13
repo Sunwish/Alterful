@@ -265,10 +265,13 @@ namespace Alterful
         System.Threading.Mutex mutex = new System.Threading.Mutex(true, "Alterful", out GotMutex);
         public MainWindow()
         {
+            /*
+             * TODO: Automatically initialize default startup items for users who first use Alterful.
             foreach (AHelper.SoftwareInstalled software in AHelper.GetInstalledSoftwareList())
             {
                 Console.WriteLine(software.DisplayName + " (" + software.InstallLocation + ")");
             }
+            */
 
             if (!GotMutex)
             {
@@ -294,7 +297,7 @@ namespace Alterful
                     Resize();
                 }));
             });
-            InitializeGUI(ATheme.GetThemeConfig());
+            InitializeGUI(ATheme.GetThemeConfig(), true);
             InitializePipe();
             CheckCommandLine();
 
@@ -326,6 +329,7 @@ namespace Alterful
             List<string> commandLineArgList = new List<string>(Environment.GetCommandLineArgs());
             if (commandLineArgList.Count == 0) return;
             string path = commandLineArgList[commandLineArgList.Count - 1].Trim();
+
             if (path != "" && path != AHelper.BASE_PATH + @"\Alterful.exe" && (File.Exists(path) || Directory.Exists(path)))
             {
                 string defaultName = System.IO.Path.GetFileNameWithoutExtension(path).ToLower();
@@ -374,7 +378,7 @@ namespace Alterful
             }
         }
 
-        private void InitializeGUI(AThemeConfig tc)
+        private void InitializeGUI(AThemeConfig tc, bool realyInitialize = false)
         {
             Resize();
             themeConfig = tc;
@@ -383,6 +387,9 @@ namespace Alterful
             TestRichTextbox.Background = themeConfig.BackgroundOutput;
             TestRichTextbox.Foreground = themeConfig.ForegroundOutput;
             InstructionTextBox.Focus();
+
+            // Hide when start up
+            if (realyInitialize) Visibility = Visibility.Hidden; showOutput = false; Resize();
         }
 
 

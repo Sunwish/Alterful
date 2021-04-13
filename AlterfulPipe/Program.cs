@@ -16,15 +16,17 @@ namespace AlterfulPipe
         static string targetPath = "";
         static void Main(string[] args)
         {
-            if (args.Count() != 1) return;
-
-            targetPath = args[0].Trim();
-            if (!System.IO.File.Exists(targetPath) && !System.IO.Directory.Exists(targetPath)) return;
-
-            // Is alterful is running
             string selfLocation = System.Reflection.Assembly.GetEntryAssembly().Location;
             string alterfulPath = Path.GetDirectoryName(selfLocation) + @"\Alterful.exe";
 
+            // No arg: just startup alterful
+            if (args.Count() != 1) { StartAlterful(alterfulPath, ""); return; }
+
+            // One arg: add as alterful startup item
+            targetPath = args[0].Trim();
+            if (!System.IO.File.Exists(targetPath) && !System.IO.Directory.Exists(targetPath)) return;
+
+            // Is alterful running
             bool flag = false;
             System.Threading.Mutex mutex = new System.Threading.Mutex(true, "Alterful", out flag);
             if (!flag) // running
@@ -39,23 +41,10 @@ namespace AlterfulPipe
                 mutex.Close();
 
                 // Start alterful
-                if (!File.Exists(alterfulPath)) return;
-                Process newProcess = new Process()
-                {
-                    StartInfo = new ProcessStartInfo()
-                    {
-                        UseShellExecute = true,
-                        Arguments = targetPath,
-                        FileName = alterfulPath,
-                    }
-                };
-                newProcess.StartInfo.Verb = "runas";
-                newProcess.Start();
-
+                StartAlterful(alterfulPath, targetPath);
                 Thread.Sleep(996);
             }
         }
-
 
         private static void SendData()
         {
@@ -70,6 +59,22 @@ namespace AlterfulPipe
                 sw.Close();
             }
             catch (Exception) { /* Who cares? */ }
+        }
+
+        private static void StartAlterful(string alterfulPath, string arg)
+        {
+            if (!File.Exists(alterfulPath)) return;
+            Process newProcess = new Process()
+            {
+                StartInfo = new ProcessStartInfo()
+                {
+                    UseShellExecute = true,
+                    Arguments = arg,
+                    FileName = alterfulPath,
+                }
+            };
+            newProcess.StartInfo.Verb = "runas";
+            newProcess.Start();
         }
     }
 }

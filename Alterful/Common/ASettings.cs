@@ -16,6 +16,8 @@ namespace Alterful.Functions
         private static readonly string autoRunKeyName = Registry.LocalMachine + autoRunSubKeyName;
         private static readonly string autoRunValueName = "Alterful";
         private static readonly string selfLocation = System.Reflection.Assembly.GetEntryAssembly().Location;
+        private static readonly string alterfulDirectoryPath = Path.GetDirectoryName(selfLocation);
+        private static readonly string alterfulPiplePath = alterfulDirectoryPath + @"\AlterfulPipe.exe";
 
         private static readonly string rightMenuSubKeyName_1 = @"\*\shell\" + autoRunValueName + @"Startup\";
         private static readonly string rightMenuKeyName_1 = Registry.ClassesRoot + rightMenuSubKeyName_1;
@@ -44,13 +46,13 @@ namespace Alterful.Functions
             get
             {
                 string path = SysRegedit.GetKeyValue(autoRunKeyName, autoRunValueName);
-                return path != null && path.Equals(selfLocation);
+                return path != null && path.Equals(alterfulPiplePath);
             }
             set
             {
                 // if (value == AutoRunWithSystem) return;
                 if (value)
-                    SysRegedit.SetKeyValue(autoRunKeyName, autoRunValueName, selfLocation);
+                    SysRegedit.SetKeyValue(autoRunKeyName, autoRunValueName, alterfulPiplePath);
                 else
                     SysRegedit.DeleteValue(Registry.LocalMachine, autoRunSubKeyName, autoRunValueName);
             }
