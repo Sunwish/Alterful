@@ -220,7 +220,7 @@ namespace Alterful
         }
 
         /// <summary>
-        /// 虎丘当前录入的常指令文本行
+        /// 获取当前录入的常指令文本行
         /// </summary>
         /// <returns></returns>
         private List<string> GetConstInstructionInputLines()
@@ -270,7 +270,11 @@ namespace Alterful
                 Console.WriteLine(software.DisplayName + " (" + software.InstallLocation + ")");
             }
 
-            if (!GotMutex) Environment.Exit(1);//退出程序
+            if (!GotMutex)
+            {
+                AHelper.ShowANotification("Alterful 已在运行中", "Alterful is already running");
+                Environment.Exit(1);//退出程序
+            }
 
             // Global Initialization.
             InitializeComponent();
@@ -511,10 +515,15 @@ namespace Alterful
         {
             // Measure and set width, height.
             double insWidth = MeasureString(InstructionTextBox, InstructionTextBox.Text).Width;
+            //if (!showOutput) TestRichTextbox.Width = 0;
             Width = (showOutput ? (insWidth > outputWidthMax ? insWidth : outputWidthMax) : insWidth) + widthBias;
+            //if (showOutput) TestRichTextbox.Width = Width;
             TestRichTextbox.Visibility = showOutput ? Visibility.Visible : Visibility.Hidden;
-            if (resizeHeight) Height = (showOutput ? TestRichTextbox.ExtentHeight : 0) + InstructionTextBox.Height + heightBias;
-
+            if (resizeHeight)
+            {
+                Height = (showOutput ? TestRichTextbox.ExtentHeight : 0) + InstructionTextBox.Height + heightBias;
+                //Console.WriteLine(Height + " = " + TestRichTextbox.ExtentHeight + " + " + InstructionTextBox.Height + " + " + heightBias);
+            }
             // Window Left-Bottom.
             var desktopWorkingArea = System.Windows.SystemParameters.WorkArea;
             Top = desktopWorkingArea.Height - Math.Min(this.Height, this.MaxHeight) - 40;
@@ -608,12 +617,19 @@ namespace Alterful
         /// <param name="e"></param>
         private void InstructionTextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
+            //TimeSpan startTime = new TimeSpan(System.DateTime.Now.Ticks);
+
             Resize(constInstructionInputMode);
+            
+            //TimeSpan endTime = new TimeSpan(System.DateTime.Now.Ticks);
+            //TimeSpan countTime = startTime.Subtract(endTime).Duration();
+            //Console.WriteLine(countTime.TotalMilliseconds.ToString());
 
             // Completion
             foreach (TextChange tc in e.Changes)
                 if (tc.AddedLength > 0)
                 { CompleteInstruction(); break; }
+
         }
 
         /// <summary>

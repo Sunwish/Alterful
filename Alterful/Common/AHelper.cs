@@ -60,7 +60,7 @@ namespace Alterful.Helper
             // Others
             System.IO.File.Delete(@".\restart.bat");
             ShowANew(appendString);
-            ShowANotification();
+            ShowANotification("Alterful 正在后台运行", "Alterful is running in background");
         }
 
         private static void ShowANew(AppendString appendString)
@@ -96,7 +96,7 @@ namespace Alterful.Helper
             }
         }
 
-        private static void ShowANotification()
+        public static void ShowANotification(string title, string text)
         {
             try
             {
@@ -105,8 +105,8 @@ namespace Alterful.Helper
                     Text = "Alterful",
                     Icon = new Icon(BASE_PATH + @"\AIcon.ico"),
                     BalloonTipIcon = ToolTipIcon.None,
-                    BalloonTipTitle = "Alterful 正在后台运行",
-                    BalloonTipText = "Alterful is running in background"
+                    BalloonTipTitle = title,
+                    BalloonTipText = text
                 };
                 icon.Visible = true;
                 icon.ShowBalloonTip(3600);
