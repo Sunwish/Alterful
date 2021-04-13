@@ -392,7 +392,7 @@ namespace Alterful
             }
         }
 
-        private void InitializeGUI(AThemeConfig tc, bool hideWhenStart = false)
+        private void InitializeGUI(AThemeConfig tc, bool hideWhenStart = false, bool mustShowDetails = false)
         {
             Resize();
             themeConfig = tc;
@@ -403,7 +403,7 @@ namespace Alterful
             InstructionTextBox.Focus();
 
             // Hide when start up
-            if (hideWhenStart) Visibility = Visibility.Hidden; showOutput = false; Resize();
+            if (hideWhenStart) { Visibility = Visibility.Hidden; showOutput = false; Resize(); }
         }
 
 
