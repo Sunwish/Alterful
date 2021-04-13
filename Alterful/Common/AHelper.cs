@@ -77,7 +77,8 @@ namespace Alterful.Helper
             {
                 using (StreamReader reader = new StreamReader(ANewPath))
                 {
-                    appendString("What's new in version " + Properties.Settings.Default.localVersion + ":", AInstruction.ReportType.OK);
+                    appendString("在新版本 " + Properties.Settings.Default.localVersion + " 中有以下更新: ", AInstruction.ReportType.OK);
+                    //appendString("What's new in version " + Properties.Settings.Default.localVersion + ":", AInstruction.ReportType.OK);
                     foreach (string line in reader.ReadToEnd().Split('\n'))
                     {
                         if (0 == line.Length) continue;
@@ -451,9 +452,14 @@ namespace Alterful.Helper
             AHelper.AppendString handler = msgHandler as AHelper.AppendString;
             using (var client = new WebClient())
             {
-                handler("[update] Getting file list...", AInstruction.ReportType.NONE);
+                handler("[更新] 正在获取文件列表...", AInstruction.ReportType.NONE);
+                //handler("[update] Getting file list...", AInstruction.ReportType.NONE);
                 List<FileInfo> differFiles = GetFilesDiffer();
-                if (0 == differFiles.Count) { handler("The current version is already the latest version.", AInstruction.ReportType.OK); return; }
+                if (0 == differFiles.Count) {
+                    handler("当前版本已经是最新版。", AInstruction.ReportType.OK);
+                    //handler("The current version is already the latest version.", AInstruction.ReportType.OK); 
+                    return;
+                }
                 Console.WriteLine((100 * count / differFiles.Count) + "%");
                 try
                 {
@@ -470,9 +476,11 @@ namespace Alterful.Helper
                             client.DownloadFile(AHelper.RemoteUrl + differFile.FileName, differFile.FileRoute + differFile.FileName);
                         }
                         count++;
-                        handler("[update] Updating " + differFile.FileName + "... (" + count + "/" + differFiles.Count + ", " + (100 * count / differFiles.Count) + "%)", AInstruction.ReportType.NONE);
+                        handler("[更新] 正在更新 " + differFile.FileName + "... (" + count + "/" + differFiles.Count + ", " + (100 * count / differFiles.Count) + "%)", AInstruction.ReportType.NONE);
+                        //handler("[update] Updating " + differFile.FileName + "... (" + count + "/" + differFiles.Count + ", " + (100 * count / differFiles.Count) + "%)", AInstruction.ReportType.NONE);
                     }
-                    handler("Update finished.", AInstruction.ReportType.OK);
+                    handler("更新已完成。", AInstruction.ReportType.OK);
+                    //handler("Update finished.", AInstruction.ReportType.OK);
                 }
                 catch (Exception) { throw; }
                 
@@ -480,8 +488,10 @@ namespace Alterful.Helper
             if(updateSelf)
             {
                 // Restart.
-                handler("The update just now needs to be restarted to take full effect.", AInstruction.ReportType.WARNING);
-                handler("[restart] Alterful will auto restart in 10 seconds.", AInstruction.ReportType.NONE);
+                handler("此次更新需要重新启动 Alterful 才能完全生效。", AInstruction.ReportType.WARNING);
+                handler("[重启] Alterful 将在 10 秒后自动重新启动。", AInstruction.ReportType.NONE);
+                //handler("The update just now needs to be restarted to take full effect.", AInstruction.ReportType.WARNING);
+                //handler("[restart] Alterful will auto restart in 10 seconds.", AInstruction.ReportType.NONE);
                 Thread.Sleep(10000);
 
                 System.IO.File.Delete(@".\restart.bat");
@@ -512,7 +522,8 @@ namespace Alterful.Helper
             }
             else
             {
-                handler("Execute @restart to list what's new.", AInstruction.ReportType.NONE);
+                handler("你可以执行 @restart 来看看更新了些什么内容。", AInstruction.ReportType.NONE);
+                //handler("Execute @restart to list what's new.", AInstruction.ReportType.NONE);
             }
         }
 

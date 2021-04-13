@@ -14,6 +14,8 @@ namespace Alterful.Instruction
         public enum MacroType { ADD, NEW, DEL, SET, UPDATE, RESTART }
         public enum MacroAddType { STARTUP, CONST_QUOTE }
         public enum MacroDelType { STARTUP, CONST_QUOTE }
+        //public static string MSG_UNKNOW_MACRO_TYPE { get; } = "未知的宏指令类型";
+        //public static string MSG_MACRO_FORMAT_EXCEPTION { get; } = "未知的宏指令格式。";
         public static string MSG_UNKNOW_MACRO_TYPE { get; } = "Unknow macro type";
         public static string MSG_MACRO_FORMAT_EXCEPTION { get; } = "Unknow macro instruction format.";
         public AInstruction_Macro(string instruction) : base(instruction)
@@ -214,7 +216,14 @@ namespace Alterful.Instruction
         {
             try
             {
-                AFile.Add(AConstQuote.ConstQuoteParse(macroInstructionParameters[0]), AConstQuote.ConstQuoteParse(macroInstructionParameters[1]));
+                string startupName = AConstQuote.ConstQuoteParse(macroInstructionParameters[0]);
+                string targetPath = AConstQuote.ConstQuoteParse(macroInstructionParameters[1]);
+                if (AFile.Exists(startupName))
+                {
+                    //throw new NotImplementedException("添加失败，因为启动名 [" + startupName + "] 已经存在。");
+                    throw new NotImplementedException("Failed to add, because item [" + startupName + "] is already exist.");
+                }
+                AFile.Add(startupName, targetPath);
                 reportType = ReportType.OK;
             }
             catch (FileNotFoundException)
@@ -293,6 +302,7 @@ namespace Alterful.Instruction
             {
                 case 0:
                     // List setting items.
+                    //string retnMessage = "可用的设置项: \n";
                     string retnMessage = "Available setting items: ";
                     foreach (string propertyName in ASettings.GetSettingsPropertiesName())
                         retnMessage += propertyName + " ";
@@ -300,8 +310,10 @@ namespace Alterful.Instruction
                 case 1:
                     // List available value and current value.
                     if (0 == ASettings.GetSettingsPropertiesName().Where(p => p == paramList[0]).Count())
+                        //throw new NotImplementedException("设置项 [" + paramList[0] + "] 没有找到。");
                         throw new NotImplementedException("Setting item [" + paramList[0] + "] is not found.");
                     string targetPropertyName = paramList[0].Trim();
+                    //string availableValues = "可选值: ";
                     string availableValues = "Available values: ";
                     Type t = typeof(ASettings).GetProperty(paramList[0]).GetValue(null).GetType();
                     if (t.Equals(true.GetType()))
@@ -318,9 +330,11 @@ namespace Alterful.Instruction
                 case 2:
                     // Set value.
                     if (0 == ASettings.GetSettingsPropertiesName().Where(p => p == paramList[0]).Count())
+                        //throw new NotImplementedException("设置项 [" + paramList[0] + "] 没有找到。");
                         throw new NotImplementedException("Setting item [" + paramList[0] + "] is not found.");
                     string targetPropertyName2 = paramList[0].Trim();
                     string setValue = paramList[1].Trim();
+                    //string availableValues2 = "可选值: ";
                     string availableValues2 = "Available values: ";
                     Type t2 = typeof(ASettings).GetProperty(paramList[0]).GetValue(null).GetType();
                     if (t2.Equals(true.GetType()))
@@ -336,6 +350,7 @@ namespace Alterful.Instruction
                                 typeof(ASettings).GetProperty(paramList[0]).SetValue(null, false);
                                 break;
                             default:
+                                // throw new NotImplementedException("无效的值。");
                                 throw new NotImplementedException("Invalid value.");
                         }
                         availableValues2 += "True / False";
@@ -350,10 +365,11 @@ namespace Alterful.Instruction
                             {
                                 ATheme.Theme = theme;
                                 found = true;
-                                ReportInfo.Add("Theme config have changed, but early content won't be appply.");
+                                //ReportInfo.Add("主题设置已经生效，但之前的内容样式不会更新，可用 @restart 来重启 Alterful。");
+                                ReportInfo.Add("Theme config have changed, but early content won't be appply, you can @restart Alterful.");
                             }
                         }
-                        if (!found) throw new NotImplementedException("Theme [" + setValue + "] is not found.");
+                        if (!found) throw new NotImplementedException("Theme [" + setValue + "] is not found."); //throw new NotImplementedException("主题 [" + setValue + "] 没有找到。");
                     }
                     break;
                 default:

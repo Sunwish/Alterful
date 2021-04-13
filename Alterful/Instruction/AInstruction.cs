@@ -25,6 +25,7 @@ namespace Alterful.Instruction
         public const char SYMBOL_CONST_CMD = '>';
         public const string ADD_CONST_INSTRUCTION = "ADD_CONST_INSTRUCTION";
         public const string UPDATE_INSTRUCTION = "UPDATE_INSTRUCTION";
+        //public const string MSG_EXECUTE_SUCCESSFULLY = "执行成功。";
         public const string MSG_EXECUTE_SUCCESSFULLY = "Execute successfully.";
         public string Instruction { get; }
         public static List<string> ReportInfo { get; } = new List<string>();

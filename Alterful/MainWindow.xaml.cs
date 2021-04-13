@@ -325,6 +325,7 @@ namespace Alterful
         private void CheckUpdate()
         {
             if (AVersion.GetVersionNumberDiffer() >= 0) return;
+            //string outInfo = "检测到有新版本, 你可以执行 @update 来启用更新程序。"/*"检查到有新版本，执行 @update 来启用更新程序"*/;
             string outInfo = "A new version is detected, execute @update to enable the Updater."/*"检查到有新版本，执行 @update 来启用更新程序"*/;
 
             // InstructionTextBox 被主线程占用，利用 Dispatcher 进行操作
@@ -421,6 +422,7 @@ namespace Alterful
             {
                 constInstructionInputMode = true;
                 TestRichTextbox.IsReadOnly = false; InstructionTextBox.IsEnabled = false;
+                //AppendRTBLine(TestRichTextbox, "确认编辑: Alt + S / 取消编辑: Alt + Esc", themeConfig.ForegroundOutputWarning, themeConfig.BackgroundOutputWarning);
                 AppendRTBLine(TestRichTextbox, "Confirm: Alt + S / Cancel: Alt + Esc", themeConfig.ForegroundOutputWarning, themeConfig.BackgroundOutputWarning);
                 TestRichTextbox.BorderThickness = new Thickness(1);
 
@@ -448,6 +450,7 @@ namespace Alterful
                 // Set CaretPosition.
                 TestRichTextbox.CaretPosition = TestRichTextbox.Document.ContentEnd;
 
+                //UpdateMaxWidth("确认编辑: Alt + S / 取消编辑: Alt + Esc");
                 UpdateMaxWidth("Confirm: Alt + S / Cancel: Alt + Esc");
                 Resize(true, constInstructionInputWidthBias);
                 TestRichTextbox.Focus(); showOutput = true;

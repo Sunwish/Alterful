@@ -62,6 +62,7 @@ namespace Alterful.Instruction
                 }
                 else
                 {
+                    //ReportInfo.Add("启动项 [" + item.StartupName + "] 并不存在。");
                     ReportInfo.Add("Starup item [" + item.StartupName + "] is not exist.");
                 }
             }
