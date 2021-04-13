@@ -297,7 +297,7 @@ namespace Alterful
                     Resize();
                 }));
             });
-            InitializeGUI(ATheme.GetThemeConfig(), true);
+            InitializeGUI(ATheme.GetThemeConfig(), !AHelper.IS_FIRST_START && !AHelper.HAS_ANEW);
             InitializePipe();
             CheckCommandLine();
 
@@ -392,7 +392,7 @@ namespace Alterful
             }
         }
 
-        private void InitializeGUI(AThemeConfig tc, bool realyInitialize = false)
+        private void InitializeGUI(AThemeConfig tc, bool hideWhenStart = false)
         {
             Resize();
             themeConfig = tc;
@@ -403,7 +403,7 @@ namespace Alterful
             InstructionTextBox.Focus();
 
             // Hide when start up
-            if (realyInitialize) Visibility = Visibility.Hidden; showOutput = false; Resize();
+            if (hideWhenStart) Visibility = Visibility.Hidden; showOutput = false; Resize();
         }
 
 

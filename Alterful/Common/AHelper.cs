@@ -24,6 +24,7 @@ namespace Alterful.Helper
         public static string APATH_PATH { get; } = BASE_PATH + @"\APath";
         public static string ATEMP_PATH { get; } = BASE_PATH + @"\ATemp";
         public static bool IS_FIRST_START = false;
+        public static bool HAS_ANEW = false;
         public static string CONST_INSTRUCTION_PATH { get; } = BASE_PATH + @"\Config\ConstInstruction";
         public const string RemoteUrl = @"https://alterful.com/bin/";
         public const string LNK_EXTENTION = ".lnk";
@@ -77,6 +78,7 @@ namespace Alterful.Helper
             string ANewPath = @".\ANew.ini";
             if (System.IO.File.Exists(ANewPath))
             {
+                HAS_ANEW = true;
                 using (StreamReader reader = new StreamReader(ANewPath))
                 {
                     appendString("在新版本 " + Properties.Settings.Default.localVersion + " 中有以下更新: ", AInstruction.ReportType.OK);
