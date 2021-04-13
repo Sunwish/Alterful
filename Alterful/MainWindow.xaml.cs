@@ -659,7 +659,7 @@ namespace Alterful
         /// 指令补全
         /// </summary>
         private void CompleteInstruction()
-        {   
+        {
             if (!completing)
             {
                 InputAttribution ia = ACompletion.GetInstructionCompletion(new InputAttribution { content = InstructionTextBox.Text, caretPosition = InstructionTextBox.CaretIndex, selectEmpty = true });

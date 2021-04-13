@@ -11,7 +11,7 @@ namespace Alterful.Instruction
 {
     public class AInstruction_Macro : AInstruction
     {
-        public enum MacroType { ADD, NEW, DEL, SET, UPDATE, RESTART }
+        public enum MacroType { ADD, NEW, DEL, SET, UPDATE, RESTART, LOCATE }
         public enum MacroAddType { STARTUP, CONST_QUOTE }
         public enum MacroDelType { STARTUP, CONST_QUOTE }
         //public static string MSG_UNKNOW_MACRO_TYPE { get; } = "未知的宏指令类型";
@@ -36,7 +36,7 @@ namespace Alterful.Instruction
         /// </summary>
         /// <param name="part"></param>
         /// <returns></returns>
-        public static string GetCompletion(string part) => SYMBOL_MACRO + AHelper.FindCompletion(new List<string> { "add", "del", "new", "set", "update", "restart" }, part.Substring(1));
+        public static string GetCompletion(string part) => SYMBOL_MACRO + AHelper.FindCompletion(new List<string> { "add", "del", "new", "set", "update", "restart", "locate" }, part.Substring(1));
 
         /// <summary>
         /// 获取宏指令类型
@@ -57,6 +57,7 @@ namespace Alterful.Instruction
                 case "set": return MacroType.SET;
                 case "update": return MacroType.UPDATE;
                 case "restart": return MacroType.RESTART;
+                case "locate": return MacroType.LOCATE;
                 default: throw new UnknowMacroType(macroType);
             }
         }
@@ -82,6 +83,7 @@ namespace Alterful.Instruction
                     case MacroType.SET: ExecuteMacroSet(); break;
                     case MacroType.UPDATE: ExecuteMacroUpdate(); break;
                     case MacroType.RESTART: ExecuteMacroRestart(); break;
+                    case MacroType.LOCATE: ExecuteMacroLocate(); break;
                 }
             }
             catch (Exception)
@@ -142,11 +144,35 @@ namespace Alterful.Instruction
         private void ExecuteMacroNew()
         {
             List<string> macroInstructionParameters = GetMacroInstructionParametersList();
+
+            // Handle [in] sytex
+            string inWhere = AFile.ATEMP_PATH;
+            if(macroInstructionParameters.Count >= 3 && "in" == macroInstructionParameters[macroInstructionParameters.Count - 2])
+            {
+                string lastParam = macroInstructionParameters[macroInstructionParameters.Count - 1];
+                if (AFile.Exists(lastParam))
+                {
+                    // If the item is already a directory
+                    string itemPath = AFile.GetFullPath(lastParam);
+                    if (Directory.Exists(itemPath)) inWhere = itemPath;
+                    // If the item is exist
+                    else if (File.Exists(itemPath)) inWhere = Path.GetDirectoryName(itemPath);
+                    else throw new NotImplementedException("The startup item [" + lastParam + "] is not found in disk.");
+                }
+                else if (Directory.Exists(lastParam)) inWhere = lastParam;
+                else throw new NotImplementedException("The directory [" + lastParam + "] is not exist.");
+                macroInstructionParameters.RemoveRange(macroInstructionParameters.Count - 2, 2);
+            }
+            // Remove the last '\'
+            if (inWhere.Last() == '\\') inWhere = inWhere.Substring(0, inWhere.Length - 1);
+
             foreach (string newFileName in macroInstructionParameters)
             {
                 string fileName = AConstQuote.ConstQuoteParse(newFileName);
-                using (StreamWriter streamWriter = new StreamWriter(AFile.ATEMP_PATH + @"\" + fileName, false)) { }
-                AFile.LaunchTempFile(fileName);
+                string filePath = inWhere + @"\" + fileName;
+                using (StreamWriter streamWriter = new StreamWriter(filePath, false)) { }
+                AFile.StartupProcess(filePath);
+                //AFile.LaunchTempFile(fileName);
             }
         }
 
@@ -379,6 +405,19 @@ namespace Alterful.Instruction
 
         private void ExecuteMacroUpdate() => throw new Exception(AInstruction.UPDATE_INSTRUCTION);
         private void ExecuteMacroRestart() => AHelper.Restart();
+        private void ExecuteMacroLocate()
+        {
+            List<string> macroInstructionParametersRaw = GetMacroInstructionParametersList();
+            foreach(string item in macroInstructionParametersRaw)
+            {
+                if (AFile.Exists(item)) AFile.ShowInExplorer(item);
+                else
+                {
+                    reportType = ReportType.ERROR;
+                    ReportInfo.Add("Startup item [" + item + "] is not exist.");
+                }
+            }
+        }
     }
 
 }

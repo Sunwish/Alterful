@@ -66,7 +66,7 @@ namespace Alterful.Functions
         /// <param name="filePath">要启动的文件路径</param>
         /// <param name="fileArgs">附加启动参数，默认为空</param>
         /// <exception cref="FileNotFoundException"></exception>
-        static private void StartupProcess(string filePath, string fileArgs = "", bool startupAsAdministrator = false)
+        public static void StartupProcess(string filePath, string fileArgs = "", bool startupAsAdministrator = false)
         {
             if (!System.IO.File.Exists(filePath) && !System.IO.Directory.Exists(filePath)) throw new FileNotFoundException();
             StartupProcessWithoutCheck(filePath, fileArgs, startupAsAdministrator);

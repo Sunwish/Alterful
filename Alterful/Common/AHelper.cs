@@ -39,9 +39,11 @@ namespace Alterful.Helper
                 ASettings.DisplayRightMenu = true;
                 ASettings.AutoRunWithSystem = true;
                 CreateShortcut(APATH_PATH + @"\alterful"  + AFile.LNK_EXTENTION, BASE_PATH + @"\Alterful.exe");
+                CreateShortcut(APATH_PATH + @"\atemp" + AFile.LNK_EXTENTION, ATEMP_PATH);
+                CreateShortcut(APATH_PATH + @"\desktop" + AFile.LNK_EXTENTION, Environment.GetFolderPath(Environment.SpecialFolder.Desktop));
                 IS_FIRST_START = true;
             }
-
+            
             // Old version auto startup alterful.exe but new version startup AlterfulPiple.exe, 
             // so over execute to overwrite the old auto startup register configurate.
             if (ASettings.AutoRunWithSystem) ASettings.AutoRunWithSystem = true;
