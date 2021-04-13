@@ -304,6 +304,19 @@ namespace Alterful
             Thread thread = new Thread(new ThreadStart(CheckUpdate));
             thread.Start();
 
+            // If is first startup, give user some tips.
+            if (AHelper.IS_FIRST_START)
+            {
+                string outInfo = "欢迎来到 Alterful，以下是初次上手帮助！\n- 在[指令框输入框]按 Alt 来隐藏/显示回显框；\n- 使用组合键 [Alt+A] 来唤醒/隐藏指令框；\n- 右键任意文件/文件夹来将其添加为启动项；\n- 在指令输入框键入启动项名并回车来启动它；\n- 需要时键入波浪号(~)并回车来结束 Alterful；\n- 前往 help.alterful.com 了解详细功能和使用技巧。";
+                TestRichTextbox.Dispatcher.BeginInvoke((Action)(() => {
+                    UpdateMaxWidth(outInfo);
+                    AppendRTBLine(TestRichTextbox, outInfo, themeConfig.ForegroundOutputWarning, themeConfig.BackgroundOutputWarning);
+                    Visibility = Visibility.Visible;
+                    showOutput = true;
+                    Resize();
+                }));
+            }
+
             // Instruction Test.
             // MainTest();
             // Close();

@@ -23,6 +23,7 @@ namespace Alterful.Helper
         public static string BASE_PATH { get; } = System.IO.File.Exists(System.IO.Path.GetDirectoryName(System.IO.Path.GetDirectoryName(System.IO.Path.GetDirectoryName(System.IO.Path.GetDirectoryName(typeof(MainWindow).Assembly.Location)))) + @"\Alterful.sln") ? System.IO.Path.GetDirectoryName(System.IO.Path.GetDirectoryName(System.IO.Path.GetDirectoryName(System.IO.Path.GetDirectoryName(typeof(MainWindow).Assembly.Location)))) : System.IO.Path.GetDirectoryName(typeof(MainWindow).Assembly.Location);
         public static string APATH_PATH { get; } = BASE_PATH + @"\APath";
         public static string ATEMP_PATH { get; } = BASE_PATH + @"\ATemp";
+        public static bool IS_FIRST_START = false;
         public static string CONST_INSTRUCTION_PATH { get; } = BASE_PATH + @"\Config\ConstInstruction";
         public const string RemoteUrl = @"https://alterful.com/bin/";
         public const string LNK_EXTENTION = ".lnk";
@@ -38,6 +39,7 @@ namespace Alterful.Helper
                 ASettings.DisplayRightMenu = true;
                 ASettings.AutoRunWithSystem = true;
                 CreateShortcut(APATH_PATH + @"\alterful"  + AFile.LNK_EXTENTION, BASE_PATH + @"\Alterful.exe");
+                IS_FIRST_START = true;
             }
 
             // Old version auto startup alterful.exe but new version startup AlterfulPiple.exe, 
