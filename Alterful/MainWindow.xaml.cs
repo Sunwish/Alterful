@@ -460,6 +460,7 @@ namespace Alterful
             {
                 UpdateMaxWidth(InstructionTextBox.Text);
                 AppendRTBLine(TestRichTextbox, InstructionTextBox.Text, themeConfig.ForegroundOutput, themeConfig.BackgroundOutput);
+                showOutput = true;
                 InstructionTextBox.Text = "";
                 Resize();
                 AHelper.AppendString appendString = delegate (string content, AInstruction.ReportType type)
