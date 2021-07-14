@@ -31,6 +31,7 @@ namespace Alterful.Helper
         public static List<string> InstructionHistory = new List<string>();
         public static int InstructionPointer = -1;
         public delegate void AppendString(string content, AInstruction.ReportType type);
+
         public static void Initialize(AppendString appendString)
         {
             // Floder Check
@@ -341,13 +342,22 @@ namespace Alterful.Helper
         /// 获取远程版本号
         /// </summary>
         /// <returns></returns>
-        public static string GetRemoteVersionNumber()
+        public static string GetRemoteVersionNumber(AHelper.AppendString appendString)
         {
             HttpWebRequest request = WebRequest.Create(RemoteVersionUrl) as HttpWebRequest;
-            using (StreamReader reader = new StreamReader(request.GetResponse().GetResponseStream()))
+            try
             {
-                string versionInfoBody = reader.ReadToEnd();
-                return versionInfoBody.Substring(versionInfoBody.IndexOf("=") + 1);
+                using (StreamReader reader = new StreamReader(request.GetResponse().GetResponseStream()))
+                {
+                    string versionInfoBody = reader.ReadToEnd();
+                    return versionInfoBody.Substring(versionInfoBody.IndexOf("=") + 1);
+                }
+            }
+            catch (Exception)
+            {
+                // Do nothing, skip update checking.
+                appendString("检查更新出错，请检查网络连接状况，\n可使用@restart来重启Alterful检查更新，或使用@update来检查并执行更新。", AInstruction.ReportType.ERROR);
+                return "0.0.0.0";
             }
         }
 
@@ -376,7 +386,7 @@ namespace Alterful.Helper
         /// <param name="local"></param>
         /// <param name="remote"></param>
         /// <returns></returns>
-        public static int GetVersionNumberDiffer() => GetVersionNumberDiffer(GetLocalVersionNumber(), GetRemoteVersionNumber());
+        public static int GetVersionNumberDiffer(AHelper.AppendString appendString) => GetVersionNumberDiffer(GetLocalVersionNumber(), GetRemoteVersionNumber(appendString));
 
         /// <summary>
         /// 获取版本号差异。版本偏低返回负数，最新版本返回0，内测版本返回正数
@@ -456,9 +466,18 @@ namespace Alterful.Helper
             AHelper.AppendString handler = msgHandler as AHelper.AppendString;
             using (var client = new WebClient())
             {
-                handler("[更新] 正在获取文件列表...", AInstruction.ReportType.NONE);
+                handler("[更新] 正在获取文件列表...", AInstruction.ReportType.OK);
                 //handler("[update] Getting file list...", AInstruction.ReportType.NONE);
-                List<FileInfo> differFiles = GetFilesDiffer();
+                List<FileInfo> differFiles = new List<FileInfo>();
+                try
+                {
+                    differFiles = GetFilesDiffer(handler);
+                }
+                catch (Exception)
+                {
+                    return;
+                }
+                
                 if (0 == differFiles.Count) {
                     handler("当前版本已经是最新版。", AInstruction.ReportType.OK);
                     //handler("The current version is already the latest version.", AInstruction.ReportType.OK); 
@@ -486,7 +505,7 @@ namespace Alterful.Helper
                     handler("更新已完成。", AInstruction.ReportType.OK);
                     //handler("Update finished.", AInstruction.ReportType.OK);
                 }
-                catch (Exception) { throw; }
+                catch (Exception e) { handler("[错误] " + e.Message, AInstruction.ReportType.ERROR); }
                 
             }
             if(updateSelf)
@@ -531,14 +550,21 @@ namespace Alterful.Helper
             }
         }
 
-        public static List<FileInfo> GetFilesDiffer()
+        public static List<FileInfo> GetFilesDiffer(AHelper.AppendString appendString)
         {
             List<FileInfo> differFiles = new List<FileInfo>();
-            foreach(FileInfo remoteFile in GetRemoteFileList())
+            try
             {
-                string localFileMd5 = AHelper.GetFileMd5(remoteFile.FileRoute + remoteFile.FileName).ToLower();
-                if (!localFileMd5.Equals(remoteFile.FileMd5.ToLower()))
-                    differFiles.Add(remoteFile);
+                foreach (FileInfo remoteFile in GetRemoteFileList(appendString))
+                {
+                    string localFileMd5 = AHelper.GetFileMd5(remoteFile.FileRoute + remoteFile.FileName).ToLower();
+                    if (!localFileMd5.Equals(remoteFile.FileMd5.ToLower()))
+                        differFiles.Add(remoteFile);
+                }
+            }
+            catch (Exception)
+            {
+                throw;
             }
             return differFiles;
         }
@@ -548,7 +574,18 @@ namespace Alterful.Helper
         /// </summary>
         /// <param name="fileListString"></param>
         /// <returns></returns>
-        public static List<FileInfo> GetRemoteFileList() => GetRemoteFileList(GetRemoteFileListString());
+        public static List<FileInfo> GetRemoteFileList(AHelper.AppendString appendString)
+        {
+            try
+            {
+                return GetRemoteFileList(GetRemoteFileListString(appendString));
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
 
         /// <summary>
         /// 获取远程文件列表
@@ -570,12 +607,21 @@ namespace Alterful.Helper
         /// 获取远程文件列表文本
         /// </summary>
         /// <returns></returns>
-        public static string GetRemoteFileListString()
+        public static string GetRemoteFileListString(AHelper.AppendString appendString)
         {
             string fileListBody = "";
             HttpWebRequest request = WebRequest.Create(RemoteFileListUrl) as HttpWebRequest;
-            using (StreamReader reader = new StreamReader(request.GetResponse().GetResponseStream()))
-                fileListBody = reader.ReadToEnd();
+            try
+            {
+                using (StreamReader reader = new StreamReader(request.GetResponse().GetResponseStream()))
+                    fileListBody = reader.ReadToEnd();
+            }
+            catch (Exception e)
+            {
+                appendString("[错误] 获取文件列表失败，请检查网络状况。", AInstruction.ReportType.ERROR);
+                throw;
+            }
+            
             return fileListBody;
         }
     }

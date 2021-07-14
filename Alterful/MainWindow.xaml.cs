@@ -48,6 +48,26 @@ namespace Alterful
         bool completing = false;
         AThemeConfig themeConfig = ATheme.GetThemeConfig();
         ConstInstructionContentRange constInstructionContentRange = new ConstInstructionContentRange();
+        public AHelper.AppendString appendStringDelegate;
+
+        public void AppendStringFunction(string content, AInstruction.ReportType type)
+        {
+            // InstructionTextBox 被主线程占用，利用 Dispatcher 进行操作
+            TestRichTextbox.Dispatcher.BeginInvoke((Action)(() =>
+            {
+                UpdateMaxWidth(content);
+                switch (type)
+                {
+                    case AInstruction.ReportType.NONE: AppendRTBLine(TestRichTextbox, content, themeConfig.ForegroundOutput, themeConfig.BackgroundOutput); break;
+                    case AInstruction.ReportType.WARNING: AppendRTBLine(TestRichTextbox, content, themeConfig.ForegroundOutputWarning, themeConfig.BackgroundOutputWarning); break;
+                    case AInstruction.ReportType.OK: AppendRTBLine(TestRichTextbox, content, themeConfig.ForegroundOutputOk, themeConfig.BackgroundOutputOk); break;
+                    case AInstruction.ReportType.ERROR: AppendRTBLine(TestRichTextbox, content, themeConfig.ForegroundOutputError, themeConfig.BackgroundOutputError); break;
+                }
+                Visibility = Visibility.Visible;
+                showOutput = true;
+                Resize();
+            }));
+        }
 
         struct ConstInstructionContentRange
         {
@@ -300,6 +320,7 @@ namespace Alterful
             InitializeGUI(ATheme.GetThemeConfig(), !AHelper.IS_FIRST_START && !AHelper.HAS_ANEW);
             InitializePipe();
             CheckCommandLine();
+            appendStringDelegate = AppendStringFunction;
 
             Thread thread = new Thread(new ThreadStart(CheckUpdate));
             thread.Start();
@@ -324,7 +345,7 @@ namespace Alterful
 
         private void CheckUpdate()
         {
-            if (AVersion.GetVersionNumberDiffer() >= 0) return;
+            if (AVersion.GetVersionNumberDiffer(appendStringDelegate) >= 0) return;
             //string outInfo = "检测到有新版本, 你可以执行 @update 来启用更新程序。"/*"检查到有新版本，执行 @update 来启用更新程序"*/;
             string outInfo = "A new version is detected, execute @update to enable the Updater."/*"检查到有新版本，执行 @update 来启用更新程序"*/;
 
@@ -711,6 +732,12 @@ namespace Alterful
         private void TestRichTextbox_TextChanged(object sender, TextChangedEventArgs e)
         {
             if (constInstructionInputMode) Resize(true, constInstructionInputWidthBias);
+        }
+
+        // Button for testing features
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            // appendStringDelegate("试试看呗", AInstruction.ReportType.ERROR);
         }
     }
 }

@@ -13,5 +13,6 @@
             </FlowDocument>
         </RichTextBox>
         <TextBox x:Name="InstructionTextBox" BorderBrush="SlateGray" TextWrapping="NoWrap" Text="" Background="Black" KeyDown="InstructionTextBox_KeyDown" Margin="0,0,0,0" Height="24" Foreground="White" BorderThickness="1" VerticalAlignment="Bottom" VerticalContentAlignment="Center" AllowDrop="False" TextChanged="InstructionTextBox_TextChanged" PreviewKeyDown="InstructionTextBox_PreviewKeyDown"/>
+        <Button Content="Test Button" HorizontalAlignment="Left" Margin="24,9,0,0" VerticalAlignment="Top" Width="81" Height="39" Click="Button_Click" Visibility="Hidden"/>
     </Grid>
 </Window>
