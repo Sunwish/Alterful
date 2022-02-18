@@ -54,6 +54,7 @@ namespace Alterful.Functions
                     UseShellExecute = true,
                     Arguments = fileArgs,
                     FileName = filePath,
+                    WorkingDirectory = Path.GetDirectoryName(filePath)
                 }
             };
             if (startupAsAdministrator) newProcess.StartInfo.Verb = "runas";
