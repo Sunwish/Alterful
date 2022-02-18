@@ -42,6 +42,14 @@ namespace Alterful.Instruction
 
                 if (AFile.Exists(item.StartupName))
                 {
+                    // Check if startup file is exist
+                    string filePath = AFile.GetFullPath(item.StartupName);
+                    if (!System.IO.File.Exists(filePath) && !System.IO.Directory.Exists(filePath))
+                    {
+                        ReportInfo.Add("Starup item [" + item.StartupName + "] references null file. "); /* + System.Environment.NewLine + " You can @delete the item then @add it back with a valid path.";*/
+                        continue;
+                    }
+                    // Launch startup file
                     existCount++;
                     if (item.SuffixList == null)
                     {
