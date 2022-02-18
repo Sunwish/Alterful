@@ -473,8 +473,8 @@ namespace Alterful
 
                 //UpdateMaxWidth("确认编辑: Alt + S / 取消编辑: Alt + Esc");
                 UpdateMaxWidth("Confirm: Alt + S / Cancel: Alt + Esc");
-                Resize(true, constInstructionInputWidthBias);
                 TestRichTextbox.Focus(); showOutput = true;
+                Resize(true, constInstructionInputWidthBias);
                 return;
             }
             else if (AInstruction.UPDATE_INSTRUCTION == retnInfo)
