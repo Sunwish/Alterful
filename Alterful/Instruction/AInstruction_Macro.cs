@@ -11,7 +11,7 @@ namespace Alterful.Instruction
 {
     public class AInstruction_Macro : AInstruction
     {
-        public enum MacroType { ADD, NEW, DEL, SET, UPDATE, RESTART, LOCATE }
+        public enum MacroType { ADD, NEW, DEL, SET, UPDATE, RESTART, LOCATE, VERSION }
         public enum MacroAddType { STARTUP, CONST_QUOTE }
         public enum MacroDelType { STARTUP, CONST_QUOTE }
         //public static string MSG_UNKNOW_MACRO_TYPE { get; } = "未知的宏指令类型";
@@ -36,7 +36,7 @@ namespace Alterful.Instruction
         /// </summary>
         /// <param name="part"></param>
         /// <returns></returns>
-        public static string GetCompletion(string part) => SYMBOL_MACRO + AHelper.FindCompletion(new List<string> { "add", "del", "new", "set", "update", "restart", "locate" }, part.Substring(1));
+        public static string GetCompletion(string part) => SYMBOL_MACRO + AHelper.FindCompletion(new List<string> { "add", "del", "new", "set", "update", "restart", "locate", "version" }, part.Substring(1));
 
         /// <summary>
         /// 获取宏指令类型
@@ -58,6 +58,7 @@ namespace Alterful.Instruction
                 case "update": return MacroType.UPDATE;
                 case "restart": return MacroType.RESTART;
                 case "locate": return MacroType.LOCATE;
+                case "version": return MacroType.VERSION;
                 default: throw new UnknowMacroType(macroType);
             }
         }
@@ -84,6 +85,7 @@ namespace Alterful.Instruction
                     case MacroType.UPDATE: ExecuteMacroUpdate(); break;
                     case MacroType.RESTART: ExecuteMacroRestart(); break;
                     case MacroType.LOCATE: ExecuteMacroLocate(); break;
+                    case MacroType.VERSION: ExecuteMacroVersion(); break;
                 }
             }
             catch (Exception)
@@ -94,6 +96,7 @@ namespace Alterful.Instruction
             reportType = ReportType.OK;
             return MSG_EXECUTE_SUCCESSFULLY;
         }
+
 
         /// <summary>
         /// 取宏指令块列表
@@ -417,6 +420,12 @@ namespace Alterful.Instruction
                     ReportInfo.Add("Startup item [" + item + "] is not exist.");
                 }
             }
+        }
+        private void ExecuteMacroVersion()
+        {
+            string locVerNum = AVersion.GetLocalVersionNumber();
+            throw new Exception("Local version: " + locVerNum);
+            // ReportInfo.Add("Local version: " + locVerNum);
         }
     }
 
